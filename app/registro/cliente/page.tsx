@@ -27,12 +27,15 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>
 
-export default function RegistroClientePage() {
-  const router = useRouter()
-  const supabase = createBrowserClient(
+function mkClient() {
+  return createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
+}
+
+export default function RegistroClientePage() {
+  const router = useRouter()
 
   const [departments, setDepartments] = useState<Department[]>([])
   const [municipalities, setMunicipalities] = useState<Municipality[]>([])
@@ -49,6 +52,7 @@ export default function RegistroClientePage() {
 
   useEffect(() => {
     const load = async () => {
+      const supabase = mkClient()
       const { data: country } = await supabase
         .from('countries')
         .select('id')
@@ -69,6 +73,7 @@ export default function RegistroClientePage() {
 
   useEffect(() => {
     if (!selectedDept) return
+    const supabase = mkClient()
     supabase
       .from('municipalities')
       .select('*')
@@ -82,6 +87,7 @@ export default function RegistroClientePage() {
 
   useEffect(() => {
     if (!selectedMuni) return
+    const supabase = mkClient()
     supabase
       .from('districts')
       .select('*')
@@ -92,6 +98,7 @@ export default function RegistroClientePage() {
   }, [selectedMuni])
 
   const onSubmit = async (data: FormData) => {
+    const supabase = mkClient()
     const { data: auth, error: authError } = await supabase.auth.signUp({
       email: data.email,
       password: data.password,

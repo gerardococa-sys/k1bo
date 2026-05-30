@@ -33,12 +33,15 @@ const step1Schema = z.object({
 
 type Step1Data = z.infer<typeof step1Schema>
 
-export default function RegistroProfesionalPage() {
-  const router = useRouter()
-  const supabase = createBrowserClient(
+function mkClient() {
+  return createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
+}
+
+export default function RegistroProfesionalPage() {
+  const router = useRouter()
   const [step, setStep] = useState(1)
   const [userId, setUserId] = useState('')
   const [svCountryId, setSvCountryId] = useState('')
@@ -74,6 +77,7 @@ export default function RegistroProfesionalPage() {
 
   useEffect(() => {
     const load = async () => {
+      const supabase = mkClient()
       const { data: country } = await supabase.from('countries').select('id').eq('url_prefix', process.env.NEXT_PUBLIC_DEFAULT_COUNTRY ?? 'sv').single()
       if (country) {
         setSvCountryId(country.id)
@@ -88,11 +92,13 @@ export default function RegistroProfesionalPage() {
 
   useEffect(() => {
     if (selectedDepts.length === 0) { setMunicipalities([]); return }
+    const supabase = mkClient()
     supabase.from('municipalities').select('*').in('department_id', selectedDepts).order('name')
       .then(({ data }) => setMunicipalities(data ?? []))
   }, [selectedDepts])
 
   const handleStep1 = async (data: Step1Data) => {
+    const supabase = mkClient()
     const { data: auth, error } = await supabase.auth.signUp({ email: data.email, password: data.password })
     if (error || !auth.user) { toast.error(error?.message ?? 'Error'); return }
     setUserId(auth.user.id)
@@ -129,6 +135,7 @@ export default function RegistroProfesionalPage() {
   }
 
   const handleStep2 = async () => {
+    const supabase = mkClient()
     await supabase.from('professionals').update({ covers_entire_country: coversAll }).eq('id', userId)
     if (!coversAll) {
       const coverageRows = selectedDepts.map((dept_id) => ({
@@ -143,6 +150,7 @@ export default function RegistroProfesionalPage() {
   }
 
   const handleStep3 = async () => {
+    const supabase = mkClient()
     await supabase.from('professionals').update({
       short_description: shortDesc,
       bio,
@@ -162,6 +170,7 @@ export default function RegistroProfesionalPage() {
   }
 
   const handleStep4 = async () => {
+    const supabase = mkClient()
     for (const file of portfolioFiles.slice(0, 25)) {
       const ext = file.name.split('.').pop()
       const path = `${userId}/${Date.now()}_${Math.random()}.${ext}`
@@ -179,6 +188,7 @@ export default function RegistroProfesionalPage() {
   }
 
   const handleStep5 = async () => {
+    const supabase = mkClient()
     if (!duiFront || !duiBack) { toast.error('Ambas fotos del DUI son requeridas'); return }
 
     const upload = async (file: File, side: string) => {
