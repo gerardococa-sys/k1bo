@@ -71,7 +71,7 @@ export default function RegistroProfesionalPage() {
 
   useEffect(() => {
     const load = async () => {
-      const { data: country } = await supabase.from('countries').select('id').eq('url_prefix', 'sv').single()
+      const { data: country } = await supabase.from('countries').select('id').eq('url_prefix', process.env.NEXT_PUBLIC_DEFAULT_COUNTRY ?? 'sv').single()
       if (country) {
         setSvCountryId(country.id)
         const { data: depts } = await supabase.from('departments').select('*').eq('country_id', country.id).order('name')

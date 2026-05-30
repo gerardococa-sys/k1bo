@@ -2,7 +2,9 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 import { COUNTRY_PREFIXES } from '@/lib/utils'
 
-const ACTIVE_PREFIXES = ['sv'] // se actualiza cuando se activan países
+const ACTIVE_PREFIXES = process.env.NEXT_PUBLIC_DEFAULT_COUNTRY
+  ? [process.env.NEXT_PUBLIC_DEFAULT_COUNTRY]
+  : ['sv']
 
 const PROTECTED_ROUTES: Record<string, string[]> = {
   client: ['cliente'],

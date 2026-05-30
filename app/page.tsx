@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { CountrySelector } from '@/components/navbar/CountrySelector'
 
 const ACTIVE_COUNTRIES = [
-  { name: 'El Salvador', prefix: 'sv', flag: '🇸🇻' },
+  { name: 'El Salvador', prefix: process.env.NEXT_PUBLIC_DEFAULT_COUNTRY ?? 'sv', flag: '🇸🇻' },
 ]
 
 export default function RootPage() {
@@ -95,7 +95,7 @@ export default function RootPage() {
             <Link
               href="/sv"
               className="flex flex-col items-center gap-2 rounded-xl border-2 border-primary bg-primary/5 p-6 hover:bg-primary/10 transition-colors"
-              onClick={() => localStorage.setItem('k1bo_country', 'sv')}
+              onClick={() => localStorage.setItem('k1bo_country', process.env.NEXT_PUBLIC_DEFAULT_COUNTRY ?? 'sv')}
             >
               <span className="text-4xl">🇸🇻</span>
               <span className="text-sm font-semibold">El Salvador</span>

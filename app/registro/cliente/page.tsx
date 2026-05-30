@@ -49,7 +49,7 @@ export default function RegistroClientePage() {
       const { data: country } = await supabase
         .from('countries')
         .select('id')
-        .eq('url_prefix', 'sv')
+        .eq('url_prefix', process.env.NEXT_PUBLIC_DEFAULT_COUNTRY ?? 'sv')
         .single()
       if (country) {
         setSvCountryId(country.id)
