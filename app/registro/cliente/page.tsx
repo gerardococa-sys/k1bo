@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { createClient } from '@/lib/supabase/client'
+import { createBrowserClient } from '@supabase/ssr'
 import type { Department, Municipality, District } from '@/types'
 
 const schema = z.object({
@@ -29,7 +29,10 @@ type FormData = z.infer<typeof schema>
 
 export default function RegistroClientePage() {
   const router = useRouter()
-  const supabase = createClient()
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
 
   const [departments, setDepartments] = useState<Department[]>([])
   const [municipalities, setMunicipalities] = useState<Municipality[]>([])

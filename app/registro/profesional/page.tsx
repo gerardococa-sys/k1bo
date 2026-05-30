@@ -17,7 +17,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
-import { createClient } from '@/lib/supabase/client'
+import { createBrowserClient } from '@supabase/ssr'
 import { DAY_LABELS } from '@/lib/utils'
 import type { Department, Municipality, Category } from '@/types'
 
@@ -35,7 +35,10 @@ type Step1Data = z.infer<typeof step1Schema>
 
 export default function RegistroProfesionalPage() {
   const router = useRouter()
-  const supabase = createClient()
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
   const [step, setStep] = useState(1)
   const [userId, setUserId] = useState('')
   const [svCountryId, setSvCountryId] = useState('')
