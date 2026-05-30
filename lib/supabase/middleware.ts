@@ -1,8 +1,15 @@
-
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import type { User } from '@supabase/supabase-js'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
-export async function updateSession(request: NextRequest) {
+type CookieToSet = { name: string; value: string; options?: Record<string, unknown> }
+
+export async function updateSession(request: NextRequest): Promise<{
+  supabase: SupabaseClient
+  supabaseResponse: NextResponse
+  user: User | null
+}> {
   let supabaseResponse = NextResponse.next({
     request,
   })
@@ -15,20 +22,20 @@ export async function updateSession(request: NextRequest) {
         getAll() {
           return request.cookies.getAll()
         },
-        setAll(cookiesToSet: { name: string; value: string; options?: any }[]) {
+        setAll(cookiesToSet: CookieToSet[]) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
           supabaseResponse = NextResponse.next({
             request,
           })
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
+            supabaseResponse.cookies.set(name, value, options as Parameters<typeof supabaseResponse.cookies.set>[2])
           )
         },
       },
     }
   )
 
-  await supabase.auth.getUser()
+  const { data: { user } } = await supabase.auth.getUser()
 
-  return supabaseResponse
+  return { supabase, supabaseResponse, user }
 }
