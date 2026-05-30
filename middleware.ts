@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
-import { COUNTRY_PREFIXES } from '@/lib/utils'
+
+const COUNTRY_PREFIXES = ['sv', 'gt', 'hn', 'ni', 'cr', 'pa', 'bz'] as const
 
 const ACTIVE_PREFIXES = process.env.NEXT_PUBLIC_DEFAULT_COUNTRY
   ? [process.env.NEXT_PUBLIC_DEFAULT_COUNTRY]
@@ -81,4 +82,5 @@ export const config = {
   matcher: [
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
+  runtime: 'nodejs',
 }
