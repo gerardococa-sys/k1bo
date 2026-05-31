@@ -28,9 +28,8 @@ export default function CountryPage({ params }: { params: { country: string } })
 
       const { data: cats } = await supabase
         .from('categories')
-        .select('*, subcategories:categories!parent_id(*)')
+        .select('*')
         .is('parent_id', null)
-        .eq('active', true)
         .order('order_index')
       setCategories(cats ?? [])
 
