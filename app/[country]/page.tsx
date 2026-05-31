@@ -26,11 +26,13 @@ export default function CountryPage({ params }: { params: { country: string } })
     const load = async () => {
       const supabase = mkClient()
 
-      const { data: cats } = await supabase
+      const { data: cats, error: catsError } = await supabase
         .from('categories')
         .select('*')
         .is('parent_id', null)
         .order('order_index')
+      console.log('categorias data:', cats)
+      console.log('categorias error:', catsError)
       setCategories(cats ?? [])
 
       const { data: country } = await supabase
