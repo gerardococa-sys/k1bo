@@ -3,18 +3,11 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Search, CheckCircle, Star, Clock } from 'lucide-react'
-import { createBrowserClient } from '@supabase/ssr'
+import { createClient } from '@/lib/supabase/client'
 import { CategoryGrid } from '@/components/categories/CategoryGrid'
 import { ProfessionalCard } from '@/components/professionals/ProfessionalCard'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-
-function mkClient() {
-  return createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-}
 
 export default function CountryPage({ params }: { params: { country: string } }) {
   const [categories, setCategories] = useState<any[]>([])
@@ -24,7 +17,7 @@ export default function CountryPage({ params }: { params: { country: string } })
 
   useEffect(() => {
     const load = async () => {
-      const supabase = mkClient()
+      const supabase = createClient()
 
       const { data: cats, error: catsError } = await supabase
         .from('categories')
