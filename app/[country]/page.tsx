@@ -16,13 +16,19 @@ export default async function CountryPage({ params }: { params: { country: strin
     return <div>Error de configuración</div>
   }
 
-  const supabase = await createClient()
+  const categoriesRes = await fetch(
+    `${supabaseUrl}/rest/v1/categories?parent_id=is.null&order=order_index`,
+    {
+      headers: {
+        'apikey': supabaseKey,
+        'Authorization': `Bearer ${supabaseKey}`,
+      },
+      cache: 'no-store',
+    }
+  )
+  const categories = categoriesRes.ok ? await categoriesRes.json() : []
 
-  const { data: categories } = await supabase
-    .from('categories')
-    .select('*')
-    .is('parent_id', null)
-    .order('order_index')
+  const supabase = await createClient()
 
   const { data: country } = await supabase
     .from('countries')
