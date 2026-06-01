@@ -9,6 +9,13 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
 export default async function CountryPage({ params }: { params: { country: string } }) {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  if (!supabaseUrl || !supabaseKey) {
+    return <div>Error de configuración</div>
+  }
+
   const supabase = await createClient()
 
   const { data: categories } = await supabase
