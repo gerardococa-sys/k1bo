@@ -4,15 +4,15 @@ import { Card, CardContent } from '@/components/ui/card'
 import type { Category } from '@/types'
 
 const ICON_MAP: Record<string, React.ReactNode> = {
-  wrench: <Wrench className="h-6 w-6" />,
-  paintbucket: <PaintBucket className="h-6 w-6" />,
-  zap: <Zap className="h-6 w-6" />,
-  droplets: <Droplets className="h-6 w-6" />,
-  treepine: <TreePine className="h-6 w-6" />,
-  layers: <Layers className="h-6 w-6" />,
-  wind: <Wind className="h-6 w-6" />,
-  building2: <Building2 className="h-6 w-6" />,
-  hammer: <Hammer className="h-6 w-6" />,
+  wrench: <Wrench className="h-7 w-7 text-[#1B3A6B]" />,
+  paintbucket: <PaintBucket className="h-7 w-7 text-[#1B3A6B]" />,
+  zap: <Zap className="h-7 w-7 text-[#1B3A6B]" />,
+  droplets: <Droplets className="h-7 w-7 text-[#1B3A6B]" />,
+  treepine: <TreePine className="h-7 w-7 text-[#1B3A6B]" />,
+  layers: <Layers className="h-7 w-7 text-[#1B3A6B]" />,
+  wind: <Wind className="h-7 w-7 text-[#1B3A6B]" />,
+  building2: <Building2 className="h-7 w-7 text-[#1B3A6B]" />,
+  hammer: <Hammer className="h-7 w-7 text-[#1B3A6B]" />,
 }
 
 interface CategoryGridProps {
@@ -27,10 +27,10 @@ export function CategoryGrid({ categories, countryPrefix }: CategoryGridProps) {
         <Link key={cat.id} href={`/${countryPrefix}/categoria/${cat.slug}`}>
           <Card className="cursor-pointer transition-all hover:border-primary hover:shadow-md h-full">
             <CardContent className="flex flex-col items-center justify-center gap-3 p-6 text-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#1B3A6B]/10">
                 {cat.icon && ICON_MAP[cat.icon.toLowerCase()]
                   ? ICON_MAP[cat.icon.toLowerCase()]
-                  : <Wrench className="h-6 w-6" />}
+                  : <Wrench className="h-7 w-7 text-[#1B3A6B]" />}
               </div>
               <div>
                 <p className="font-semibold text-sm">{cat.name}</p>

@@ -9,14 +9,14 @@ export function Footer({ countryPrefix }: FooterProps) {
   const base = countryPrefix ? `/${countryPrefix}` : ''
 
   return (
-    <footer style={{ backgroundColor: '#1A1A1A' }} className="text-white">
+    <footer style={{ backgroundColor: '#1B3A6B' }} className="text-white">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-4">
           {/* Brand */}
           <div>
             <p className="text-2xl font-black uppercase mb-3">K1BO</p>
-            <p className="text-white/60 text-sm leading-relaxed">
-              Encuentra al profesional ideal para tu hogar
+            <p className="text-white/70 text-sm leading-relaxed">
+              Encuentra al profesional ideal para tu hogar, negocio u oficina
             </p>
           </div>
 
@@ -50,17 +50,9 @@ export function Footer({ countryPrefix }: FooterProps) {
               <Link href="/sv" className="flex items-center gap-2 text-white hover:text-white/80 transition-colors">
                 <span>🇸🇻</span> El Salvador
               </Link>
-              {[
-                { flag: '🇬🇹', name: 'Guatemala' },
-                { flag: '🇭🇳', name: 'Honduras' },
-                { flag: '🇳🇮', name: 'Nicaragua' },
-                { flag: '🇨🇷', name: 'Costa Rica' },
-                { flag: '🇵🇦', name: 'Panamá' },
-              ].map((c) => (
-                <span key={c.name} className="flex items-center gap-2 text-white/30 text-xs">
-                  {c.flag} {c.name} — Próximamente
-                </span>
-              ))}
+              <span className="flex items-center gap-2 text-white/40 text-xs">
+                🇬🇹 Guatemala — Próximamente
+              </span>
             </div>
           </div>
         </div>
