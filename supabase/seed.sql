@@ -185,29 +185,29 @@ SELECT dept.id, unnest(ARRAY[
 
 -- Main categories
 INSERT INTO public.categories (name, slug, description, icon, order_index) VALUES
-  ('Tabla Roca',          'tabla-roca',         'Instalación de cielos falsos, fascias y divisiones en tabla roca (gypsum).',                  'layers',     1),
-  ('Cielo Falso PVC',     'cielo-falso-pvc',    'Instalación de cielos falsos en láminas de PVC, ideales para ambientes húmedos.',             'layers',     2),
-  ('Paneles WPC y PVC',   'paneles-wpc-pvc',    'Revestimiento de paredes interiores y exteriores con paneles de madera plástica (WPC) y PVC.','layers',     3),
-  ('Ventanas PVC',        'ventanas-pvc',        'Fabricación e instalación de ventanas en perfiles de PVC.',                                  'wind',       4),
-  ('Albañilería',         'albanileria',         'Construcción, reparación y acabados en paredes, pisos, repellos y enchapes.',                 'hammer',     5),
-  ('Pintura',             'pintura',             'Aplicación de pintura interior y exterior, acabados decorativos.',                            'paintbucket',6),
-  ('Jardinería',          'jardineria',          'Diseño, mantenimiento y paisajismo de jardines, podas y limpieza de áreas verdes.',            'treepine',   7),
-  ('Fontanería',          'fontaneria',          'Instalación y reparación de tuberías, llaves, sanitarios y sistemas de agua.',                 'droplets',   8),
-  ('Electricidad',        'electricidad',        'Instalaciones eléctricas residenciales y comerciales.',                                       'zap',        9),
-  ('Estructura Metálica', 'estructura-metalica', 'Fabricación e instalación de estructuras metálicas para techos, mezanines y portones.',       'building2', 10),
-  ('Pisos',               'pisos',               'Instalación de todo tipo de pisos.',                                                           'layers',   11);
+  ('Cielo Falso y Divisiones', 'cielo-falso-divisiones', 'Instalación de cielos falsos y divisiones interiores en tabla roca y otros materiales.',  'layout-grid', 1),
+  ('Cielo Falso PVC',          'cielo-falso-pvc',        'Instalación de cielos falsos en láminas de PVC, ideales para ambientes húmedos.',          'panel-top',   2),
+  ('Paneles WPC y PVC',        'paneles-wpc-pvc',        'Revestimiento de paredes interiores y exteriores con paneles de madera plástica y PVC.',    'layers',      3),
+  ('Ventanas PVC',             'ventanas-pvc',           'Fabricación e instalación de ventanas en perfiles de PVC.',                                'wind',        4),
+  ('Albañilería',              'albanileria',            'Construcción, reparación y acabados en paredes, pisos, repellos y enchapes.',               'hammer',      5),
+  ('Pintura',                  'pintura',                'Aplicación de pintura interior y exterior, acabados decorativos.',                          'paintbucket', 6),
+  ('Jardinería',               'jardineria',             'Diseño, mantenimiento y paisajismo de jardines, podas y limpieza de áreas verdes.',          'treepine',    7),
+  ('Fontanería',               'fontaneria',             'Instalación y reparación de tuberías, llaves, sanitarios y sistemas de agua.',               'droplets',    8),
+  ('Electricidad',             'electricidad',           'Instalaciones eléctricas residenciales y comerciales.',                                     'zap',         9),
+  ('Estructura Metálica',      'estructura-metalica',    'Fabricación e instalación de estructuras metálicas para techos, mezanines y portones.',     'building2',  10),
+  ('Pisos',                    'pisos',                  'Instalación de todo tipo de pisos.',                                                         'layers',    11);
 
--- Subcategories: Tabla Roca
+-- Subcategories: Cielo Falso y Divisiones
 INSERT INTO public.categories (name, slug, description, parent_id, order_index) VALUES
-  ('Cielo Falso', 'tabla-roca-cielo-falso',
+  ('Cielo Falso PVC', 'cielo-falso-pvc-sub',
+   'Instalación de cielos falsos en láminas de PVC, ideales para cocinas, baños y áreas húmedas.',
+   (SELECT id FROM public.categories WHERE slug = 'cielo-falso-divisiones'), 1),
+  ('Cielo Falso Tabla Roca', 'cielo-falso-tabla-roca',
    'Sistemas de cielo falso en tabla roca (gypsum) para interiores con acabados lisos y diseños arquitectónicos.',
-   (SELECT id FROM public.categories WHERE slug = 'tabla-roca'), 1),
-  ('Fascias y Cornisas', 'tabla-roca-fascias-cornisas',
-   'Instalación de fascias, cornisas y molduras decorativas en tabla roca.',
-   (SELECT id FROM public.categories WHERE slug = 'tabla-roca'), 2),
-  ('Divisiones de espacios', 'tabla-roca-divisiones',
-   'Construcción de tabiques y divisiones de espacios interiores con tabla roca.',
-   (SELECT id FROM public.categories WHERE slug = 'tabla-roca'), 3);
+   (SELECT id FROM public.categories WHERE slug = 'cielo-falso-divisiones'), 2),
+  ('Divisiones de Tabla Roca', 'divisiones-tabla-roca',
+   'Construcción de divisiones y tabiques interiores con tabla roca.',
+   (SELECT id FROM public.categories WHERE slug = 'cielo-falso-divisiones'), 3);
 
 -- Subcategories: Pisos
 INSERT INTO public.categories (name, slug, description, parent_id, order_index) VALUES

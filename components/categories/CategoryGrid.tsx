@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Wrench, PaintBucket, Zap, Droplets, TreePine, Layers, Wind, Building2, Hammer } from 'lucide-react'
+import { Wrench, PaintBucket, Zap, Droplets, TreePine, Layers, Wind, Building2, Hammer, LayoutGrid, PanelTop } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import type { Category } from '@/types'
 
@@ -13,6 +13,8 @@ const ICON_MAP: Record<string, React.ReactNode> = {
   wind: <Wind className="h-7 w-7 text-[#1B3A6B]" />,
   building2: <Building2 className="h-7 w-7 text-[#1B3A6B]" />,
   hammer: <Hammer className="h-7 w-7 text-[#1B3A6B]" />,
+  'layout-grid': <LayoutGrid className="h-7 w-7 text-[#1B3A6B]" />,
+  'panel-top': <PanelTop className="h-7 w-7 text-[#1B3A6B]" />,
 }
 
 interface CategoryGridProps {
