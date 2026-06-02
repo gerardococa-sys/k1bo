@@ -1,12 +1,12 @@
 export const dynamic = 'force-dynamic'
 
 import Link from 'next/link'
-import { Search, CheckCircle, Star, Clock } from 'lucide-react'
+import { CheckCircle, Star, Clock } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { CategoryGrid } from '@/components/categories/CategoryGrid'
 import { ProfessionalCard } from '@/components/professionals/ProfessionalCard'
+import { SearchBar } from '@/components/search/SearchBar'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 
 export default async function CountryPage({ params }: { params: { country: string } }) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -80,18 +80,7 @@ export default async function CountryPage({ params }: { params: { country: strin
           </p>
 
           {/* Search */}
-          <div className="flex gap-2 max-w-md mx-auto">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                className="pl-10 bg-white text-foreground"
-                placeholder="¿Qué servicio necesitas?"
-              />
-            </div>
-            <Button className="bg-white text-[#1B3A6B] hover:bg-white/90 font-semibold">
-              Buscar
-            </Button>
-          </div>
+          <SearchBar countryPrefix={params.country} />
 
           {/* Trust badges */}
           <div className="flex justify-center gap-6 mt-8 text-sm text-white/80">
@@ -103,15 +92,17 @@ export default async function CountryPage({ params }: { params: { country: strin
       </section>
 
       {/* Categories */}
-      <section className="container mx-auto px-4 py-16">
-        <h2 className="text-2xl font-bold mb-2">Categorías de servicios</h2>
-        <p className="text-muted-foreground mb-8">Encuentra el profesional para cada necesidad</p>
-        <CategoryGrid categories={categories ?? []} countryPrefix={params.country} />
+      <section className="bg-white py-16">
+        <div className="container mx-auto px-4">
+          <h2 className="text-2xl font-bold mb-2">Categorías de servicios</h2>
+          <p className="text-muted-foreground mb-8">Encuentra el profesional para cada necesidad</p>
+          <CategoryGrid categories={categories ?? []} countryPrefix={params.country} />
+        </div>
       </section>
 
       {/* Featured professionals */}
       {featuredPros && featuredPros.length > 0 && (
-        <section className="bg-muted/50 py-16">
+        <section className="bg-[#F9F9F9] py-16">
           <div className="container mx-auto px-4">
             <h2 className="text-2xl font-bold mb-2">Profesionales Destacados</h2>
             <p className="text-muted-foreground mb-8">Los mejores profesionales de {countryName}</p>
@@ -125,37 +116,39 @@ export default async function CountryPage({ params }: { params: { country: strin
       )}
 
       {/* How it works */}
-      <section className="container mx-auto px-4 py-16">
-        <h2 className="text-2xl font-bold text-center mb-2">¿Cómo funciona K1BO?</h2>
-        <p className="text-center text-muted-foreground mb-12">Simple y rápido</p>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5">
-          {[
-            { n: 1, title: 'Busca', desc: 'Elige la categoría del servicio que necesitas' },
-            { n: 2, title: 'Selecciona', desc: 'Elige el tipo de trabajo específico' },
-            { n: 3, title: 'Compara', desc: 'Revisa perfiles, fotos y reseñas' },
-            { n: 4, title: 'Cotiza', desc: 'Solicita cotización (registro gratuito)' },
-            { n: 5, title: 'Decide', desc: 'Acepta o rechaza la propuesta' },
-          ].map((s) => (
-            <div key={s.n} className="text-center">
-              <div className="h-12 w-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xl font-bold mx-auto mb-3">
-                {s.n}
+      <section className="bg-white py-16">
+        <div className="container mx-auto px-4">
+          <h2 className="text-2xl font-bold text-center mb-2">¿Cómo funciona K1BO?</h2>
+          <p className="text-center text-muted-foreground mb-12">Simple y rápido</p>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5">
+            {[
+              { n: 1, title: 'Busca', desc: 'Elige la categoría del servicio que necesitas' },
+              { n: 2, title: 'Selecciona', desc: 'Elige el tipo de trabajo específico' },
+              { n: 3, title: 'Compara', desc: 'Revisa perfiles, fotos y reseñas' },
+              { n: 4, title: 'Cotiza', desc: 'Solicita cotización (registro gratuito)' },
+              { n: 5, title: 'Decide', desc: 'Acepta o rechaza la propuesta' },
+            ].map((s) => (
+              <div key={s.n} className="text-center">
+                <div className="h-12 w-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xl font-bold mx-auto mb-3">
+                  {s.n}
+                </div>
+                <p className="font-semibold mb-1">{s.title}</p>
+                <p className="text-sm text-muted-foreground">{s.desc}</p>
               </div>
-              <p className="font-semibold mb-1">{s.title}</p>
-              <p className="text-sm text-muted-foreground">{s.desc}</p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Reviews */}
       {reviews && reviews.length > 0 && (
-        <section className="bg-muted/50 py-16">
+        <section className="bg-[#F9F9F9] py-16">
           <div className="container mx-auto px-4">
             <h2 className="text-2xl font-bold mb-2">Testimonios de Clientes</h2>
             <p className="text-muted-foreground mb-8">Lo que dicen nuestros clientes</p>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {reviews.map((review) => (
-                <div key={review.id} className="rounded-lg bg-background border p-5">
+                <div key={review.id} className="rounded-lg bg-white border p-5">
                   <div className="flex items-center gap-1 mb-3">
                     {Array.from({ length: 5 }).map((_, i) => (
                       <Star
@@ -177,14 +170,16 @@ export default async function CountryPage({ params }: { params: { country: strin
       )}
 
       {/* CTA */}
-      <section className="container mx-auto px-4 py-16 text-center">
-        <h2 className="text-2xl font-bold mb-4">¿Eres profesional?</h2>
-        <p className="text-muted-foreground mb-6">
-          Únete a K1BO y llega a más clientes en {countryName}.
-        </p>
-        <Button size="lg" asChild>
-          <Link href="/registro/profesional">Registra tu negocio gratis</Link>
-        </Button>
+      <section className="bg-white py-16">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-2xl font-bold mb-4">¿Eres profesional?</h2>
+          <p className="text-muted-foreground mb-6">
+            Únete a K1BO y llega a más clientes en {countryName}.
+          </p>
+          <Button size="lg" asChild>
+            <Link href="/registro/profesional">Registra tu negocio gratis</Link>
+          </Button>
+        </div>
       </section>
     </div>
   )
