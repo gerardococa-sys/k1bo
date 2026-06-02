@@ -9,8 +9,7 @@ INSERT INTO public.countries (name, code, url_prefix, currency_name, currency_co
   ('Honduras',    'HN', 'hn', 'Lempira',              'HNL', 'L',   '🇭🇳', false),
   ('Nicaragua',   'NI', 'ni', 'Córdoba',              'NIO', 'C$',  '🇳🇮', false),
   ('Costa Rica',  'CR', 'cr', 'Colón',                'CRC', '₡',   '🇨🇷', false),
-  ('Panamá',      'PA', 'pa', 'Balboa',               'PAB', 'B/.', '🇵🇦', false),
-  ('Belice',      'BZ', 'bz', 'Dólar de Belice',      'BZD', 'BZ$', '🇧🇿', false);
+  ('Panamá',      'PA', 'pa', 'Balboa',               'PAB', 'B/.', '🇵🇦', false);
 
 -- ============================================================
 -- El Salvador — Departments (14)

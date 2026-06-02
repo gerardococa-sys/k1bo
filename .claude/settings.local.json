@@ -4,7 +4,8 @@
       "Bash(npx tsc *)",
       "Bash(echo \"Exit code: $?\")",
       "Bash(echo \"Exit: $?\")",
-      "Bash(node *)"
+      "Bash(node *)",
+      "Bash(grep -v \"^$\")"
     ]
   }
 }
