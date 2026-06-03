@@ -3,7 +3,9 @@
 export const dynamic = 'force-dynamic'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { useRouter, useParams } from 'next/navigation'
+import { ArrowLeft } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -34,6 +36,7 @@ type ProfileFormData = z.infer<typeof profileSchema>
 export default function ProProfilePage() {
   const supabase = createClient()
   const router = useRouter()
+  const params = useParams<{ country: string }>()
   const [userId, setUserId] = useState('')
   const [loading, setLoading] = useState(true)
   const [portfolio, setPortfolio] = useState<any[]>([])
@@ -123,6 +126,12 @@ export default function ProProfilePage() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-2xl">
+      <Link
+        href={`/${params.country}/profesional-panel/dashboard`}
+        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
+      >
+        <ArrowLeft className="h-4 w-4" /> Volver al Dashboard
+      </Link>
       <h1 className="text-2xl font-bold mb-6">Mi Perfil</h1>
 
       <Tabs defaultValue="info">

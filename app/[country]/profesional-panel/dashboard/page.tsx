@@ -63,16 +63,19 @@ export default async function ProDashboardPage({ params }: { params: { country: 
             <p className="text-3xl font-bold text-primary">{pending}</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground flex items-center gap-1">
-              <Star className="h-4 w-4" /> Calificación promedio
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">{avgRating.toFixed(1)}</p>
-          </CardContent>
-        </Card>
+        <Link href={`/${params.country}/profesional-panel/resenas`}>
+          <Card className="cursor-pointer hover:border-primary hover:shadow-md transition-all">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm text-muted-foreground flex items-center gap-1">
+                <Star className="h-4 w-4" /> Calificación promedio
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold">{avgRating.toFixed(1)}</p>
+              <p className="text-xs text-primary mt-1">Ver todas las reseñas →</p>
+            </CardContent>
+          </Card>
+        </Link>
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-muted-foreground">Proyectos completados</CardTitle>

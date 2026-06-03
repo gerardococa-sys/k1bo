@@ -40,12 +40,17 @@ export function UserMenu({ profile, countryPrefix }: UserMenuProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="focus:outline-none">
-        <Avatar className="h-8 w-8 cursor-pointer">
-          <AvatarImage src={profile.photo_url ?? ''} alt={profile.full_name ?? ''} />
-          <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-            {getInitials(profile.full_name ?? 'U')}
-          </AvatarFallback>
-        </Avatar>
+        <div className="flex items-center gap-2 cursor-pointer rounded-md px-1 py-0.5 hover:bg-muted transition-colors">
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={profile.photo_url ?? ''} alt={profile.full_name ?? ''} />
+            <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+              {getInitials(profile.full_name ?? 'U')}
+            </AvatarFallback>
+          </Avatar>
+          <span className="hidden md:block text-sm font-medium text-foreground">
+            {profile.full_name?.split(' ')[0] ?? 'Usuario'}
+          </span>
+        </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
         <DropdownMenuLabel className="truncate">{profile.full_name}</DropdownMenuLabel>

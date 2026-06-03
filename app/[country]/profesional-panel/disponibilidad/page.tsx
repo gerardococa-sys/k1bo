@@ -3,7 +3,9 @@
 export const dynamic = 'force-dynamic'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { useRouter, useParams } from 'next/navigation'
+import { ArrowLeft } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/client'
@@ -32,6 +34,7 @@ function getFirstDayOfMonth(year: number, month: number) {
 export default function DisponibilidadPage() {
   const supabase = createClient()
   const router = useRouter()
+  const params = useParams<{ country: string }>()
   const [userId, setUserId] = useState('')
   const [availability, setAvailability] = useState<Record<string, AvailabilityStatus>>({})
   const today = new Date()
@@ -77,6 +80,12 @@ export default function DisponibilidadPage() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-2xl">
+      <Link
+        href={`/${params.country}/profesional-panel/dashboard`}
+        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
+      >
+        <ArrowLeft className="h-4 w-4" /> Volver al Dashboard
+      </Link>
       <h1 className="text-2xl font-bold mb-2">Mi Disponibilidad</h1>
       <p className="text-muted-foreground mb-6">Marca los días según tu disponibilidad</p>
 
@@ -127,8 +136,8 @@ export default function DisponibilidadPage() {
               disabled={isPast}
               onClick={() => handleDayClick(day)}
               className={`aspect-square rounded-lg text-sm font-medium border transition-all ${
-                status ? STATUS_COLORS_MAP[status] : 'border-border hover:bg-muted'
-              } ${isPast ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
+                STATUS_COLORS_MAP[status ?? 'available']
+              } ${isPast ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer hover:opacity-80'}`}
             >
               {day}
             </button>

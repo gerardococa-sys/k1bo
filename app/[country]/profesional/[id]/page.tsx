@@ -206,7 +206,7 @@ export default async function ProfessionalProfilePage({
                       <span
                         key={s.id}
                         className="inline-flex items-center rounded-full px-3 py-1 text-sm font-medium text-white"
-                        style={{ backgroundColor: '#610094' }}
+                        style={{ backgroundColor: '#1B3A6B' }}
                       >
                         {s.service_tag}
                       </span>

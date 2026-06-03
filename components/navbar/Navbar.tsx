@@ -20,23 +20,33 @@ export function Navbar({ countryPrefix: propPrefix }: NavbarProps) {
   const [profile, setProfile] = useState<Profile | null>(null)
   const pathname = usePathname()
 
-  // Detect country from URL when not passed as prop (e.g. when rendered from root layout)
-  const detectedPrefix = COUNTRY_PREFIXES.find((c) =>
-    pathname === `/${c}` || pathname?.startsWith(`/${c}/`),
+  const detectedPrefix = COUNTRY_PREFIXES.find(
+    (c) => pathname === `/${c}` || pathname?.startsWith(`/${c}/`),
   )
   const countryPrefix = propPrefix ?? detectedPrefix
 
   useEffect(() => {
     const supabase = createClient()
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) return
+
+    const fetchProfile = (userId: string) => {
       supabase
         .from('profiles')
         .select('full_name, photo_url, role')
-        .eq('id', user.id)
+        .eq('id', userId)
         .single()
         .then(({ data }) => setProfile(data))
+    }
+
+    // Subscribe to auth state — fires immediately with current session
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        fetchProfile(session.user.id)
+      } else {
+        setProfile(null)
+      }
     })
+
+    return () => subscription.unsubscribe()
   }, [])
 
   const base = countryPrefix ? `/${countryPrefix}` : '/sv'

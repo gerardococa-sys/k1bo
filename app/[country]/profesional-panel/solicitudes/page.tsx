@@ -3,7 +3,9 @@
 export const dynamic = 'force-dynamic'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { useRouter, useParams } from 'next/navigation'
+import { ArrowLeft } from 'lucide-react'
 import Image from 'next/image'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -17,6 +19,7 @@ import type { QuoteRequest } from '@/types'
 export default function ProSolicitudesPage() {
   const supabase = createClient()
   const router = useRouter()
+  const params = useParams<{ country: string }>()
   const [quotes, setQuotes] = useState<any[]>([])
   const [selected, setSelected] = useState<any | null>(null)
   const [response, setResponse] = useState('')
@@ -46,6 +49,12 @@ export default function ProSolicitudesPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <Link
+        href={`/${params.country}/profesional-panel/dashboard`}
+        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
+      >
+        <ArrowLeft className="h-4 w-4" /> Volver al Dashboard
+      </Link>
       <h1 className="text-2xl font-bold mb-6">Mis Solicitudes</h1>
 
       {quotes.length > 0 ? (
