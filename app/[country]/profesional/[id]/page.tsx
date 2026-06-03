@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import {
-  CheckCircle, Star, MapPin, Clock, Phone, MessageCircle,
+  CheckCircle, Star, MapPin,
   Facebook, Instagram, ExternalLink
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
@@ -13,7 +13,9 @@ import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Separator } from '@/components/ui/separator'
-import { getInitials, DAY_LABELS } from '@/lib/utils'
+import { AvailabilityCalendar } from '@/components/professionals/AvailabilityCalendar'
+import { PortfolioLightbox } from '@/components/professionals/PortfolioLightbox'
+import { getInitials } from '@/lib/utils'
 
 export default async function ProfessionalProfilePage({
   params,
@@ -44,6 +46,12 @@ export default async function ProfessionalProfilePage({
     .eq('professional_id', params.id)
     .order('created_at', { ascending: false })
 
+  const { data: availability } = await supabase
+    .from('availability')
+    .select('id, date, status')
+    .eq('professional_id', params.id)
+    .order('date', { ascending: true })
+
   const avgRating = reviews && reviews.length > 0
     ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
     : 0
@@ -60,10 +68,13 @@ export default async function ProfessionalProfilePage({
   }
 
   const profile = pro.profile as any
-  const workingHours = pro.working_hours as Record<string, { open: boolean; from: string; to: string }> | null
   const coverageText = pro.covers_entire_country
     ? 'Todo El Salvador'
     : (pro.coverage as any[])?.map((c: any) => c.department?.name).filter(Boolean).join(', ')
+
+  const sortedPortfolio = ((pro.portfolio as any[]) ?? []).sort(
+    (a: any, b: any) => a.order_index - b.order_index,
+  )
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -119,41 +130,19 @@ export default async function ProfessionalProfilePage({
             </div>
           )}
 
-          {/* Working hours */}
-          {workingHours && (
-            <div>
-              <p className="text-sm font-semibold mb-2 flex items-center gap-1">
-                <Clock className="h-4 w-4" /> Horario
+          {/* Availability calendar */}
+          <div>
+            <p className="text-sm font-semibold mb-3">Disponibilidad</p>
+            {availability && availability.length > 0 ? (
+              <AvailabilityCalendar availability={availability} />
+            ) : (
+              <p className="text-sm text-muted-foreground italic">
+                Este profesional aún no ha configurado su disponibilidad.
               </p>
-              <div className="space-y-1">
-                {Object.entries(DAY_LABELS).map(([key, label]) => {
-                  const h = workingHours[key]
-                  if (!h?.open) return null
-                  return (
-                    <div key={key} className="flex justify-between text-xs text-muted-foreground">
-                      <span>{label}</span>
-                      <span>{h.from} – {h.to}</span>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          )}
+            )}
+          </div>
 
           <Separator />
-
-          {/* Contact buttons */}
-          {pro.whatsapp && (
-            <a
-              href={`https://wa.me/${pro.whatsapp.replace(/\D/g, '')}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button className="w-full bg-green-600 hover:bg-green-700">
-                <MessageCircle className="mr-2 h-4 w-4" /> WhatsApp
-              </Button>
-            </a>
-          )}
 
           {/* Social links */}
           <div className="flex gap-3">
@@ -208,16 +197,24 @@ export default async function ProfessionalProfilePage({
                   <p className="text-muted-foreground whitespace-pre-line">{pro.bio}</p>
                 </div>
               )}
+
               {(pro.services as any[])?.length > 0 && (
                 <div>
-                  <h2 className="font-semibold mb-3">Servicios</h2>
+                  <h2 className="font-semibold mb-3">Habilidades y experiencia:</h2>
                   <div className="flex flex-wrap gap-2">
                     {(pro.services as any[]).map((s: any) => (
-                      <Badge key={s.id} variant="secondary">{s.service_tag}</Badge>
+                      <span
+                        key={s.id}
+                        className="inline-flex items-center rounded-full px-3 py-1 text-sm font-medium text-white"
+                        style={{ backgroundColor: '#610094' }}
+                      >
+                        {s.service_tag}
+                      </span>
                     ))}
                   </div>
                 </div>
               )}
+
               <div>
                 <p className="text-sm text-muted-foreground">
                   {pro.total_projects} proyectos completados
@@ -227,22 +224,7 @@ export default async function ProfessionalProfilePage({
 
             {/* Portfolio */}
             <TabsContent value="portfolio" className="mt-6">
-              {(pro.portfolio as any[])?.length > 0 ? (
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                  {(pro.portfolio as any[]).map((photo: any) => (
-                    <div key={photo.id} className="relative aspect-square overflow-hidden rounded-lg bg-muted">
-                      <Image
-                        src={photo.photo_url}
-                        alt={photo.caption ?? 'Foto de portafolio'}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-muted-foreground text-center py-8">No hay fotos en el portafolio aún.</p>
-              )}
+              <PortfolioLightbox photos={sortedPortfolio} />
             </TabsContent>
 
             {/* Reviews */}

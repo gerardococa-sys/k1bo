@@ -24,8 +24,8 @@ export function Footer({ countryPrefix }: FooterProps) {
           <div>
             <p className="font-semibold mb-4 text-white">Empresa</p>
             <div className="space-y-2 text-sm text-white/60">
-              <Link href={base || '/'} className="block hover:text-white transition-colors">Nosotros</Link>
-              <Link href={base || '/'} className="block hover:text-white transition-colors">Cómo funciona</Link>
+              <Link href="/nosotros" className="block hover:text-white transition-colors">Nosotros</Link>
+              <Link href={`${base || '/sv'}#como-funciona`} className="block hover:text-white transition-colors">Cómo funciona</Link>
               <Link href={base || '/'} className="block hover:text-white transition-colors">Contacto</Link>
             </div>
           </div>

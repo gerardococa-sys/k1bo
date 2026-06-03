@@ -1,12 +1,3 @@
-import { Navbar } from '@/components/navbar/Navbar'
-import { Footer } from '@/components/footer/Footer'
-
 export default function RegistroLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <>
-      <Navbar />
-      <main>{children}</main>
-      <Footer />
-    </>
-  )
+  return <main>{children}</main>
 }

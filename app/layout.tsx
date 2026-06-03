@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { Toaster } from '@/components/ui/sonner'
+import { GlobalShell } from '@/components/GlobalShell'
 
 export const metadata: Metadata = {
   title: 'K1BO — Directorio de profesionales para el hogar en Centroamérica',
@@ -16,7 +17,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="es">
       <body>
-        {children}
+        <GlobalShell>
+          {children}
+        </GlobalShell>
         <Toaster />
       </body>
     </html>
