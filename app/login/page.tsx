@@ -46,7 +46,33 @@ function LoginContent() {
       return
     }
 
-    router.push(redirect)
+    // If a specific redirect was requested (e.g. from cotizar flow), honor it
+    if (searchParams.get('redirect')) {
+      router.push(redirect)
+      router.refresh()
+      return
+    }
+
+    // Otherwise redirect based on role
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+
+      if (profile?.role === 'professional') {
+        router.push('/sv/profesional-panel/dashboard')
+      } else if (profile?.role === 'admin') {
+        router.push('/admin/dashboard')
+      } else {
+        router.push('/sv/cliente/dashboard')
+      }
+    } else {
+      router.push('/sv')
+    }
+
     router.refresh()
   }
 
