@@ -1,12 +1,12 @@
-export const dynamic = 'force-dynamic'
+'use client'
 
-import { redirect } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/client'
 import { Calendar, Clock } from 'lucide-react'
 import { PhotoGallery } from '@/components/quotes/PhotoGallery'
-import { MessageBoard } from '@/components/messages/MessageBoard'
-import { MarkAsVisited } from '@/components/messages/MarkAsVisited'
+import MessageBoard from '@/components/messages/MessageBoard'
 
 const FONT_SERIF = 'var(--font-serif, "Playfair Display", Georgia, serif)'
 const FONT_SANS  = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
@@ -61,49 +61,76 @@ function Initials({ name }: { name?: string }) {
   )
 }
 
-export default async function SolicitudDetailPage({ params }: { params: { country: string; id: string } }) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+export default function SolicitudDetailPage() {
+  const router = useRouter()
+  const params = useParams<{ country: string; id: string }>()
 
-  const [{ data: solicitud }, { data: currentProfile }] = await Promise.all([
-    supabase
-      .from('quote_requests')
-      .select(`
-        *,
-        professional:professionals(
-          id, bio, short_description,
-          profiles(full_name, photo_url, phone)
-        ),
-        category:categories!quote_requests_category_id_fkey(name, slug),
-        subcategory:categories!quote_requests_subcategory_id_fkey(name, slug),
-        quote_request_photos(id, photo_url)
-      `)
-      .eq('id', params.id)
-      .eq('client_id', user.id)
-      .single(),
-    supabase.from('profiles').select('full_name, photo_url').eq('id', user.id).single(),
-  ])
+  const [userId, setUserId]       = useState('')
+  const [solicitud, setSolicitud] = useState<any>(null)
+  const [photos, setPhotos]       = useState<{ photo_url: string }[]>([])
+  const [loading, setLoading]     = useState(true)
 
-  if (!solicitud) redirect(`/${params.country}/cliente/solicitudes`)
+  useEffect(() => {
+    async function load() {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { router.push('/login'); return }
+
+      setUserId(user.id)
+      localStorage.setItem('visit_' + params.id, new Date().toISOString())
+
+      const { data } = await supabase
+        .from('quote_requests')
+        .select(`
+          *,
+          professional:professionals(
+            id, bio, short_description,
+            profiles(full_name, photo_url, phone)
+          ),
+          category:categories!quote_requests_category_id_fkey(name, slug),
+          subcategory:categories!quote_requests_subcategory_id_fkey(name, slug),
+          quote_request_photos(id, photo_url)
+        `)
+        .eq('id', params.id)
+        .eq('client_id', user.id)
+        .single()
+
+      if (!data) { router.push(`/${params.country}/cliente/solicitudes`); return }
+
+      setSolicitud(data)
+
+      const rawPhotos = (data.quote_request_photos ?? []) as { id: string; photo_url: string }[]
+      const photoList = rawPhotos
+        .map((p) => {
+          const { data: { publicUrl } } = supabase.storage.from('quote-photos').getPublicUrl(p.photo_url)
+          return { photo_url: publicUrl }
+        })
+        .filter((p) => p.photo_url)
+      setPhotos(photoList)
+
+      setLoading(false)
+    }
+    load()
+  }, [params.id])
+
+  if (loading) {
+    return (
+      <div style={{ fontFamily: FONT_SANS, padding: '64px 24px', textAlign: 'center', color: '#6B7B6E' }}>
+        Cargando...
+      </div>
+    )
+  }
 
   const pro         = solicitud.professional as any
   const profProfile = Array.isArray(pro?.profiles) ? pro.profiles[0] : pro?.profiles
   const proName     = profProfile?.full_name ?? 'Profesional'
   const proPhoto    = profProfile?.photo_url
-  const category    = solicitud.category   as any
+  const category    = solicitud.category    as any
   const subcategory = solicitud.subcategory as any
   const badge       = STATUS_BADGE[solicitud.status] ?? STATUS_BADGE.pending
 
-  const rawPhotos = (solicitud.quote_request_photos ?? []) as { id: string; photo_url: string }[]
-  const photos = rawPhotos.map((p) => {
-    const { data: { publicUrl } } = supabase.storage.from('quote-photos').getPublicUrl(p.photo_url)
-    return { photo_url: publicUrl }
-  }).filter((p) => p.photo_url)
-
   return (
     <div className="container mx-auto px-4 py-10 max-w-6xl">
-      <MarkAsVisited solicitudId={params.id} />
 
       {/* Back link */}
       <Link
@@ -119,7 +146,7 @@ export default async function SolicitudDetailPage({ params }: { params: { countr
         Detalle de Solicitud
       </h1>
 
-      {/* 50/50 grid — messages sticky on right */}
+      {/* 50/50 grid */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px', alignItems: 'start' }} className="sol-detail-grid">
 
         {/* LEFT — solicitud info + professional card */}
@@ -210,15 +237,14 @@ export default async function SolicitudDetailPage({ params }: { params: { countr
         </div>
 
         {/* RIGHT — sticky MessageBoard */}
-        <div className="sol-msg-sticky" style={{ backgroundColor: '#fff', border: '0.5px solid #1C141015', borderRadius: '12px', overflow: 'hidden' }}>
-          <MessageBoard
-            quoteRequestId={params.id}
-            currentUserId={user.id}
-            currentUserName={currentProfile?.full_name ?? 'Propietario'}
-            currentUserPhoto={currentProfile?.photo_url ?? undefined}
-            otherPartyName={proName}
-            otherPartyPhoto={proPhoto ?? undefined}
-          />
+        <div style={{ position: 'sticky', top: '24px' }}>
+          {userId && (
+            <MessageBoard
+              quoteRequestId={params.id}
+              currentUserId={userId}
+              otherPartyName={proName}
+            />
+          )}
         </div>
 
       </div>
@@ -226,10 +252,8 @@ export default async function SolicitudDetailPage({ params }: { params: { countr
       <style>{`
         .sol-back-link:hover { text-decoration: underline; }
         .sol-pro-btn:hover   { opacity: 0.88; }
-        .sol-msg-sticky      { height: 520px; }
         @media (min-width: 768px) {
           .sol-detail-grid { grid-template-columns: 1fr 1fr; }
-          .sol-msg-sticky  { position: sticky; top: 24px; height: calc(100vh - 120px); min-height: 520px; }
         }
       `}</style>
     </div>

@@ -205,10 +205,7 @@ export default async function ProSolicitudDetailPage({ params }: { params: { cou
           <MessageBoard
             quoteRequestId={params.id}
             currentUserId={user.id}
-            currentUserName={proProfile?.full_name ?? 'Profesional'}
-            currentUserPhoto={proProfile?.photo_url ?? undefined}
             otherPartyName={clientName}
-            otherPartyPhoto={clientPhoto ?? undefined}
           />
         </div>
 

@@ -1,125 +1,87 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { MessageSquare, MessageCircle, Send } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
 const FONT_SANS = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
 
-interface Msg {
-  id: string
-  sender_id: string
-  message: string
-  created_at: string
-}
-
-export interface MessageBoardProps {
+interface Props {
   quoteRequestId: string
   currentUserId: string
-  currentUserName: string
-  currentUserPhoto?: string
   otherPartyName: string
-  otherPartyPhoto?: string
 }
 
-function fmtTime(d: string) {
-  return new Date(d).toLocaleTimeString('es-SV', { hour: '2-digit', minute: '2-digit' })
-}
+function MessageBoard({ quoteRequestId, currentUserId, otherPartyName }: Props) {
+  const [messages, setMessages]   = useState<any[]>([])
+  const [newMessage, setNewMessage] = useState('')
+  const [sending, setSending]     = useState(false)
+  const [error, setError]         = useState('')
+  const bottomRef = useRef<HTMLDivElement>(null)
 
-export function MessageBoard({
-  quoteRequestId,
-  currentUserId,
-  currentUserName,
-  otherPartyName,
-}: MessageBoardProps) {
-  const [msgs, setMsgs]       = useState<Msg[]>([])
-  const [text, setText]       = useState('')
-  const [sending, setSending] = useState(false)
-  const endRef = useRef<HTMLDivElement>(null)
-  const taRef  = useRef<HTMLTextAreaElement>(null)
-
-  // Load messages — no profile join to keep query simple and avoid RLS edge-cases
-  const loadMessages = useCallback(async () => {
+  async function loadMessages() {
     const supabase = createClient()
     const { data, error } = await supabase
       .from('quote_messages')
-      .select('id, sender_id, message, created_at')
+      .select('id, message, sender_id, created_at')
       .eq('quote_request_id', quoteRequestId)
       .order('created_at', { ascending: true })
     if (error) { console.error('Error cargando mensajes:', error); return }
-    setMsgs((prev) => {
-      // Only update if content actually changed (avoid unnecessary re-renders)
-      if (JSON.stringify(prev) === JSON.stringify(data ?? [])) return prev
-      return data ?? []
-    })
+    if (data) setMessages(data)
+  }
+
+  async function sendMessage() {
+    if (!newMessage.trim() || sending) return
+    setSending(true)
+    setError('')
+    const supabase = createClient()
+    const { error } = await supabase
+      .from('quote_messages')
+      .insert({
+        quote_request_id: quoteRequestId,
+        sender_id: currentUserId,
+        message: newMessage.trim(),
+      })
+    if (error) {
+      console.error('Error enviando:', error)
+      setError('No se pudo enviar. Intenta de nuevo.')
+    } else {
+      setNewMessage('')
+      await loadMessages()
+    }
+    setSending(false)
+  }
+
+  // Scroll al último mensaje
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
+
+  // Carga inicial + polling cada 4 segundos
+  useEffect(() => {
+    loadMessages()
+    const interval = setInterval(loadMessages, 4000)
+    return () => clearInterval(interval)
   }, [quoteRequestId])
 
-  useEffect(() => {
-    loadMessages()
-
-    // 3-second polling as primary mechanism (works even without Realtime enabled)
-    const interval = setInterval(loadMessages, 3000)
-
-    // Realtime subscription as bonus (deduplicated with polling above)
-    const supabase = createClient()
-    const channel = supabase
-      .channel('msgs-' + quoteRequestId)
-      .on('postgres_changes', {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'quote_messages',
-        filter: 'quote_request_id=eq.' + quoteRequestId,
-      }, () => { loadMessages() })
-      .subscribe()
-
-    return () => {
-      clearInterval(interval)
-      supabase.removeChannel(channel)
-    }
-  }, [quoteRequestId, loadMessages])
-
-  // Auto-scroll on new messages
-  useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [msgs])
-
-  const send = async () => {
-    if (!text.trim() || sending) return
-    setSending(true)
-    const supabase = createClient()
-    const { error } = await supabase.from('quote_messages').insert({
-      quote_request_id: quoteRequestId,
-      sender_id: currentUserId,
-      message: text.trim(),
-    })
-    if (error) {
-      console.error('Error enviando mensaje:', error)
-      setSending(false)
-      return
-    }
-    setText('')
-    setSending(false)
-    if (taRef.current) taRef.current.style.height = 'auto'
-    // Immediately reload so the sent message appears without waiting for next poll
-    loadMessages()
-  }
-
-  const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() }
-  }
-
-  const onInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setText(e.target.value)
-    const ta = e.target
-    ta.style.height = 'auto'
-    ta.style.height = Math.min(ta.scrollHeight, 82) + 'px'
+  function formatTime(ts: string) {
+    return new Date(ts).toLocaleTimeString('es-SV', { hour: '2-digit', minute: '2-digit' })
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      {/* Header — compact */}
+    <div style={{
+      background: '#fff',
+      border: '0.5px solid rgba(28,20,16,0.08)',
+      borderRadius: '12px',
+      overflow: 'hidden',
+      display: 'flex',
+      flexDirection: 'column',
+      height: '560px',
+    }}>
+
+      {/* Header */}
       <div style={{
-        backgroundColor: '#1C1410',
+        background: '#1C1410',
         padding: '14px 18px',
         display: 'flex',
         alignItems: 'center',
@@ -128,133 +90,165 @@ export function MessageBoard({
       }}>
         <MessageSquare style={{ width: 18, height: 18, color: '#D4A96A', flexShrink: 0 }} />
         <div>
-          <span style={{ fontFamily: FONT_SANS, fontSize: '16px', fontWeight: 600, color: '#F5F0E8', display: 'block' }}>
+          <div style={{ color: '#F5F0E8', fontSize: '15px', fontWeight: 600, fontFamily: FONT_SANS }}>
             Mensajes
-          </span>
-          <span style={{ fontFamily: FONT_SANS, fontSize: '13px', color: 'rgba(245,240,232,0.50)' }}>
-            Comunícate con {otherPartyName}
-          </span>
+          </div>
+          <div style={{ color: 'rgba(245,240,232,0.5)', fontSize: '12px', fontFamily: FONT_SANS }}>
+            Conversación con {otherPartyName}
+          </div>
         </div>
       </div>
 
-      {/* Messages area — fills available height */}
+      {/* Área de mensajes */}
       <div style={{
         flex: 1,
         overflowY: 'auto',
         padding: '16px',
-        backgroundColor: '#F5F0E8',
+        background: '#F5F0E8',
         display: 'flex',
         flexDirection: 'column',
         gap: '10px',
       }}>
-        {msgs.length === 0 ? (
+        {messages.length === 0 && (
           <div style={{
-            flex: 1,
+            margin: 'auto',
+            textAlign: 'center',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'center',
             gap: '10px',
           }}>
             <MessageCircle style={{ width: 32, height: 32, color: '#D4A96A', opacity: 0.4 }} />
-            <p style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E', textAlign: 'center', margin: 0 }}>
+            <p style={{ color: '#6B7B6E', fontSize: '14px', fontFamily: FONT_SANS, margin: 0 }}>
               Aún no hay mensajes.<br />Inicia la conversación.
             </p>
           </div>
-        ) : (
-          <>
-            {msgs.map((m) => {
-              const isOwn = m.sender_id === currentUserId
-              const name  = isOwn ? currentUserName : otherPartyName
-              return (
-                <div key={m.id} style={{ alignSelf: isOwn ? 'flex-end' : 'flex-start', maxWidth: '78%' }}>
-                  {!isOwn && (
-                    <p style={{ fontFamily: FONT_SANS, fontSize: '11px', fontWeight: 600, color: '#B85C1A', margin: '0 0 3px' }}>
-                      {name}
-                    </p>
-                  )}
-                  <div style={{
-                    backgroundColor: isOwn ? '#1C1410' : '#FFFFFF',
-                    color:            isOwn ? '#F5F0E8' : '#1C1410',
-                    border:           isOwn ? 'none' : '0.5px solid #1C141015',
-                    borderRadius:     isOwn ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
-                    padding: '10px 14px',
-                  }}>
-                    <p style={{ fontFamily: FONT_SANS, fontSize: '15px', margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
-                      {m.message}
-                    </p>
-                    <p style={{
-                      fontFamily: FONT_SANS,
-                      fontSize: '11px',
-                      color:     isOwn ? 'rgba(245,240,232,0.50)' : '#6B7B6E',
-                      textAlign: isOwn ? 'right' : 'left',
-                      margin: '4px 0 0',
-                    }}>
-                      {fmtTime(m.created_at)}
-                    </p>
-                  </div>
-                </div>
-              )
-            })}
-            <div ref={endRef} />
-          </>
         )}
+
+        {messages.map((msg) => {
+          const isOwn = msg.sender_id === currentUserId
+          return (
+            <div key={msg.id} style={{
+              alignSelf: isOwn ? 'flex-end' : 'flex-start',
+              maxWidth: '78%',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '3px',
+            }}>
+              {!isOwn && (
+                <span style={{
+                  fontSize: '11px', fontWeight: 600, color: '#B85C1A',
+                  paddingLeft: '4px', fontFamily: FONT_SANS,
+                }}>
+                  {otherPartyName}
+                </span>
+              )}
+              <div style={{
+                background:   isOwn ? '#1C1410' : '#fff',
+                color:        isOwn ? '#F5F0E8' : '#1C1410',
+                border:       isOwn ? 'none' : '0.5px solid rgba(28,20,16,0.1)',
+                borderRadius: isOwn ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
+                padding: '10px 14px',
+                fontSize: '15px',
+                lineHeight: 1.5,
+                fontFamily: FONT_SANS,
+                wordBreak: 'break-word',
+                whiteSpace: 'pre-wrap',
+              }}>
+                {msg.message}
+              </div>
+              <span style={{
+                fontSize: '11px',
+                color: '#6B7B6E',
+                alignSelf:    isOwn ? 'flex-end' : 'flex-start',
+                paddingLeft:  isOwn ? 0 : '4px',
+                paddingRight: isOwn ? '4px' : 0,
+                fontFamily: FONT_SANS,
+              }}>
+                {formatTime(msg.created_at)}
+              </span>
+            </div>
+          )
+        })}
+
+        <div ref={bottomRef} />
       </div>
+
+      {/* Error */}
+      {error && (
+        <div style={{
+          padding: '6px 16px',
+          background: '#B85C1A15',
+          color: '#B85C1A',
+          fontSize: '13px',
+          fontFamily: FONT_SANS,
+          flexShrink: 0,
+        }}>
+          {error}
+        </div>
+      )}
 
       {/* Input */}
       <div style={{
-        borderTop: '0.5px solid #1C141015',
-        padding: '12px 16px',
-        backgroundColor: '#FFFFFF',
+        borderTop: '0.5px solid rgba(28,20,16,0.08)',
+        padding: '12px 14px',
+        background: '#fff',
         display: 'flex',
         gap: '10px',
         alignItems: 'flex-end',
         flexShrink: 0,
       }}>
         <textarea
-          ref={taRef}
-          value={text}
-          onChange={onInput}
-          onKeyDown={onKeyDown}
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage() }
+          }}
+          placeholder="Escribe un mensaje... (Enter para enviar)"
           rows={1}
-          placeholder="Escribe un mensaje..."
           style={{
             flex: 1,
             padding: '10px 14px',
             borderRadius: '8px',
-            border: '1px solid rgba(212,169,106,0.40)',
-            backgroundColor: '#F5F0E8',
-            fontFamily: FONT_SANS,
+            border: '1px solid rgba(212,169,106,0.4)',
+            background: '#F5F0E8',
             fontSize: '15px',
             color: '#1C1410',
             resize: 'none',
             outline: 'none',
+            fontFamily: FONT_SANS,
             lineHeight: '1.5',
-            overflowY: 'hidden',
           }}
         />
         <button
-          onClick={send}
-          disabled={!text.trim() || sending}
+          onClick={sendMessage}
+          disabled={!newMessage.trim() || sending}
           style={{
-            backgroundColor: '#B85C1A',
+            background: !newMessage.trim() || sending ? 'rgba(184,92,26,0.4)' : '#B85C1A',
             color: '#F5F0E8',
-            width: 42,
-            height: 42,
-            borderRadius: '8px',
             border: 'none',
-            cursor: text.trim() && !sending ? 'pointer' : 'default',
+            borderRadius: '8px',
+            padding: '10px 16px',
+            cursor: !newMessage.trim() || sending ? 'not-allowed' : 'pointer',
+            fontSize: '14px',
+            fontWeight: 600,
+            fontFamily: FONT_SANS,
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
+            gap: '6px',
             flexShrink: 0,
-            opacity: text.trim() && !sending ? 1 : 0.5,
-            transition: 'opacity 150ms',
           }}
         >
-          <Send style={{ width: 18, height: 18 }} />
+          <Send style={{ width: 16, height: 16 }} />
+          {sending ? 'Enviando...' : 'Enviar'}
         </button>
       </div>
+
     </div>
   )
 }
+
+// Named export (used by profesional-panel detail page)
+export { MessageBoard }
+// Default export (used by client solicitud detail page)
+export default MessageBoard
