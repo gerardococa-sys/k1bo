@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { FileX, Calendar } from 'lucide-react'
+import { UnreadDot } from '@/components/messages/UnreadDot'
 
 const FONT_SERIF = 'var(--font-serif, "Playfair Display", Georgia, serif)'
 const FONT_SANS  = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
@@ -63,6 +64,21 @@ export default async function ClientSolicitudesPage({ params }: { params: { coun
     .order('created_at', { ascending: false })
 
   const total = solicitudes?.length ?? 0
+
+  // Unread message dots: latest message from other party per solicitud
+  const solicitudIds = (solicitudes ?? []).map((s: any) => s.id)
+  let latestMsgMap: Record<string, string> = {}
+  if (solicitudIds.length > 0) {
+    const { data: msgs } = await supabase
+      .from('quote_messages')
+      .select('quote_request_id, created_at')
+      .in('quote_request_id', solicitudIds)
+      .neq('sender_id', user!.id)
+      .order('created_at', { ascending: false })
+    msgs?.forEach((m: any) => {
+      if (!latestMsgMap[m.quote_request_id]) latestMsgMap[m.quote_request_id] = m.created_at
+    })
+  }
 
   return (
     <div className="container mx-auto px-4 py-10 max-w-3xl">
@@ -207,13 +223,16 @@ export default async function ClientSolicitudesPage({ params }: { params: { coun
                   }}>
                     {badge.label}
                   </span>
-                  <Link
-                    href={`/${params.country}/cliente/solicitudes/${q.id}`}
-                    style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#B85C1A', textDecoration: 'none' }}
-                    className="solicitudes-detail-link"
-                  >
-                    Ver detalle →
-                  </Link>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <UnreadDot solicitudId={q.id} latestAt={latestMsgMap[q.id] ?? null} />
+                    <Link
+                      href={`/${params.country}/cliente/solicitudes/${q.id}`}
+                      style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#B85C1A', textDecoration: 'none' }}
+                      className="solicitudes-detail-link"
+                    >
+                      Ver detalle →
+                    </Link>
+                  </div>
                 </div>
 
               </div>

@@ -21,7 +21,7 @@ export function PhotoGallery({ photos }: PhotoGalleryProps) {
     <>
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))',
         gap: '8px',
       }}>
         {photos.map((p, i) => (

@@ -5,159 +5,197 @@ export const dynamic = 'force-dynamic'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter, useParams } from 'next/navigation'
-import { ArrowLeft } from 'lucide-react'
-import Image from 'next/image'
-import { toast } from 'sonner'
-import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
-import { Badge } from '@/components/ui/badge'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import { ChevronLeft, Calendar } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
-import { STATUS_LABELS, STATUS_COLORS, formatDate, getInitials } from '@/lib/utils'
-import type { QuoteRequest } from '@/types'
+import { UnreadDot } from '@/components/messages/UnreadDot'
+import { formatDate } from '@/lib/utils'
+
+const FONT_SERIF = 'var(--font-serif, "Playfair Display", Georgia, serif)'
+const FONT_SANS  = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
+
+const STATUS_BADGE: Record<string, { bg: string; color: string; label: string }> = {
+  pending:   { bg: '#D4A96A20', color: '#B85C1A', label: 'Pendiente' },
+  responded: { bg: '#1C141015', color: '#1C1410', label: 'Respondida' },
+  accepted:  { bg: '#6B7B6E20', color: '#3d4d40', label: 'Aceptada' },
+  rejected:  { bg: '#1C141010', color: '#6B7B6E', label: 'Rechazada' },
+}
+
+function Initials({ name }: { name?: string }) {
+  const letters = (name ?? '?').split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase()
+  return (
+    <div style={{
+      width: 48, height: 48, borderRadius: '50%', backgroundColor: '#B85C1A15',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+    }}>
+      <span style={{ fontFamily: FONT_SERIF, fontSize: '16px', fontWeight: 700, color: '#B85C1A' }}>{letters}</span>
+    </div>
+  )
+}
 
 export default function ProSolicitudesPage() {
   const supabase = createClient()
   const router = useRouter()
   const params = useParams<{ country: string }>()
+
+  const [userId, setUserId] = useState('')
   const [quotes, setQuotes] = useState<any[]>([])
-  const [selected, setSelected] = useState<any | null>(null)
-  const [response, setResponse] = useState('')
   const [loading, setLoading] = useState(true)
+  const [latestMsgMap, setLatestMsgMap] = useState<Record<string, string>>({})
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) { router.push('/login'); return }
+      setUserId(user.id)
       supabase
         .from('quote_requests')
-        .select('*, category:categories(name), subcategory:categories!subcategory_id(name), client:profiles!client_id(full_name, photo_url), photos:quote_request_photos(*)')
+        .select(`
+          *,
+          category:categories!quote_requests_category_id_fkey(name),
+          subcategory:categories!quote_requests_subcategory_id_fkey(name),
+          client:profiles!client_id(full_name, photo_url)
+        `)
         .eq('professional_id', user.id)
         .order('created_at', { ascending: false })
         .then(({ data }) => { setQuotes(data ?? []); setLoading(false) })
     })
   }, [])
 
-  const updateStatus = async (id: string, status: string) => {
-    const { error } = await supabase.from('quote_requests').update({ status }).eq('id', id)
-    if (error) { toast.error('Error al actualizar'); return }
-    setQuotes((prev) => prev.map((q) => q.id === id ? { ...q, status } : q))
-    setSelected(null)
-    toast.success('Estado actualizado')
-  }
+  useEffect(() => {
+    if (!userId || quotes.length === 0) return
+    const ids = quotes.map((q) => q.id)
+    supabase
+      .from('quote_messages')
+      .select('quote_request_id, created_at')
+      .in('quote_request_id', ids)
+      .neq('sender_id', userId)
+      .order('created_at', { ascending: false })
+      .then(({ data }) => {
+        const map: Record<string, string> = {}
+        data?.forEach((m: any) => {
+          if (!map[m.quote_request_id]) map[m.quote_request_id] = m.created_at
+        })
+        setLatestMsgMap(map)
+      })
+  }, [userId, quotes])
 
   if (loading) return <div className="container mx-auto px-4 py-8">Cargando...</div>
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-10 max-w-3xl">
       <Link
         href={`/${params.country}/profesional-panel/dashboard`}
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
+        style={{
+          fontFamily: FONT_SANS, fontSize: '15px', color: '#B85C1A', textDecoration: 'none',
+          display: 'inline-flex', alignItems: 'center', gap: '6px', marginBottom: '20px',
+        }}
+        className="pro-sol-back"
       >
-        <ArrowLeft className="h-4 w-4" /> Volver al Dashboard
+        <ChevronLeft style={{ width: 16, height: 16 }} />
+        Volver al Dashboard
       </Link>
-      <h1 className="text-2xl font-bold mb-6">Mis Solicitudes</h1>
 
-      {quotes.length > 0 ? (
-        <div className="space-y-4">
+      <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '32px', flexWrap: 'wrap' }}>
+        <h1 style={{ fontFamily: FONT_SERIF, fontSize: '38px', fontWeight: 700, color: '#1C1410', margin: 0 }}>
+          Mis Solicitudes
+        </h1>
+        <span style={{
+          fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#6B7B6E',
+          backgroundColor: '#1C141010', padding: '4px 12px', borderRadius: '20px',
+        }}>
+          {quotes.length} {quotes.length === 1 ? 'solicitud' : 'solicitudes'}
+        </span>
+      </div>
+
+      {quotes.length === 0 ? (
+        <p style={{ fontFamily: FONT_SANS, fontSize: '16px', color: '#6B7B6E', textAlign: 'center', padding: '48px 0' }}>
+          Aún no tienes solicitudes.
+        </p>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {quotes.map((q) => {
-            const client = q.client as any
+            const client  = q.client as any
+            const clientName  = client?.full_name ?? 'Propietario'
+            const clientPhoto = client?.photo_url
+            const category    = q.category as any
+            const subcategory = q.subcategory as any
+            const badge       = STATUS_BADGE[q.status] ?? STATUS_BADGE.pending
+
             return (
-              <div key={q.id} className="rounded-lg border p-5">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex items-start gap-3">
-                    {/* Client avatar */}
-                    <div className="h-10 w-10 rounded-full bg-muted overflow-hidden shrink-0 flex items-center justify-center text-sm font-semibold">
-                      {client?.photo_url ? (
-                        <Image src={client.photo_url} alt="" width={40} height={40} className="object-cover" />
-                      ) : (
-                        getInitials(client?.full_name ?? 'C')
-                      )}
-                    </div>
-                    <div>
-                      <p className="font-semibold">{client?.full_name}</p>
-                      <p className="text-sm text-muted-foreground">{(q.category as any)?.name}</p>
-                      <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{q.description}</p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Fecha requerida: {formatDate(q.required_date)}
-                      </p>
-                    </div>
+              <div key={q.id} style={{
+                backgroundColor: '#fff',
+                border: '0.5px solid #1C141015',
+                borderRadius: '12px',
+                padding: '20px 24px',
+                display: 'flex',
+                gap: '16px',
+                alignItems: 'flex-start',
+              }}>
+                {/* Avatar */}
+                {clientPhoto ? (
+                  <div style={{ width: 48, height: 48, borderRadius: '50%', overflow: 'hidden', flexShrink: 0 }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={clientPhoto} alt={clientName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
-                  <div className="flex flex-col items-end gap-2 shrink-0">
-                    <span className={`rounded-full px-3 py-1 text-xs font-semibold ${STATUS_COLORS[q.status]}`}>
-                      {STATUS_LABELS[q.status]}
+                ) : (
+                  <Initials name={clientName} />
+                )}
+
+                {/* Content */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontFamily: FONT_SERIF, fontSize: '17px', fontWeight: 600, color: '#1C1410', margin: '0 0 4px' }}>
+                    {clientName}
+                  </p>
+                  {category && (
+                    <p style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#B85C1A', margin: '0 0 6px' }}>
+                      {category.name}{subcategory ? ` › ${subcategory.name}` : ''}
+                    </p>
+                  )}
+                  <p style={{
+                    fontFamily: FONT_SANS, fontSize: '14px', color: 'rgba(28,20,16,0.65)',
+                    margin: '0 0 8px',
+                    display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+                  }}>
+                    {q.description}
+                  </p>
+                  {q.required_date && (
+                    <span style={{ fontFamily: FONT_SANS, fontSize: '12px', color: '#6B7B6E', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <Calendar style={{ width: 12, height: 12 }} />
+                      Fecha requerida: {formatDate(q.required_date)}
                     </span>
-                    <Button size="sm" variant="outline" onClick={() => setSelected(q)}>
-                      Ver detalle
-                    </Button>
+                  )}
+                </div>
+
+                {/* Right: status + link */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '10px', flexShrink: 0 }}>
+                  <span style={{
+                    fontFamily: FONT_SANS, fontSize: '11px', fontWeight: 700,
+                    backgroundColor: badge.bg, color: badge.color,
+                    padding: '4px 10px', borderRadius: '20px',
+                    textTransform: 'uppercase', letterSpacing: '0.04em',
+                  }}>
+                    {badge.label}
+                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <UnreadDot solicitudId={q.id} latestAt={latestMsgMap[q.id] ?? null} />
+                    <Link
+                      href={`/${params.country}/profesional-panel/solicitudes/${q.id}`}
+                      style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#B85C1A', textDecoration: 'none' }}
+                      className="pro-sol-detail-link"
+                    >
+                      Ver detalle →
+                    </Link>
                   </div>
                 </div>
               </div>
             )
           })}
         </div>
-      ) : (
-        <p className="text-center py-12 text-muted-foreground">No hay solicitudes aún.</p>
       )}
 
-      {/* Detail dialog */}
-      <Dialog open={!!selected} onOpenChange={() => setSelected(null)}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Detalle de solicitud</DialogTitle>
-          </DialogHeader>
-          {selected && (
-            <div className="space-y-4">
-              <div>
-                <p className="text-sm font-semibold">Propietario</p>
-                <p className="text-sm text-muted-foreground">{selected.client?.full_name}</p>
-              </div>
-              <div>
-                <p className="text-sm font-semibold">Servicio</p>
-                <p className="text-sm text-muted-foreground">
-                  {selected.category?.name}
-                  {selected.subcategory ? ` → ${selected.subcategory.name}` : ''}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm font-semibold">Descripción</p>
-                <p className="text-sm text-muted-foreground">{selected.description}</p>
-              </div>
-              <div>
-                <p className="text-sm font-semibold">Fecha requerida</p>
-                <p className="text-sm text-muted-foreground">{formatDate(selected.required_date)}</p>
-              </div>
-              {selected.photos?.length > 0 && (
-                <div>
-                  <p className="text-sm font-semibold mb-2">Fotos adjuntas</p>
-                  <div className="flex gap-2 flex-wrap">
-                    {selected.photos.map((p: any) => (
-                      <a key={p.id} href={p.photo_url} target="_blank" rel="noopener noreferrer"
-                        className="text-xs text-primary underline">
-                        Ver foto
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-          <DialogFooter className="flex-col gap-2 sm:flex-row">
-            {selected?.status === 'pending' && (
-              <>
-                <Button onClick={() => updateStatus(selected.id, 'accepted')} className="flex-1">
-                  Aceptar
-                </Button>
-                <Button variant="destructive" onClick={() => updateStatus(selected.id, 'rejected')} className="flex-1">
-                  Rechazar
-                </Button>
-                <Button variant="outline" onClick={() => updateStatus(selected.id, 'responded')} className="flex-1">
-                  Responder
-                </Button>
-              </>
-            )}
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <style>{`
+        .pro-sol-back:hover        { text-decoration: underline; }
+        .pro-sol-detail-link:hover { text-decoration: underline; }
+      `}</style>
     </div>
   )
 }

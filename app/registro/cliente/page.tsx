@@ -55,7 +55,7 @@ export default function RegistroClientePage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
 
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
+  const { register, handleSubmit, setError, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: 'onChange',
   })
@@ -108,6 +108,10 @@ export default function RegistroClientePage() {
   }, [selectedMuni])
 
   const onSubmit = async (data: FormData) => {
+    if (new Date(data.date_of_birth) >= new Date()) {
+      setError('date_of_birth', { message: 'La fecha de nacimiento debe ser anterior a la fecha actual' })
+      return
+    }
     const supabase = mkClient()
     const { data: auth, error: authError } = await supabase.auth.signUp({
       email: data.email,
@@ -231,8 +235,8 @@ export default function RegistroClientePage() {
 
           <div className="space-y-2">
             <Label htmlFor="date_of_birth">Fecha de nacimiento *</Label>
-            <Input id="date_of_birth" type="date" {...register('date_of_birth')} />
-            {errors.date_of_birth && <p className="text-sm text-destructive">{errors.date_of_birth.message}</p>}
+            <Input id="date_of_birth" type="date" max={new Date().toISOString().split('T')[0]} {...register('date_of_birth')} />
+            {errors.date_of_birth && <p style={{ fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)', fontSize: '13px', color: '#B85C1A' }}>{errors.date_of_birth.message}</p>}
           </div>
 
           <div className="space-y-2">

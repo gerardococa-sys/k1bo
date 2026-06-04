@@ -39,7 +39,7 @@ export default async function ClientDashboardPage({ params }: { params: { countr
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-2">Panel del Propietario</h1>
+      <h1 className="text-2xl font-bold mb-2">Dashboard del Propietario</h1>
       <p className="text-muted-foreground mb-8">Bienvenido, {profile.full_name}</p>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mb-8">

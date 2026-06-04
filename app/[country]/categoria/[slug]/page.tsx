@@ -127,7 +127,7 @@ export default async function CategoryPage({
             </p>
             <p className="text-sm text-muted-foreground mt-2">
               ¿Eres profesional?{' '}
-              <Link href="/registro/profesional" className="text-primary hover:underline">
+              <Link href="/registro" className="text-primary hover:underline">
                 Regístrate aquí
               </Link>
             </p>

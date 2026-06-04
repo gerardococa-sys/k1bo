@@ -5,7 +5,18 @@
       "Bash(echo \"Exit code: $?\")",
       "Bash(echo \"Exit: $?\")",
       "Bash(node *)",
-      "Bash(grep -v \"^$\")"
+      "Bash(grep -v \"^$\")",
+      "Bash(sed -n '55,70p' /Users/Gerardo/Library/CloudStorage/OneDrive-Personal/Proyectos/Ai/K1bo/components/navbar/UserMenu.tsx)",
+      "Bash(sed -n '35,60p' /Users/Gerardo/Library/CloudStorage/OneDrive-Personal/Proyectos/Ai/K1bo/app/\\\\[country\\\\]/profesional-panel/resenas/page.tsx)",
+      "Bash(sed -n '125,140p' /Users/Gerardo/Library/CloudStorage/OneDrive-Personal/Proyectos/Ai/K1bo/app/\\\\[country\\\\]/profesional-panel/perfil/page.tsx)",
+      "Bash(sed -n '48,60p' /Users/Gerardo/Library/CloudStorage/OneDrive-Personal/Proyectos/Ai/K1bo/app/\\\\[country\\\\]/profesional-panel/solicitudes/page.tsx)",
+      "Bash(sed -n '80,90p' /Users/Gerardo/Library/CloudStorage/OneDrive-Personal/Proyectos/Ai/K1bo/app/\\\\[country\\\\]/profesional-panel/disponibilidad/page.tsx)",
+      "Bash(sed -n '78,105p' /Users/Gerardo/Library/CloudStorage/OneDrive-Personal/Proyectos/Ai/K1bo/components/footer/Footer.tsx)",
+      "Bash(sed -n '248,260p' /Users/Gerardo/Library/CloudStorage/OneDrive-Personal/Proyectos/Ai/K1bo/app/\\\\[country\\\\]/page.tsx)",
+      "Bash(sed -n '185,200p' /Users/Gerardo/Library/CloudStorage/OneDrive-Personal/Proyectos/Ai/K1bo/components/navbar/Navbar.tsx)",
+      "Bash(sed -n '250,265p' /Users/Gerardo/Library/CloudStorage/OneDrive-Personal/Proyectos/Ai/K1bo/components/navbar/Navbar.tsx)",
+      "Bash(sed -n '178,198p' /Users/Gerardo/Library/CloudStorage/OneDrive-Personal/Proyectos/Ai/K1bo/components/navbar/Navbar.tsx)",
+      "Bash(sed -n '245,265p' /Users/Gerardo/Library/CloudStorage/OneDrive-Personal/Proyectos/Ai/K1bo/components/navbar/Navbar.tsx)"
     ]
   }
 }

@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter, useParams } from 'next/navigation'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, ChevronLeft } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -128,10 +128,17 @@ export default function ProProfilePage() {
     <div className="container mx-auto px-4 py-8 max-w-2xl">
       <Link
         href={`/${params.country}/profesional-panel/dashboard`}
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
+        style={{
+          fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)',
+          fontSize: '15px', color: '#B85C1A', textDecoration: 'none',
+          display: 'inline-flex', alignItems: 'center', gap: '6px', marginBottom: '20px',
+        }}
+        className="pro-perfil-back-link"
       >
-        <ArrowLeft className="h-4 w-4" /> Volver al Dashboard
+        <ChevronLeft style={{ width: 16, height: 16 }} />
+        Volver al Dashboard
       </Link>
+      <style>{`.pro-perfil-back-link:hover { text-decoration: underline; }`}</style>
       <h1 className="text-2xl font-bold mb-6">Mi Perfil</h1>
 
       <Tabs defaultValue="info">

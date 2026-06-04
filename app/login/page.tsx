@@ -129,12 +129,8 @@ function LoginContent() {
 
         <div className="mt-6 text-center text-sm text-muted-foreground">
           ¿No tienes cuenta?{' '}
-          <Link href="/registro/cliente" className="text-primary hover:underline font-medium">
-            Regístrate como propietario
-          </Link>{' '}
-          o{' '}
-          <Link href="/registro/profesional" className="text-primary hover:underline font-medium">
-            como profesional
+          <Link href="/registro" className="text-primary hover:underline font-medium">
+            Regístrate
           </Link>
         </div>
       </div>

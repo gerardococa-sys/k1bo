@@ -48,7 +48,7 @@ export default async function ProDashboardPage({ params }: { params: { country: 
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-2">Panel del Profesional</h1>
+      <h1 className="text-2xl font-bold mb-2">Dashboard del Profesional</h1>
       <p className="text-muted-foreground mb-8">Bienvenido, {profile.full_name}</p>
 
       {/* Stats */}

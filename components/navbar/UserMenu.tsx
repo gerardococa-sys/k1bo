@@ -60,7 +60,7 @@ export function UserMenu({ profile, countryPrefix }: UserMenuProps) {
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => router.push(panelPath)}>
           <LayoutDashboard className="mr-2 h-4 w-4" />
-          Mi Panel
+          Mi Dashboard
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => router.push(`${panelPath.replace('dashboard', 'perfil')}`)}>
           <User className="mr-2 h-4 w-4" />

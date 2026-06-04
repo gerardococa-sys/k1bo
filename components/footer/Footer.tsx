@@ -80,7 +80,7 @@ export function Footer({ countryPrefix }: FooterProps) {
             <p style={colTitleStyle}>Profesionales</p>
             <div>
               {[
-                { label: 'Registrarse',    href: '/registro/profesional' },
+                { label: 'Registrarse',    href: '/registro' },
                 { label: 'Iniciar sesión', href: '/login' },
               ].map(({ label, href }) => (
                 <Link key={href} href={href} style={linkStyle} className="hover-footer-link">
@@ -95,7 +95,7 @@ export function Footer({ countryPrefix }: FooterProps) {
             <p style={colTitleStyle}>Propietarios</p>
             <div>
               {[
-                { label: 'Registrarme',   href: '/registro/cliente' },
+                { label: 'Registrarme',   href: '/registro' },
                 { label: 'Iniciar sesión', href: '/login' },
                 { label: 'Cómo funciona', href: '/sv#como-funciona' },
               ].map(({ label, href }) => (

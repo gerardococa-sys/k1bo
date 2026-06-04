@@ -251,7 +251,7 @@ export default async function CountryPage({ params }: { params: { country: strin
             Únete a <Logo size="inherit" /> y llega a más propietarios en {countryName}.
           </p>
           <Link
-            href="/registro/profesional"
+            href="/registro"
             style={{
               display: 'inline-block',
               backgroundColor: '#1C1410',

@@ -3,12 +3,13 @@
 export const dynamic = 'force-dynamic'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { useRouter, useParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
-import { Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff, ChevronLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -37,6 +38,7 @@ function mkClient() {
 
 export default function ClientProfilePage() {
   const router = useRouter()
+  const params = useParams<{ country: string }>()
   const [loading, setLoading]         = useState(true)
   const [userId, setUserId]           = useState('')
   const [email, setEmail]             = useState('')
@@ -60,7 +62,7 @@ export default function ClientProfilePage() {
   const [pwdSaving, setPwdSaving]       = useState(false)
   const [pwdSuccess, setPwdSuccess]     = useState(false)
 
-  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<ProfileData>({
+  const { register, handleSubmit, reset, setError, formState: { errors, isSubmitting } } = useForm<ProfileData>({
     resolver: zodResolver(profileSchema),
   })
 
@@ -125,6 +127,10 @@ export default function ClientProfilePage() {
   }, [selectedMuni])
 
   const onSubmit = async (data: ProfileData) => {
+    if (new Date(data.date_of_birth) >= new Date()) {
+      setError('date_of_birth', { message: 'La fecha de nacimiento debe ser anterior a la fecha actual' })
+      return
+    }
     const supabase = mkClient()
     let photo_url: string | undefined
 
@@ -172,6 +178,18 @@ export default function ClientProfilePage() {
 
   return (
     <div className="container mx-auto px-4 py-10 max-w-xl">
+      <Link
+        href={`/${params?.country ?? 'sv'}/cliente/dashboard`}
+        style={{
+          fontFamily: FONT_SANS, fontSize: '15px', color: '#B85C1A', textDecoration: 'none',
+          display: 'inline-flex', alignItems: 'center', gap: '6px', marginBottom: '20px',
+        }}
+        className="perfil-back-link"
+      >
+        <ChevronLeft style={{ width: 16, height: 16 }} />
+        Volver al Dashboard
+      </Link>
+      <style>{`.perfil-back-link:hover { text-decoration: underline; }`}</style>
       <h1 style={{ fontFamily: FONT_SERIF, fontSize: '28px', fontWeight: 700, color: '#1C1410', marginBottom: '8px' }}>
         Mi Perfil
       </h1>
@@ -236,8 +254,8 @@ export default function ClientProfilePage() {
 
             <div className="space-y-2">
               <Label htmlFor="date_of_birth">Fecha de nacimiento *</Label>
-              <Input id="date_of_birth" type="date" {...register('date_of_birth')} />
-              {errors.date_of_birth && <p className="text-sm text-destructive">{errors.date_of_birth.message}</p>}
+              <Input id="date_of_birth" type="date" max={new Date().toISOString().split('T')[0]} {...register('date_of_birth')} />
+              {errors.date_of_birth && <p style={{ fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)', fontSize: '13px', color: '#B85C1A' }}>{errors.date_of_birth.message}</p>}
             </div>
           </div>
         </section>

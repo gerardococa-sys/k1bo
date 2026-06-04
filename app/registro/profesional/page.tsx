@@ -96,6 +96,10 @@ export default function RegistroProfesionalPage() {
   }, [selectedDepts])
 
   const handleStep1 = async (data: Step1Data) => {
+    if (new Date(data.date_of_birth) >= new Date()) {
+      step1Form.setError('date_of_birth', { message: 'La fecha de nacimiento debe ser anterior a la fecha actual' })
+      return
+    }
     const supabase = mkClient()
     const { data: auth, error } = await supabase.auth.signUp({ email: data.email, password: data.password })
     if (error || !auth.user) { toast.error(error?.message ?? 'Error'); return }
@@ -258,8 +262,8 @@ export default function RegistroProfesionalPage() {
             </div>
             <div className="space-y-2">
               <Label>Fecha de nacimiento *</Label>
-              <Input type="date" {...step1Form.register('date_of_birth')} />
-              {step1Form.formState.errors.date_of_birth && <p className="text-sm text-destructive">{step1Form.formState.errors.date_of_birth.message}</p>}
+              <Input type="date" max={new Date().toISOString().split('T')[0]} {...step1Form.register('date_of_birth')} />
+              {step1Form.formState.errors.date_of_birth && <p style={{ fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)', fontSize: '13px', color: '#B85C1A' }}>{step1Form.formState.errors.date_of_birth.message}</p>}
             </div>
 
             {/* Account type — fixed as independent */}
