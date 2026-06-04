@@ -9,19 +9,20 @@ const COL_DIVIDER = '0.5px solid rgba(245,240,232,0.08)'
 
 const colTitleStyle: React.CSSProperties = {
   fontFamily: 'var(--font-sans, DM Sans, system-ui, sans-serif)',
-  fontSize: '12px',
-  fontWeight: 600,
+  fontSize: '13px',
+  fontWeight: 700,
   letterSpacing: '0.1em',
   textTransform: 'uppercase',
   color: '#D4A96A',
-  marginBottom: '12px',
+  marginBottom: '14px',
 }
 
 const linkStyle: React.CSSProperties = {
   fontFamily: 'var(--font-sans, DM Sans, system-ui, sans-serif)',
-  fontSize: '14px',
-  color: 'rgba(245,240,232,0.38)',
+  fontSize: '15px',
+  color: 'rgba(245,240,232,0.70)',
   display: 'block',
+  lineHeight: 2,
   transition: 'color 0.15s',
 }
 
@@ -36,16 +37,13 @@ export function Footer({ countryPrefix }: FooterProps) {
         <div className="grid grid-cols-1 gap-10 md:grid-cols-4">
 
           {/* Col 1 — Brand */}
-          <div
-            className="md:pr-8"
-            style={{ borderRight: COL_DIVIDER }}
-          >
+          <div className="md:pr-8" style={{ borderRight: COL_DIVIDER }}>
             {/* Logo */}
             <p
               className="mb-1"
               style={{
                 fontFamily: 'var(--font-serif, Playfair Display, Georgia, serif)',
-                fontSize: '20px',
+                fontSize: '24px',
                 fontWeight: 700,
                 color: '#F5F0E8',
               }}
@@ -57,35 +55,27 @@ export function Footer({ countryPrefix }: FooterProps) {
               className="mb-4"
               style={{
                 fontFamily: 'var(--font-sans, DM Sans, system-ui, sans-serif)',
-                fontSize: '12px',
-                color: 'rgba(245,240,232,0.25)',
+                fontSize: '14px',
+                color: 'rgba(245,240,232,0.31)',
                 lineHeight: '1.5',
               }}
             >
-              Directorio de servicios para el hogar
+              La red de los maestros de la construcción.
             </p>
             {/* Globe icon */}
             <Globe className="h-4 w-4" style={{ color: 'rgba(245,240,232,0.25)' }} />
           </div>
 
           {/* Col 2 — Plataforma */}
-          <div
-            className="md:px-8"
-            style={{ borderRight: COL_DIVIDER }}
-          >
+          <div className="md:px-8" style={{ borderRight: COL_DIVIDER }}>
             <p style={colTitleStyle}>Plataforma</p>
-            <div className="space-y-2">
+            <div>
               {[
                 { label: 'Nosotros',      href: '/nosotros' },
                 { label: 'Cómo funciona', href: `${base}#como-funciona` },
                 { label: 'Categorías',    href: `${base}#categorias` },
               ].map(({ label, href }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  style={linkStyle}
-                  className="hover-footer-link"
-                >
+                <Link key={href} href={href} style={linkStyle} className="hover-footer-link">
                   {label}
                 </Link>
               ))}
@@ -93,22 +83,14 @@ export function Footer({ countryPrefix }: FooterProps) {
           </div>
 
           {/* Col 3 — Profesionales */}
-          <div
-            className="md:px-8"
-            style={{ borderRight: COL_DIVIDER }}
-          >
+          <div className="md:px-8" style={{ borderRight: COL_DIVIDER }}>
             <p style={colTitleStyle}>Profesionales</p>
-            <div className="space-y-2">
+            <div>
               {[
                 { label: 'Registrarse',    href: '/registro/profesional' },
                 { label: 'Iniciar sesión', href: '/login' },
               ].map(({ label, href }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  style={linkStyle}
-                  className="hover-footer-link"
-                >
+                <Link key={href} href={href} style={linkStyle} className="hover-footer-link">
                   {label}
                 </Link>
               ))}
@@ -118,14 +100,16 @@ export function Footer({ countryPrefix }: FooterProps) {
           {/* Col 4 — Países */}
           <div className="md:pl-8">
             <p style={colTitleStyle}>Países</p>
-            <div className="space-y-2">
+            <div>
               <Link
                 href="/sv"
                 className="flex items-center gap-2 hover-footer-link"
                 style={{
                   fontFamily: 'var(--font-sans, DM Sans, system-ui, sans-serif)',
-                  fontSize: '14px',
+                  fontSize: '15px',
+                  fontWeight: 600,
                   color: '#D4A96A',
+                  lineHeight: 2,
                 }}
               >
                 <span>🇸🇻</span> El Salvador
@@ -141,12 +125,15 @@ export function Footer({ countryPrefix }: FooterProps) {
                   className="flex items-center gap-2"
                   style={{
                     fontFamily: 'var(--font-sans, DM Sans, system-ui, sans-serif)',
-                    fontSize: '14px',
+                    fontSize: '15px',
                     color: 'rgba(245,240,232,0.22)',
+                    lineHeight: 2,
                   }}
                 >
                   {flag} {name}
-                  <span style={{ fontSize: '10px' }}>— Próximamente</span>
+                  <span style={{ fontSize: '13px', color: 'rgba(245,240,232,0.19)' }}>
+                    — Próximamente
+                  </span>
                 </span>
               ))}
             </div>
@@ -161,7 +148,7 @@ export function Footer({ countryPrefix }: FooterProps) {
           <p
             style={{
               fontFamily: 'var(--font-sans, DM Sans, system-ui, sans-serif)',
-              fontSize: '11px',
+              fontSize: '13px',
               color: 'rgba(245,240,232,0.25)',
             }}
           >
@@ -170,7 +157,6 @@ export function Footer({ countryPrefix }: FooterProps) {
         </div>
       </div>
 
-      {/* Hover styles injected via a global style tag — avoids JS event listeners on every link */}
       <style>{`
         .hover-footer-link:hover { color: #F5F0E8 !important; }
       `}</style>

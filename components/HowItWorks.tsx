@@ -8,7 +8,7 @@ export function HowItWorks() {
         <h2
           style={{
             fontFamily: FONT_SERIF,
-            fontSize: '38px',
+            fontSize: '42px',
             fontWeight: 700,
             color: '#1C1410',
             textAlign: 'center',
@@ -45,13 +45,13 @@ export function HowItWorks() {
                   height: 52,
                   borderRadius: '50%',
                   backgroundColor: '#B85C1A',
-                  color: '#F5F0E8',
+                  color: '#ffffff',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  margin: '0 auto 14px',
+                  margin: '0 auto',
                   fontFamily: FONT_SANS,
-                  fontSize: '22px',
+                  fontSize: '20px',
                   fontWeight: 700,
                 }}
               >
@@ -61,11 +61,12 @@ export function HowItWorks() {
               {/* Step title */}
               <p
                 style={{
-                  fontFamily: FONT_SANS,
-                  fontSize: '18px',
-                  fontWeight: 600,
+                  fontFamily: FONT_SERIF,
+                  fontSize: '20px',
+                  fontWeight: 700,
                   color: '#1C1410',
-                  marginBottom: '6px',
+                  marginTop: '16px',
+                  marginBottom: 0,
                 }}
               >
                 {s.title}
@@ -75,10 +76,12 @@ export function HowItWorks() {
               <p
                 style={{
                   fontFamily: FONT_SANS,
-                  fontSize: '15px',
+                  fontSize: '16px',
+                  fontWeight: 400,
                   color: '#6B7B6E',
                   lineHeight: 1.65,
-                  margin: 0,
+                  marginTop: '8px',
+                  marginBottom: 0,
                 }}
               >
                 {s.desc}

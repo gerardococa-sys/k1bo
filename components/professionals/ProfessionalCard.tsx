@@ -64,14 +64,15 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
   return (
     <div
       style={{
-        backgroundColor: '#FFFFFF',
-        border: isFeatured ? '1.5px solid #D4A96A70' : '0.5px solid #1C141015',
-        borderRadius: '12px',
+        backgroundColor: 'transparent',
+        border: '0.5px solid #1C141015',
+        outline: isFeatured ? '1.5px solid #D4A96A70' : 'none',
+        borderRadius: '14px',
         overflow: 'hidden',
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',
-        minHeight: '420px',
+        height: '100%',
       }}
     >
       {/* ── 1. Photo / Avatar section ────────────────────────────── */}
@@ -152,6 +153,7 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
       {/* ── 2. Body ──────────────────────────────────────────────── */}
       <div
         style={{
+          backgroundColor: '#FFFFFF',
           padding: '16px 18px',
           flex: 1,
           display: 'flex',
@@ -304,7 +306,7 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
       </div>
 
       {/* ── 3. CTA footer ────────────────────────────────────────── */}
-      <div style={{ padding: '0 16px 18px', flexShrink: 0 }}>
+      <div style={{ backgroundColor: '#FFFFFF', padding: '0 16px 18px', flexShrink: 0 }}>
         <Link
           href={`/${countryPrefix}/profesional/${professional.id}`}
           className="ax7-procard-btn"
@@ -314,10 +316,11 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
             backgroundColor: '#1C1410',
             color: '#D4A96A',
             fontFamily: FONT_SANS,
-            fontWeight: 600,
+            fontWeight: 700,
             fontSize: '16px',
+            letterSpacing: '0.02em',
             borderRadius: '8px',
-            padding: '14px 24px',
+            padding: '15px 24px',
             textDecoration: 'none',
             transition: 'background-color 150ms',
           }}
