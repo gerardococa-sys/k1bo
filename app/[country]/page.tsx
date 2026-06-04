@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic'
 
 import Link from 'next/link'
-import { CheckCircle, Star, Clock } from 'lucide-react'
+import { Star } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { CategoryGrid } from '@/components/categories/CategoryGrid'
 import { ProfessionalCard } from '@/components/professionals/ProfessionalCard'
@@ -66,25 +66,65 @@ export default async function CountryPage({ params }: { params: { country: strin
   return (
     <div>
       {/* Hero */}
-      <section className="bg-[#1B3A6B] text-white py-20 px-4">
+      <section style={{ backgroundColor: '#1C1410' }} className="py-20 px-4">
         <div className="container mx-auto text-center max-w-3xl">
-          <span className="inline-block rounded-full bg-white/20 px-4 py-1 text-sm font-medium mb-6">
-            ✓ Profesionales verificados en {countryName}
-          </span>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Encuentra al profesional ideal para tu hogar, negocio u oficina
-          </h1>
-          <p className="text-white/80 text-lg mb-8">
-            Tabla roca, pintura, fontanería, electricidad y más. Compara perfiles,
-            lee reseñas y contacta directamente.
+
+          {/* Eyebrow */}
+          <p
+            style={{
+              fontFamily: 'var(--font-sans, "DM Sans", system-ui, sans-serif)',
+              fontSize: '10px',
+              fontWeight: 700,
+              letterSpacing: '0.16em',
+              textTransform: 'uppercase',
+              color: '#D4A96A',
+              marginBottom: '20px',
+            }}
+          >
+            {countryName} · Directorio de Servicios
           </p>
 
-          {/* Trust badges */}
-          <div className="flex justify-center gap-6 mt-8 text-sm text-white/80">
-            <span className="flex items-center gap-1"><CheckCircle className="h-4 w-4" /> Verificados</span>
-            <span className="flex items-center gap-1"><Star className="h-4 w-4" /> Reseñas reales</span>
-            <span className="flex items-center gap-1"><Clock className="h-4 w-4" /> Contacto directo</span>
-          </div>
+          {/* H1 */}
+          <h1
+            style={{
+              fontFamily: 'var(--font-serif, "Playfair Display", Georgia, serif)',
+              fontSize: 'clamp(32px, 5vw, 52px)',
+              fontWeight: 700,
+              color: '#F5F0E8',
+              lineHeight: 1.15,
+              marginBottom: '12px',
+            }}
+          >
+            Encuentra al profesional que tu hogar merece
+          </h1>
+
+          {/* Italic slogan */}
+          <p
+            style={{
+              fontFamily: 'var(--font-serif, "Playfair Display", Georgia, serif)',
+              fontSize: '18px',
+              fontWeight: 400,
+              fontStyle: 'italic',
+              color: '#D4A96A',
+              marginBottom: '20px',
+            }}
+          >
+            Maestros de la Instalación y el Acabado.
+          </p>
+
+          {/* Subtitle */}
+          <p
+            style={{
+              fontFamily: 'var(--font-sans, "DM Sans", system-ui, sans-serif)',
+              fontSize: '15px',
+              color: 'rgba(245,240,232,0.55)',
+              maxWidth: '480px',
+              margin: '0 auto',
+              lineHeight: 1.6,
+            }}
+          >
+            Conecta con profesionales verificados en construcción, remodelación, electricidad y más.
+          </p>
         </div>
       </section>
 
