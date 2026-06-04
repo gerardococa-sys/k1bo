@@ -55,16 +55,16 @@ export function CategoryGrid({ categories, countryPrefix, title, subtitle }: Cat
           <h2
             style={{
               fontFamily: FONT_SERIF,
-              fontWeight: 600,
-              fontSize: '24px',
+              fontWeight: 700,
+              fontSize: '38px',
               color: '#1C1410',
-              margin: '0 0 6px',
+              margin: '0 0 8px',
             }}
           >
             {title}
           </h2>
           {subtitle && (
-            <p style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E', margin: 0 }}>
+            <p style={{ fontFamily: FONT_SANS, fontSize: '18px', color: '#6B7B6E', margin: 0 }}>
               {subtitle}
             </p>
           )}
@@ -131,11 +131,11 @@ export function CategoryGrid({ categories, countryPrefix, title, subtitle }: Cat
           .ax7-catgrid .ax7-catcard:nth-child(10) { grid-column-start: 2; }
         }
 
-        /* lg (1024px): 4 cols — items 9-10 in row 3, center them */
+        /* lg (1024px): 4 cols — items 9-10 right-aligned (cols 3 y 4) */
         @media (min-width: 1024px) {
           .ax7-catgrid { grid-template-columns: repeat(4, 1fr); }
-          .ax7-catgrid .ax7-catcard:nth-child(10) { grid-column-start: auto; } /* reset md */
-          .ax7-catgrid .ax7-catcard:nth-child(9)  { grid-column-start: 2; }
+          .ax7-catgrid .ax7-catcard:nth-child(9)  { grid-column-start: 3; }
+          .ax7-catgrid .ax7-catcard:nth-child(10) { grid-column-start: 4; }
         }
 
         /* ── Card base ────────────────────────────────────────────── */

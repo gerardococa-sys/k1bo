@@ -164,7 +164,7 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
           style={{
             fontFamily: FONT_SERIF,
             fontWeight: 600,
-            fontSize: '18px',
+            fontSize: '20px',
             color: '#1C1410',
             margin: 0,
             textAlign: 'center',
@@ -188,7 +188,7 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
             <span
               style={{
                 fontFamily: FONT_SANS,
-                fontSize: '14px',
+                fontSize: '15px',
                 fontWeight: 500,
                 color: '#B85C1A',
               }}
@@ -233,10 +233,10 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
               className="ax7-desc-clamp"
               style={{
                 fontFamily: FONT_SANS,
-                fontSize: '14px',
+                fontSize: '15px',
                 fontWeight: 400,
                 color: 'rgba(28,20,16,0.65)',
-                lineHeight: 1.6,
+                lineHeight: 1.65,
                 margin: 0,
                 textAlign: 'center',
               }}
@@ -247,9 +247,9 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
             <p
               style={{
                 fontFamily: FONT_SANS,
-                fontSize: '14px',
+                fontSize: '15px',
                 color: 'rgba(28,20,16,0.28)',
-                lineHeight: 1.6,
+                lineHeight: 1.65,
                 margin: 0,
                 fontStyle: 'italic',
                 textAlign: 'center',
@@ -315,9 +315,9 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
             color: '#D4A96A',
             fontFamily: FONT_SANS,
             fontWeight: 600,
-            fontSize: '15px',
+            fontSize: '16px',
             borderRadius: '8px',
-            padding: '13px',
+            padding: '14px 24px',
             textDecoration: 'none',
             transition: 'background-color 150ms',
           }}

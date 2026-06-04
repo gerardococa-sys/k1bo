@@ -8,7 +8,7 @@ export function HowItWorks() {
         <h2
           style={{
             fontFamily: FONT_SERIF,
-            fontSize: '36px',
+            fontSize: '38px',
             fontWeight: 700,
             color: '#1C1410',
             textAlign: 'center',
@@ -20,7 +20,7 @@ export function HowItWorks() {
         <p
           style={{
             fontFamily: FONT_SANS,
-            fontSize: '17px',
+            fontSize: '18px',
             color: '#6B7B6E',
             textAlign: 'center',
             marginBottom: '48px',
@@ -62,7 +62,7 @@ export function HowItWorks() {
               <p
                 style={{
                   fontFamily: FONT_SANS,
-                  fontSize: '17px',
+                  fontSize: '18px',
                   fontWeight: 600,
                   color: '#1C1410',
                   marginBottom: '6px',
@@ -77,7 +77,7 @@ export function HowItWorks() {
                   fontFamily: FONT_SANS,
                   fontSize: '15px',
                   color: '#6B7B6E',
-                  lineHeight: 1.6,
+                  lineHeight: 1.65,
                   margin: 0,
                 }}
               >

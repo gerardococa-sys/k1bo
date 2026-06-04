@@ -88,21 +88,21 @@ export default async function CountryPage({ params }: { params: { country: strin
           <h1
             style={{
               fontFamily: 'var(--font-serif, "Playfair Display", Georgia, serif)',
-              fontSize: 'clamp(32px, 5vw, 52px)',
+              fontSize: 'clamp(40px, 5.5vw, 56px)',
               fontWeight: 700,
               color: '#F5F0E8',
               lineHeight: 1.15,
               marginBottom: '12px',
             }}
           >
-            Encuentra al profesional que tu hogar merece
+            Encuentra al profesional de la construcción para tu hogar, oficina o negocio
           </h1>
 
           {/* Italic slogan */}
           <p
             style={{
               fontFamily: 'var(--font-serif, "Playfair Display", Georgia, serif)',
-              fontSize: '18px',
+              fontSize: '22px',
               fontWeight: 400,
               fontStyle: 'italic',
               color: '#D4A96A',
@@ -116,7 +116,7 @@ export default async function CountryPage({ params }: { params: { country: strin
           <p
             style={{
               fontFamily: 'var(--font-sans, "DM Sans", system-ui, sans-serif)',
-              fontSize: '15px',
+              fontSize: '16px',
               color: 'rgba(245,240,232,0.55)',
               maxWidth: '480px',
               margin: '0 auto',
@@ -147,7 +147,7 @@ export default async function CountryPage({ params }: { params: { country: strin
             <h2
               style={{
                 fontFamily: 'var(--font-serif,"Playfair Display",Georgia,serif)',
-                fontSize: '36px',
+                fontSize: '38px',
                 fontWeight: 700,
                 color: '#1C1410',
                 marginBottom: '8px',
@@ -158,7 +158,7 @@ export default async function CountryPage({ params }: { params: { country: strin
             <p
               style={{
                 fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)',
-                fontSize: '17px',
+                fontSize: '18px',
                 color: '#6B7B6E',
                 marginBottom: '32px',
               }}
@@ -181,7 +181,7 @@ export default async function CountryPage({ params }: { params: { country: strin
             <h2
               style={{
                 fontFamily: 'var(--font-serif,"Playfair Display",Georgia,serif)',
-                fontSize: '36px',
+                fontSize: '38px',
                 fontWeight: 700,
                 color: '#1C1410',
                 marginBottom: '8px',
@@ -192,7 +192,7 @@ export default async function CountryPage({ params }: { params: { country: strin
             <p
               style={{
                 fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)',
-                fontSize: '17px',
+                fontSize: '18px',
                 color: '#6B7B6E',
                 marginBottom: '32px',
               }}
