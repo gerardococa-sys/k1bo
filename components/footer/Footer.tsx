@@ -34,7 +34,7 @@ export function Footer({ countryPrefix }: FooterProps) {
       <div className="container mx-auto px-4 py-12">
 
         {/* 4-column grid */}
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-4">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-5">
 
           {/* Col 1 — Brand */}
           <div className="md:pr-8" style={{ borderRight: COL_DIVIDER }}>
@@ -97,7 +97,23 @@ export function Footer({ countryPrefix }: FooterProps) {
             </div>
           </div>
 
-          {/* Col 4 — Países */}
+          {/* Col 4 — Propietarios */}
+          <div className="md:px-8" style={{ borderRight: COL_DIVIDER }}>
+            <p style={colTitleStyle}>Propietarios</p>
+            <div>
+              {[
+                { label: 'Registrarme',   href: '/registro/cliente' },
+                { label: 'Iniciar sesión', href: '/login' },
+                { label: 'Cómo funciona', href: '/sv#como-funciona' },
+              ].map(({ label, href }) => (
+                <Link key={href} href={href} style={linkStyle} className="hover-footer-link">
+                  {label}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Col 5 — Países */}
           <div className="md:pl-8">
             <p style={colTitleStyle}>Países</p>
             <div>
