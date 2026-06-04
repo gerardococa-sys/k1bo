@@ -6,8 +6,8 @@ import { createClient } from '@/lib/supabase/server'
 import { HowItWorks } from '@/components/HowItWorks'
 
 export const metadata: Metadata = {
-  title: 'Nosotros — K1BO',
-  description: 'Somos una Startup que unimos personas con profesionales de construcción y remodelación en Centroamérica.',
+  title: 'Nosotros — Artifex7',
+  description: 'Conectamos el talento técnico con los mejores proyectos de construcción y remodelación en Centroamérica.',
 }
 
 export default async function NosotrosPage() {
@@ -29,16 +29,27 @@ export default async function NosotrosPage() {
         </div>
       </section>
 
-      {/* Quiénes somos */}
+      {/* ARTIFEX 7 */}
       <section className="bg-white py-16">
         <div className="container mx-auto px-4 max-w-3xl">
-          <h2 className="text-2xl font-bold mb-6">Quiénes somos</h2>
-          <p className="text-muted-foreground text-lg leading-relaxed">
-            Somos una Startup que unimos a las personas que necesitan diferentes trabajos
-            relacionados al área de construcción con Profesionales y empresas proveedoras
-            de servicios de construcción, remodelación, jardinería, fontanería, electricidad
-            entre otros.
-          </p>
+          <h2 className="text-2xl font-bold mb-6">ARTIFEX 7</h2>
+          <div className="space-y-4 text-lg text-muted-foreground leading-relaxed">
+            <p>
+              En la antigüedad, no cualquiera podía levantar un muro o colocar un acabado.
+              A quienes dominaban los materiales con precisión, limpieza y orgullo, se les
+              llamaba <strong className="text-foreground">Artifex</strong>: los maestros del oficio.
+            </p>
+            <p>
+              Hoy, la construcción ha cambiado, pero el valor de hacer las cosas bien sigue
+              intacto. Si eres de los que cuida cada milímetro, que entrega a tiempo y que
+              respeta su trabajo, tú no eres solo mano de obra.{' '}
+              <strong className="text-foreground">Tú eres un Artifex.</strong>
+            </p>
+            <p>
+              Bienvenido a la red que conecta el talento técnico con los mejores proyectos
+              de la región.
+            </p>
+          </div>
         </div>
       </section>
 

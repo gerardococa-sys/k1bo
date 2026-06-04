@@ -1,5 +1,5 @@
 -- ============================================================
--- K1BO — Esquema inicial de base de datos
+-- Artifex7 — Esquema inicial de base de datos
 -- ============================================================
 
 -- Countries

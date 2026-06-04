@@ -29,7 +29,7 @@ export function CountrySelector({ currentPrefix }: CountrySelectorProps) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" aria-label="Seleccionar país">
-          <Globe className="h-5 w-5" />
+          <Globe className="h-5 w-5" style={{ color: '#6B7B6E' }} />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-52">
@@ -42,7 +42,7 @@ export function CountrySelector({ currentPrefix }: CountrySelectorProps) {
             className={!country.active ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
             onClick={() => {
               if (country.active) {
-                localStorage.setItem('k1bo_country', country.url_prefix)
+                localStorage.setItem('artifex7_country', country.url_prefix)
                 router.push(`/${country.url_prefix}`)
               }
             }}

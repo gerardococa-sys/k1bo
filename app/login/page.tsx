@@ -81,7 +81,7 @@ function LoginContent() {
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <Link href="/" className="text-3xl font-black uppercase text-[#1B3A6B]">
-            K1BO
+            Artifex7
           </Link>
           <p className="mt-2 text-muted-foreground">Inicia sesión en tu cuenta</p>
         </div>

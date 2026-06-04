@@ -14,7 +14,7 @@ export default function ComingSoonPage({
         <Clock className="h-12 w-12 text-primary mx-auto mb-4" />
         <h1 className="text-3xl font-black text-[#1B3A6B] mb-2">Próximamente</h1>
         <p className="text-muted-foreground mb-6">
-          K1BO aún no está disponible en{' '}
+          Artifex7 aún no está disponible en{' '}
           <strong>{searchParams.country?.toUpperCase() ?? 'este país'}</strong>.
           Estamos trabajando para llegar pronto.
         </p>

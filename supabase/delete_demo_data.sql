@@ -1,5 +1,5 @@
 -- ===========================================================
--- K1BO — Eliminar todos los datos de demostración
+-- Artifex7 — Eliminar todos los datos de demostración
 -- Ejecutar en Supabase SQL Editor antes de re-ejecutar demo_data.sql
 -- Respeta el orden de foreign keys (de hija a padre)
 -- ===========================================================
@@ -41,4 +41,4 @@ WHERE user_id::text LIKE 'd0000000-0000-0000-%';
 
 -- 9. Usuarios en auth (esto hace cascade en profiles si quedan registros)
 DELETE FROM auth.users
-WHERE email LIKE '%@k1bo-demo.com';
+WHERE email LIKE '%@artifex7-demo.com';

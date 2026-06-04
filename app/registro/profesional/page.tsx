@@ -215,7 +215,7 @@ export default function RegistroProfesionalPage() {
     <div className="min-h-screen bg-background py-12 px-4">
       <div className="max-w-lg mx-auto">
         <div className="text-center mb-8">
-          <Link href="/" className="text-3xl font-black uppercase text-[#1B3A6B]">K1BO</Link>
+          <Link href="/" className="text-3xl font-black uppercase text-[#1B3A6B]">Artifex7</Link>
           <h1 className="mt-2 text-xl font-semibold">Registro de Profesional</h1>
         </div>
 
@@ -422,7 +422,7 @@ export default function RegistroProfesionalPage() {
           <div className="space-y-4">
             <h2 className="font-semibold text-lg">Paso 5 — Documentos</h2>
             <div className="rounded-lg bg-primary/5 border border-primary/20 p-4 text-sm text-muted-foreground">
-              🔒 Tus documentos solo son vistos por el equipo de K1BO para verificar tu identidad. No son públicos.
+              🔒 Tus documentos solo son vistos por el equipo de Artifex7 para verificar tu identidad. No son públicos.
             </div>
             <div className="space-y-2">
               <Label>DUI — Cara frontal *</Label>
@@ -451,7 +451,7 @@ export default function RegistroProfesionalPage() {
               <p className="text-sm">✅ Comenzarás a recibir solicitudes de trabajo</p>
             </div>
             <Button asChild className="w-full">
-              <Link href="/sv">Ir a K1BO El Salvador</Link>
+              <Link href="/sv">Ir a Artifex7 El Salvador</Link>
             </Button>
           </div>
         )}

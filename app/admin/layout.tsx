@@ -31,7 +31,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       {/* Sidebar */}
       <aside className="w-56 shrink-0 border-r bg-white flex flex-col">
         <div className="p-4 border-b">
-          <Link href="/" className="text-xl font-black uppercase text-[#1B3A6B]">K1BO</Link>
+          <Link href="/" className="text-xl font-black uppercase text-[#1B3A6B]">Artifex7</Link>
           <p className="text-xs text-muted-foreground mt-1">Panel Admin</p>
         </div>
         <nav className="flex-1 p-3 space-y-1">

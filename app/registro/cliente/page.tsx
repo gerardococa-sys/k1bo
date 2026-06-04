@@ -147,7 +147,7 @@ export default function RegistroClientePage() {
     <div className="min-h-screen bg-background py-12 px-4">
       <div className="max-w-lg mx-auto">
         <div className="text-center mb-8">
-          <Link href="/" className="text-3xl font-black uppercase text-[#1B3A6B]">K1BO</Link>
+          <Link href="/" className="text-3xl font-black uppercase text-[#1B3A6B]">Artifex7</Link>
           <h1 className="mt-2 text-xl font-semibold">Registro de Cliente</h1>
           <p className="text-muted-foreground text-sm mt-1">Encuentra profesionales cerca de ti</p>
         </div>

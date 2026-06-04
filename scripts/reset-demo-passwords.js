@@ -1,5 +1,5 @@
 /**
- * K1BO — Resetear contraseñas de usuarios demo
+ * Artifex7 — Resetear contraseñas de usuarios demo
  *
  * Uso:
  *   node scripts/reset-demo-passwords.js
@@ -45,7 +45,7 @@ const PASSWORD = 'Demo1234!'
 
 async function main() {
   console.log('\n══════════════════════════════════════════════')
-  console.log('  K1BO — Reset contraseñas demo')
+  console.log('  Artifex7 — Reset contraseñas demo')
   console.log('══════════════════════════════════════════════\n')
 
   // Obtener todos los usuarios (paginando si hay más de 1000)
@@ -62,7 +62,7 @@ async function main() {
     page++
   }
 
-  const demoUsers = allUsers.filter(u => u.email?.includes('k1bo-demo'))
+  const demoUsers = allUsers.filter(u => u.email?.includes('artifex7-demo'))
 
   if (demoUsers.length === 0) {
     console.log('  (no se encontraron usuarios demo)\n')

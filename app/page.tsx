@@ -18,7 +18,7 @@ export default function RootPage() {
 
   useEffect(() => {
     // Check localStorage first
-    const saved = localStorage.getItem('k1bo_country')
+    const saved = localStorage.getItem('artifex7_country')
     if (saved && ACTIVE_COUNTRIES.find(c => c.prefix === saved)) {
       router.push(`/${saved}`)
       return
@@ -34,7 +34,7 @@ export default function RootPage() {
 
   const handleConfirmCountry = () => {
     if (detectedCountry) {
-      localStorage.setItem('k1bo_country', detectedCountry.prefix)
+      localStorage.setItem('artifex7_country', detectedCountry.prefix)
       router.push(`/${detectedCountry.prefix}`)
     }
   }
@@ -44,7 +44,7 @@ export default function RootPage() {
       {/* Navbar */}
       <header className="sticky top-0 z-40 border-b bg-white/95 backdrop-blur">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <span className="text-xl font-black uppercase text-[#1B3A6B]">K1BO</span>
+          <span className="text-xl font-black uppercase text-[#1B3A6B]">Artifex7</span>
           <CountrySelector />
         </div>
       </header>
@@ -59,7 +59,7 @@ export default function RootPage() {
             </p>
             <div className="flex items-center gap-2 shrink-0">
               <Button size="sm" onClick={handleConfirmCountry}>
-                Sí, ir a K1BO {detectedCountry.name}
+                Sí, ir a Artifex7 {detectedCountry.name}
               </Button>
               <button
                 className="text-sm text-muted-foreground hover:text-foreground"
@@ -78,7 +78,7 @@ export default function RootPage() {
       {/* Main content */}
       <main className="container mx-auto px-4 py-16">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-black uppercase text-[#1B3A6B] mb-4">K1BO</h1>
+          <h1 className="text-4xl font-black uppercase text-[#1B3A6B] mb-4">Artifex7</h1>
           <p className="text-xl text-muted-foreground">
             El directorio de profesionales para el hogar en Centroamérica
           </p>
@@ -95,7 +95,7 @@ export default function RootPage() {
             <Link
               href="/sv"
               className="flex flex-col items-center gap-2 rounded-xl border-2 border-primary bg-primary/5 p-6 hover:bg-primary/10 transition-colors"
-              onClick={() => localStorage.setItem('k1bo_country', process.env.NEXT_PUBLIC_DEFAULT_COUNTRY ?? 'sv')}
+              onClick={() => localStorage.setItem('artifex7_country', process.env.NEXT_PUBLIC_DEFAULT_COUNTRY ?? 'sv')}
             >
               <span className="text-4xl">🇸🇻</span>
               <span className="text-sm font-semibold">El Salvador</span>

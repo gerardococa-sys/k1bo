@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'K1BO',
+  title: 'Artifex7',
   description: 'Encuentra al profesional ideal para tu hogar',
 }
 

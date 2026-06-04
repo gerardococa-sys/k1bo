@@ -91,9 +91,12 @@ export default async function CountryPage({ params }: { params: { country: strin
       {/* Categories */}
       <section id="categorias" className="bg-white py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl font-bold mb-2">Categorías de servicios</h2>
-          <p className="text-muted-foreground mb-8">Encuentra el profesional para cada necesidad</p>
-          <CategoryGrid categories={categories ?? []} countryPrefix={params.country} />
+          <CategoryGrid
+            categories={categories ?? []}
+            countryPrefix={params.country}
+            title="Categorías"
+            subtitle="Encuentra el profesional para cada necesidad"
+          />
         </div>
       </section>
 
@@ -149,7 +152,7 @@ export default async function CountryPage({ params }: { params: { country: strin
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-2xl font-bold mb-4">¿Eres profesional?</h2>
           <p className="text-muted-foreground mb-6">
-            Únete a K1BO y llega a más clientes en {countryName}.
+            Únete a Artifex7 y llega a más clientes en {countryName}.
           </p>
           <Button size="lg" asChild>
             <Link href="/registro/profesional">Registra tu negocio gratis</Link>

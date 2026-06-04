@@ -1,4 +1,4 @@
-# K1BO — Guía de instalación
+# Artifex7 — Guía de instalación
 
 ## 1. Instalar dependencias
 
