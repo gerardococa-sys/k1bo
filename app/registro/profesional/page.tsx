@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
-import { CheckCircle2, X } from 'lucide-react'
+import { CheckCircle2, X, HardHat, Building2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -18,7 +18,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
 import { createBrowserClient } from '@supabase/ssr'
-import { DAY_LABELS } from '@/lib/utils'
 import type { Department, Municipality, Category } from '@/types'
 
 const STEPS = 6
@@ -48,6 +47,7 @@ export default function RegistroProfesionalPage() {
 
   // Step 1 data
   const [avatar, setAvatar] = useState<File | null>(null)
+  const [accountType, setAccountType] = useState<'independent' | 'company'>('independent')
   const step1Form = useForm<Step1Data>({ resolver: zodResolver(step1Schema) })
 
   // Step 2 — coverage
@@ -64,9 +64,6 @@ export default function RegistroProfesionalPage() {
   const [tagInput, setTagInput] = useState('')
   const [shortDesc, setShortDesc] = useState('')
   const [bio, setBio] = useState('')
-  const [workingHours, setWorkingHours] = useState<Record<string, { open: boolean; from: string; to: string }>>(
-    Object.fromEntries(Object.keys(DAY_LABELS).map((d) => [d, { open: false, from: '08:00', to: '17:00' }]))
-  )
 
   // Step 4 — portfolio
   const [portfolioFiles, setPortfolioFiles] = useState<File[]>([])
@@ -126,6 +123,7 @@ export default function RegistroProfesionalPage() {
 
     await supabase.from('professionals').insert({
       id: auth.user.id,
+      account_type: accountType,
       covers_entire_country: false,
       featured: false,
       total_projects: 0,
@@ -154,7 +152,6 @@ export default function RegistroProfesionalPage() {
     await supabase.from('professionals').update({
       short_description: shortDesc,
       bio,
-      working_hours: workingHours,
     }).eq('id', userId)
 
     const catRows = selectedCatIds.slice(0, 3).map((cat_id) => ({
@@ -263,6 +260,45 @@ export default function RegistroProfesionalPage() {
               <Input type="date" {...step1Form.register('date_of_birth')} />
               {step1Form.formState.errors.date_of_birth && <p className="text-sm text-destructive">{step1Form.formState.errors.date_of_birth.message}</p>}
             </div>
+
+            {/* Account type selector */}
+            <div className="space-y-2">
+              <Label>Tipo de cuenta *</Label>
+              <div className="grid grid-cols-2 gap-3">
+                {([
+                  { value: 'independent', Icon: HardHat, title: 'Profesional Independiente', desc: 'Trabajo por mi cuenta' },
+                  { value: 'company',     Icon: Building2, title: 'Empresa',                  desc: 'Tengo un equipo o negocio formal' },
+                ] as const).map(({ value, Icon, title, desc }) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setAccountType(value)}
+                    style={{
+                      border: accountType === value ? '1.5px solid #B85C1A' : '1.5px solid #1C141020',
+                      backgroundColor: accountType === value ? '#B85C1A08' : '#ffffff',
+                      borderRadius: '10px',
+                      padding: '16px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: '6px',
+                      textAlign: 'center',
+                      transition: 'border-color 150ms, background-color 150ms',
+                    }}
+                  >
+                    <Icon style={{ width: 22, height: 22, color: '#B85C1A' }} />
+                    <span style={{ fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)', fontSize: '14px', fontWeight: 600, color: '#1C1410' }}>
+                      {title}
+                    </span>
+                    <span style={{ fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)', fontSize: '13px', color: '#6B7B6E', lineHeight: 1.4 }}>
+                      {desc}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <Button type="submit" className="w-full" disabled={step1Form.formState.isSubmitting}>
               {step1Form.formState.isSubmitting ? 'Creando cuenta...' : 'Continuar'}
             </Button>
@@ -363,33 +399,6 @@ export default function RegistroProfesionalPage() {
             <div className="space-y-2">
               <Label>Bio completa *</Label>
               <Textarea rows={4} placeholder="Cuéntanos tu experiencia y especialidades" value={bio} onChange={(e) => setBio(e.target.value)} />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Horario laboral</Label>
-              <div className="space-y-2">
-                {Object.entries(DAY_LABELS).map(([key, label]) => (
-                  <div key={key} className="flex items-center gap-3">
-                    <Checkbox
-                      id={`day_${key}`}
-                      checked={workingHours[key]?.open ?? false}
-                      onCheckedChange={(v) =>
-                        setWorkingHours((prev) => ({ ...prev, [key]: { ...prev[key], open: !!v } }))
-                      }
-                    />
-                    <Label htmlFor={`day_${key}`} className="w-24 text-sm">{label}</Label>
-                    {workingHours[key]?.open && (
-                      <>
-                        <Input type="time" className="w-32" value={workingHours[key].from}
-                          onChange={(e) => setWorkingHours((prev) => ({ ...prev, [key]: { ...prev[key], from: e.target.value } }))} />
-                        <span className="text-sm text-muted-foreground">a</span>
-                        <Input type="time" className="w-32" value={workingHours[key].to}
-                          onChange={(e) => setWorkingHours((prev) => ({ ...prev, [key]: { ...prev[key], to: e.target.value } }))} />
-                      </>
-                    )}
-                  </div>
-                ))}
-              </div>
             </div>
 
             <Button onClick={handleStep3} className="w-full">Continuar</Button>

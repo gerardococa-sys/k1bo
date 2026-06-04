@@ -75,11 +75,20 @@ export function Navbar({ countryPrefix: propPrefix }: NavbarProps) {
     router.refresh()
   }
 
+  const propietariosHref = profile
+    ? profile.role === 'professional'
+      ? `${base}/profesional-panel/dashboard`
+      : profile.role === 'admin'
+      ? '/admin/dashboard'
+      : `${base}/cliente/dashboard`
+    : '/login'
+
   const navLinks = [
-    { label: 'Nosotros',       href: '/nosotros' },
-    { label: 'Categorías',     href: `${base}#categorias` },
-    { label: 'Profesionales',  href: `${base}#profesionales-destacados` },
-    { label: 'Cómo funciona',  href: `${base}#como-funciona` },
+    { label: 'Nosotros',      href: '/nosotros' },
+    { label: 'Categorías',    href: `${base}#categorias` },
+    { label: 'Profesionales', href: `${base}#profesionales-destacados` },
+    { label: 'Propietarios',  href: propietariosHref },
+    { label: 'Cómo funciona', href: `${base}#como-funciona` },
   ]
 
   return (
@@ -170,7 +179,7 @@ export function Navbar({ countryPrefix: propPrefix }: NavbarProps) {
                 Iniciar sesión
               </Link>
               <Link
-                href="/registro/cliente"
+                href="/registro"
                 className="font-sans font-semibold px-4 py-1.5 transition-opacity hover:opacity-90"
                 style={{
                   backgroundColor: '#B85C1A',
@@ -236,7 +245,7 @@ export function Navbar({ countryPrefix: propPrefix }: NavbarProps) {
                 Iniciar sesión
               </Link>
               <Link
-                href="/registro/cliente"
+                href="/registro"
                 className="font-sans font-semibold text-center py-2 transition-opacity hover:opacity-90"
                 style={{
                   backgroundColor: '#B85C1A',
