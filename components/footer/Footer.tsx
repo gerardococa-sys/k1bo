@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Globe } from 'lucide-react'
+import { Logo } from '@/components/ui/Logo'
 
 interface FooterProps {
   countryPrefix?: string
@@ -39,16 +40,8 @@ export function Footer({ countryPrefix }: FooterProps) {
           {/* Col 1 — Brand */}
           <div className="md:pr-8" style={{ borderRight: COL_DIVIDER }}>
             {/* Logo */}
-            <p
-              className="mb-1"
-              style={{
-                fontFamily: 'var(--font-serif, Playfair Display, Georgia, serif)',
-                fontSize: '24px',
-                fontWeight: 700,
-                color: '#F5F0E8',
-              }}
-            >
-              Artifex<span style={{ color: '#B85C1A' }}>7</span>
+            <p className="mb-1" style={{ color: '#F5F0E8' }}>
+              <Logo size="lg" variant="light" />
             </p>
             {/* Tagline */}
             <p

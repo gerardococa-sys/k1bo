@@ -1,3 +1,5 @@
+import { Logo } from '@/components/ui/Logo'
+
 const FONT_SERIF = 'var(--font-serif, "Playfair Display", Georgia, serif)'
 const FONT_SANS  = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
 
@@ -15,7 +17,7 @@ export function HowItWorks() {
             marginBottom: '8px',
           }}
         >
-          ¿Cómo funciona Artifex7?
+          ¿Cómo funciona <Logo size="inherit" variant="light" />?
         </h2>
         <p
           style={{

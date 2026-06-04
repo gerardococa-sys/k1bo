@@ -108,7 +108,7 @@ export default function ProSolicitudesPage() {
           {selected && (
             <div className="space-y-4">
               <div>
-                <p className="text-sm font-semibold">Cliente</p>
+                <p className="text-sm font-semibold">Propietario</p>
                 <p className="text-sm text-muted-foreground">{selected.client?.full_name}</p>
               </div>
               <div>

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Globe, X } from 'lucide-react'
+import { Logo } from '@/components/ui/Logo'
 import { Button } from '@/components/ui/button'
 import { CountrySelector } from '@/components/navbar/CountrySelector'
 
@@ -44,7 +45,7 @@ export default function RootPage() {
       {/* Navbar */}
       <header className="sticky top-0 z-40 border-b bg-white/95 backdrop-blur">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <span className="text-xl font-black uppercase text-[#1B3A6B]">Artifex7</span>
+          <span style={{ color: '#1C1410' }}><Logo size="md" /></span>
           <CountrySelector />
         </div>
       </header>
@@ -59,7 +60,7 @@ export default function RootPage() {
             </p>
             <div className="flex items-center gap-2 shrink-0">
               <Button size="sm" onClick={handleConfirmCountry}>
-                Sí, ir a Artifex7 {detectedCountry.name}
+                Sí, ir a <Logo size="sm" /> {detectedCountry.name}
               </Button>
               <button
                 className="text-sm text-muted-foreground hover:text-foreground"
@@ -78,7 +79,7 @@ export default function RootPage() {
       {/* Main content */}
       <main className="container mx-auto px-4 py-16">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-black uppercase text-[#1B3A6B] mb-4">Artifex7</h1>
+          <h1 className="mb-4" style={{ color: '#1C1410' }}><Logo size="lg" /></h1>
           <p className="text-xl text-muted-foreground">
             El directorio de profesionales para el hogar en Centroamérica
           </p>

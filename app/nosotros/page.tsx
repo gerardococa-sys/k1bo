@@ -57,7 +57,7 @@ export default async function NosotrosPage() {
       {reviews && reviews.length > 0 && (
         <section className="bg-[#F9F9F9] py-16">
           <div className="container mx-auto px-4">
-            <h2 className="text-2xl font-bold mb-2">Lo que dicen nuestros clientes</h2>
+            <h2 className="text-2xl font-bold mb-2">Lo que dicen nuestros propietarios</h2>
             <p className="text-muted-foreground mb-8">Testimonios reales de nuestra comunidad</p>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {reviews.map((review) => (

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { Menu, X, LogOut, User, LayoutDashboard } from 'lucide-react'
+import { Logo } from '@/components/ui/Logo'
 import { createClient } from '@/lib/supabase/client'
 import { CountrySelector } from './CountrySelector'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -99,8 +100,8 @@ export function Navbar({ countryPrefix: propPrefix }: NavbarProps) {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
 
         {/* Logo */}
-        <Link href={base} className="font-serif font-bold" style={{ color: '#1C1410', fontSize: '22px' }}>
-          Artifex<span style={{ color: '#B85C1A' }}>7</span>
+        <Link href={base} style={{ color: '#1C1410' }}>
+          <Logo size="md" />
         </Link>
 
         {/* Desktop nav links */}

@@ -4,11 +4,12 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { LayoutDashboard, Users, UserCheck, Star, Tag } from 'lucide-react'
+import { Logo } from '@/components/ui/Logo'
 
 const NAV = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/profesionales', label: 'Profesionales', icon: UserCheck },
-  { href: '/admin/clientes', label: 'Clientes', icon: Users },
+  { href: '/admin/clientes', label: 'Propietarios', icon: Users },
   { href: '/admin/resenas', label: 'Reseñas', icon: Star },
   { href: '/admin/categorias', label: 'Categorías', icon: Tag },
 ]
@@ -31,7 +32,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       {/* Sidebar */}
       <aside className="w-56 shrink-0 border-r bg-white flex flex-col">
         <div className="p-4 border-b">
-          <Link href="/" className="text-xl font-black uppercase text-[#1B3A6B]">Artifex7</Link>
+          <Link href="/" style={{ color: '#1C1410' }}><Logo size="md" /></Link>
           <p className="text-xs text-muted-foreground mt-1">Panel Admin</p>
         </div>
         <nav className="flex-1 p-3 space-y-1">

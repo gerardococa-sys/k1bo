@@ -64,7 +64,7 @@ export default async function ProResenasPage({
               <div className="flex items-start justify-between gap-3 mb-3">
                 <div>
                   <p className="font-semibold text-sm">
-                    {(review.client as any)?.full_name ?? 'Cliente'}
+                    {(review.client as any)?.full_name ?? 'Propietario'}
                   </p>
                   {review.category && (
                     <p className="text-xs text-muted-foreground">
@@ -104,7 +104,7 @@ export default async function ProResenasPage({
         <div className="text-center py-16 text-muted-foreground">
           <Star className="h-10 w-10 mx-auto mb-3 opacity-30" />
           <p>Aún no tienes reseñas.</p>
-          <p className="text-sm mt-1">Las reseñas aparecerán aquí cuando tus clientes califiquen tu trabajo.</p>
+          <p className="text-sm mt-1">Las reseñas aparecerán aquí cuando tus propietarios califiquen tu trabajo.</p>
         </div>
       )}
     </div>

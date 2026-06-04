@@ -9,20 +9,26 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
+import { Eye, EyeOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Logo } from '@/components/ui/Logo'
 import { createBrowserClient } from '@supabase/ssr'
 import type { Department, Municipality, District } from '@/types'
 
 const schema = z.object({
-  full_name: z.string().min(2, 'Nombre requerido'),
-  email: z.string().email('Email inválido'),
-  password: z.string().min(8, 'Mínimo 8 caracteres'),
-  phone: z.string().min(8, 'Teléfono requerido'),
-  date_of_birth: z.string().min(1, 'Fecha de nacimiento requerida'),
-  address: z.string().optional(),
+  full_name:        z.string().min(2, 'Nombre requerido'),
+  email:            z.string().email('Email inválido'),
+  password:         z.string().min(8, 'Mínimo 8 caracteres'),
+  confirm_password: z.string().min(1, 'Confirmar contraseña requerida'),
+  phone:            z.string().min(8, 'Teléfono requerido'),
+  date_of_birth:    z.string().min(1, 'Fecha de nacimiento requerida'),
+  address:          z.string().optional(),
+}).refine((d) => d.password === d.confirm_password, {
+  message: 'Las contraseñas no coinciden',
+  path: ['confirm_password'],
 })
 
 type FormData = z.infer<typeof schema>
@@ -44,10 +50,14 @@ export default function RegistroClientePage() {
   const [selectedMuni, setSelectedMuni] = useState('')
   const [selectedDist, setSelectedDist] = useState('')
   const [avatar, setAvatar] = useState<File | null>(null)
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const [svCountryId, setSvCountryId] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(schema),
+    mode: 'onChange',
   })
 
   useEffect(() => {
@@ -147,9 +157,11 @@ export default function RegistroClientePage() {
     <div className="min-h-screen bg-background py-12 px-4">
       <div className="max-w-lg mx-auto">
         <div className="text-center mb-8">
-          <Link href="/" className="text-3xl font-black uppercase text-[#1B3A6B]">Artifex7</Link>
-          <h1 className="mt-2 text-xl font-semibold">Registro de Cliente</h1>
-          <p className="text-muted-foreground text-sm mt-1">Encuentra profesionales cerca de ti</p>
+          <Link href="/" style={{ color: '#1C1410' }}>
+            <Logo size="lg" />
+          </Link>
+          <h1 className="mt-2 text-xl font-semibold">Registro de Propietario</h1>
+          <p className="text-muted-foreground text-sm mt-1">Crea tu cuenta gratuita</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -167,8 +179,48 @@ export default function RegistroClientePage() {
 
           <div className="space-y-2">
             <Label htmlFor="password">Contraseña *</Label>
-            <Input id="password" type="password" placeholder="Mínimo 8 caracteres" {...register('password')} />
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Mínimo 8 caracteres"
+                {...register('password')}
+                className="pr-10"
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-3 flex items-center text-muted-foreground hover:text-foreground"
+                onClick={() => setShowPassword((v) => !v)}
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
             {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="confirm_password">Confirmar contraseña *</Label>
+            <div className="relative">
+              <Input
+                id="confirm_password"
+                type={showConfirm ? 'text' : 'password'}
+                placeholder="Repite tu contraseña"
+                {...register('confirm_password')}
+                className="pr-10"
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-3 flex items-center text-muted-foreground hover:text-foreground"
+                onClick={() => setShowConfirm((v) => !v)}
+                tabIndex={-1}
+              >
+                {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+            {errors.confirm_password && (
+              <p className="text-sm" style={{ color: '#B85C1A' }}>{errors.confirm_password.message}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -184,8 +236,24 @@ export default function RegistroClientePage() {
           </div>
 
           <div className="space-y-2">
-            <Label>Foto de perfil</Label>
-            <Input type="file" accept="image/*" onChange={(e) => setAvatar(e.target.files?.[0] ?? null)} />
+            <Label>Foto de perfil <span className="text-muted-foreground">(opcional)</span></Label>
+            {avatarPreview && (
+              <div className="flex justify-center">
+                <div style={{ width: 72, height: 72, borderRadius: '50%', overflow: 'hidden', border: '3px solid #D4A96A' }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={avatarPreview} alt="Vista previa" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
+              </div>
+            )}
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0] ?? null
+                setAvatar(file)
+                setAvatarPreview(file ? URL.createObjectURL(file) : null)
+              }}
+            />
           </div>
 
           <div className="space-y-2">
@@ -195,7 +263,7 @@ export default function RegistroClientePage() {
 
           {/* Location cascade */}
           <div className="space-y-2">
-            <Label>Departamento *</Label>
+            <Label>Departamento</Label>
             <Select value={selectedDept} onValueChange={setSelectedDept}>
               <SelectTrigger><SelectValue placeholder="Selecciona departamento" /></SelectTrigger>
               <SelectContent>
@@ -208,7 +276,7 @@ export default function RegistroClientePage() {
 
           {municipalities.length > 0 && (
             <div className="space-y-2">
-              <Label>Municipio *</Label>
+              <Label>Municipio</Label>
               <Select value={selectedMuni} onValueChange={setSelectedMuni}>
                 <SelectTrigger><SelectValue placeholder="Selecciona municipio" /></SelectTrigger>
                 <SelectContent>
@@ -222,7 +290,7 @@ export default function RegistroClientePage() {
 
           {districts.length > 0 && (
             <div className="space-y-2">
-              <Label>Distrito</Label>
+              <Label>Distrito <span className="text-muted-foreground">(opcional)</span></Label>
               <Select value={selectedDist} onValueChange={setSelectedDist}>
                 <SelectTrigger><SelectValue placeholder="Selecciona distrito" /></SelectTrigger>
                 <SelectContent>
@@ -234,7 +302,12 @@ export default function RegistroClientePage() {
             </div>
           )}
 
-          <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
+          <Button
+            type="submit"
+            className="w-full"
+            size="lg"
+            disabled={isSubmitting || !!errors.confirm_password}
+          >
             {isSubmitting ? 'Creando cuenta...' : 'Crear cuenta'}
           </Button>
         </form>

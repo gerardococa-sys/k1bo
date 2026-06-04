@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Home, HardHat, Building2 } from 'lucide-react'
 import type { Metadata } from 'next'
+import { Logo } from '@/components/ui/Logo'
 
 export const metadata: Metadata = {
   title: 'Crear cuenta — Artifex7',
@@ -34,7 +35,7 @@ export default function RegistroPage() {
             margin: '0 0 12px',
           }}
         >
-          ¿Cómo quieres usar Artifex7?
+          ¿Cómo quieres usar <Logo size="inherit" />?
         </h1>
         <p
           style={{
@@ -100,7 +101,7 @@ export default function RegistroPage() {
             Gratis
           </span>
           <p style={{ fontFamily: FONT_SANS, fontSize: '16px', color: '#6B7B6E', lineHeight: 1.65, margin: 0, flex: 1 }}>
-            Publica tus servicios y recibe solicitudes de clientes verificados. Registro gratuito.
+            Publica tus servicios y recibe solicitudes de propietarios verificados. Registro gratuito.
           </p>
           <Link
             href="/registro/profesional"

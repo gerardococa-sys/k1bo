@@ -42,7 +42,7 @@ export default function AdminResenasPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Cliente</TableHead>
+                <TableHead>Propietario</TableHead>
                 <TableHead>Profesional</TableHead>
                 <TableHead>Categoría</TableHead>
                 <TableHead>Calificación</TableHead>

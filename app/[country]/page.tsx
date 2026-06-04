@@ -7,6 +7,7 @@ import { CategoryGrid } from '@/components/categories/CategoryGrid'
 import { ProfessionalCard } from '@/components/professionals/ProfessionalCard'
 import { HowItWorks } from '@/components/HowItWorks'
 import { Button } from '@/components/ui/button'
+import { Logo } from '@/components/ui/Logo'
 
 export default async function CountryPage({ params }: { params: { country: string } }) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -187,7 +188,7 @@ export default async function CountryPage({ params }: { params: { country: strin
                 marginBottom: '8px',
               }}
             >
-              Testimonios de Clientes
+              Testimonios de Propietarios
             </h2>
             <p
               style={{
@@ -197,7 +198,7 @@ export default async function CountryPage({ params }: { params: { country: strin
                 marginBottom: '32px',
               }}
             >
-              Lo que dicen nuestros clientes
+              Lo que dicen nuestros propietarios
             </p>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {reviews.map((review) => (
@@ -247,7 +248,7 @@ export default async function CountryPage({ params }: { params: { country: strin
               marginBottom: '28px',
             }}
           >
-            Únete a Artifex7 y llega a más clientes en {countryName}.
+            Únete a <Logo size="inherit" /> y llega a más propietarios en {countryName}.
           </p>
           <Link
             href="/registro/profesional"

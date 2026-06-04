@@ -16,8 +16,8 @@ export default async function AdminClientesPage() {
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold mb-6">Gestión de Clientes</h1>
-      <p className="text-muted-foreground mb-4">{clients?.length ?? 0} clientes registrados</p>
+      <h1 className="text-2xl font-bold mb-6">Gestión de Propietarios</h1>
+      <p className="text-muted-foreground mb-4">{clients?.length ?? 0} propietarios registrados</p>
 
       <div className="rounded-lg border bg-white overflow-hidden">
         <Table>
@@ -55,7 +55,7 @@ export default async function AdminClientesPage() {
             {(!clients || clients.length === 0) && (
               <TableRow>
                 <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
-                  No hay clientes registrados
+                  No hay propietarios registrados
                 </TableCell>
               </TableRow>
             )}

@@ -9,7 +9,8 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
-import { CheckCircle2, X, HardHat, Building2 } from 'lucide-react'
+import { CheckCircle2, X, HardHat } from 'lucide-react'
+import { Logo } from '@/components/ui/Logo'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -212,7 +213,7 @@ export default function RegistroProfesionalPage() {
     <div className="min-h-screen bg-background py-12 px-4">
       <div className="max-w-lg mx-auto">
         <div className="text-center mb-8">
-          <Link href="/" className="text-3xl font-black uppercase text-[#1B3A6B]">Artifex7</Link>
+          <Link href="/" style={{ color: '#1C1410' }}><Logo size="lg" /></Link>
           <h1 className="mt-2 text-xl font-semibold">Registro de Profesional</h1>
         </div>
 
@@ -261,42 +262,33 @@ export default function RegistroProfesionalPage() {
               {step1Form.formState.errors.date_of_birth && <p className="text-sm text-destructive">{step1Form.formState.errors.date_of_birth.message}</p>}
             </div>
 
-            {/* Account type selector */}
-            <div className="space-y-2">
-              <Label>Tipo de cuenta *</Label>
-              <div className="grid grid-cols-2 gap-3">
-                {([
-                  { value: 'independent', Icon: HardHat, title: 'Profesional Independiente', desc: 'Trabajo por mi cuenta' },
-                  { value: 'company',     Icon: Building2, title: 'Empresa',                  desc: 'Tengo un equipo o negocio formal' },
-                ] as const).map(({ value, Icon, title, desc }) => (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => setAccountType(value)}
-                    style={{
-                      border: accountType === value ? '1.5px solid #B85C1A' : '1.5px solid #1C141020',
-                      backgroundColor: accountType === value ? '#B85C1A08' : '#ffffff',
-                      borderRadius: '10px',
-                      padding: '16px',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      gap: '6px',
-                      textAlign: 'center',
-                      transition: 'border-color 150ms, background-color 150ms',
-                    }}
-                  >
-                    <Icon style={{ width: 22, height: 22, color: '#B85C1A' }} />
-                    <span style={{ fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)', fontSize: '14px', fontWeight: 600, color: '#1C1410' }}>
-                      {title}
-                    </span>
-                    <span style={{ fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)', fontSize: '13px', color: '#6B7B6E', lineHeight: 1.4 }}>
-                      {desc}
-                    </span>
-                  </button>
-                ))}
+            {/* Account type — fixed as independent */}
+            <div className="space-y-1">
+              <Label>Tipo de cuenta</Label>
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  backgroundColor: '#B85C1A12',
+                  color: '#B85C1A',
+                  border: '1.5px solid #B85C1A40',
+                  borderRadius: '8px',
+                  padding: '10px 16px',
+                  fontSize: '15px',
+                  fontWeight: 600,
+                  fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)',
+                }}
+              >
+                <HardHat style={{ width: 18, height: 18 }} />
+                Profesional Independiente
               </div>
+              <p style={{ fontSize: '13px', color: '#6B7B6E', marginTop: '6px', fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)' }}>
+                ¿Eres una empresa?{' '}
+                <Link href="/registro/empresa" style={{ color: '#6B7B6E', textDecoration: 'underline' }}>
+                  Regístrate aquí →
+                </Link>
+              </p>
             </div>
 
             <Button type="submit" className="w-full" disabled={step1Form.formState.isSubmitting}>
@@ -460,7 +452,7 @@ export default function RegistroProfesionalPage() {
               <p className="text-sm">✅ Comenzarás a recibir solicitudes de trabajo</p>
             </div>
             <Button asChild className="w-full">
-              <Link href="/sv">Ir a Artifex7 El Salvador</Link>
+              <Link href="/sv">Ir a <Logo size="sm" /> El Salvador</Link>
             </Button>
           </div>
         )}

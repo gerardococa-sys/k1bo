@@ -25,7 +25,7 @@ export default async function AdminDashboardPage() {
     { label: 'Total profesionales', value: totalPros ?? 0, icon: UserCheck, color: 'text-purple-600' },
     { label: 'Verificados', value: verifiedPros ?? 0, icon: UserCheck, color: 'text-green-600' },
     { label: 'Pendientes verificación', value: pendingPros ?? 0, icon: UserCheck, color: 'text-yellow-600' },
-    { label: 'Clientes', value: totalClients ?? 0, icon: Users, color: 'text-blue-600' },
+    { label: 'Propietarios', value: totalClients ?? 0, icon: Users, color: 'text-blue-600' },
     { label: 'Solicitudes de cotización', value: totalQuotes ?? 0, icon: FileText, color: 'text-orange-600' },
   ]
 

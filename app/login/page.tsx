@@ -9,6 +9,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
+import { Logo } from '@/components/ui/Logo'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -80,8 +81,8 @@ function LoginContent() {
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <Link href="/" className="text-3xl font-black uppercase text-[#1B3A6B]">
-            Artifex7
+          <Link href="/" style={{ color: '#1C1410' }}>
+            <Logo size="lg" />
           </Link>
           <p className="mt-2 text-muted-foreground">Inicia sesión en tu cuenta</p>
         </div>
@@ -129,7 +130,7 @@ function LoginContent() {
         <div className="mt-6 text-center text-sm text-muted-foreground">
           ¿No tienes cuenta?{' '}
           <Link href="/registro/cliente" className="text-primary hover:underline font-medium">
-            Regístrate como cliente
+            Regístrate como propietario
           </Link>{' '}
           o{' '}
           <Link href="/registro/profesional" className="text-primary hover:underline font-medium">
