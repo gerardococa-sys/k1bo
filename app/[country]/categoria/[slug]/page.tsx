@@ -12,16 +12,27 @@ export default async function CategoryPage({
 }: {
   params: { country: string; slug: string }
 }) {
-  const supabase = createClient()
+  const supabase = await createClient()
 
   const { data: category } = await supabase
     .from('categories')
-    .select('*, parent:categories!parent_id(*), subcategories:categories!parent_id(*)')
+    .select('*, subcategories:categories!parent_id(*)')
     .eq('slug', params.slug)
     .eq('active', true)
     .single()
 
   if (!category) notFound()
+
+  // Fetch parent category separately to avoid unreliable self-referential join
+  let parentCategory: { name: string; slug: string } | null = null
+  if (category.parent_id) {
+    const { data: parent } = await supabase
+      .from('categories')
+      .select('name, slug')
+      .eq('id', category.parent_id)
+      .single()
+    parentCategory = parent
+  }
 
   const { data: country } = await supabase
     .from('countries')
@@ -51,18 +62,27 @@ export default async function CategoryPage({
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Breadcrumb */}
-      <nav className="text-sm text-muted-foreground mb-6">
-        <Link href={`/${params.country}`} className="hover:text-foreground">Inicio</Link>
-        {category.parent && (
-          <>
-            <span className="mx-2">/</span>
-            <Link href={`/${params.country}/categoria/${(category.parent as any).slug}`} className="hover:text-foreground">
-              {(category.parent as any).name}
+      <nav aria-label="breadcrumb" style={{ marginBottom: '24px' }}>
+        <ol style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', listStyle: 'none', margin: 0, padding: 0 }}>
+          <li>
+            <Link href={`/${params.country}`} className="ax7-bc-link" style={{ color: '#B85C1A', fontWeight: 500, fontSize: '15px', textDecoration: 'none' }}>
+              Inicio
             </Link>
-          </>
-        )}
-        <span className="mx-2">/</span>
-        <span className="text-foreground font-medium">{category.name}</span>
+          </li>
+          {parentCategory && (
+            <>
+              <li style={{ color: '#1C141040', margin: '0 8px', fontSize: '15px' }}>/</li>
+              <li>
+                <Link href={`/${params.country}/categoria/${parentCategory.slug}`} className="ax7-bc-link" style={{ color: '#B85C1A', fontWeight: 500, fontSize: '15px', textDecoration: 'none' }}>
+                  {parentCategory.name}
+                </Link>
+              </li>
+            </>
+          )}
+          <li style={{ color: '#1C141040', margin: '0 8px', fontSize: '15px' }}>/</li>
+          <li style={{ color: '#1C1410', fontWeight: 600, fontSize: '15px' }}>{category.name}</li>
+        </ol>
+        <style>{`.ax7-bc-link:hover { text-decoration: underline !important; }`}</style>
       </nav>
 
       <h1 className="text-3xl font-bold mb-2">{category.name}</h1>

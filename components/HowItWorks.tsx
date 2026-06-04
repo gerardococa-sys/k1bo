@@ -78,7 +78,7 @@ export function HowItWorks() {
                   fontFamily: FONT_SANS,
                   fontSize: '16px',
                   fontWeight: 400,
-                  color: 'rgba(245,240,232,0.44)',
+                  color: 'rgba(245,240,232,0.60)',
                   lineHeight: 1.65,
                   marginTop: '8px',
                   marginBottom: 0,
