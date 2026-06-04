@@ -12,28 +12,31 @@ const FONT_SERIF = 'var(--font-serif, "Playfair Display", Georgia, serif)'
 const FONT_SANS  = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
 
 const STATUS_BADGE: Record<string, { bg: string; color: string; label: string; description: string }> = {
-  pending: {
-    bg: '#D4A96A20', color: '#B85C1A', label: 'Pendiente',
-    description: 'Tu solicitud está siendo revisada por el profesional.',
-  },
-  responded: {
-    bg: '#1C141015', color: '#1C1410', label: 'Respondida',
-    description: 'El profesional ha respondido a tu solicitud.',
-  },
-  accepted: {
-    bg: '#6B7B6E20', color: '#3d4d40', label: 'Aceptada',
-    description: 'El profesional ha aceptado tu solicitud.',
-  },
-  rejected: {
-    bg: '#1C141010', color: '#6B7B6E', label: 'Rechazada',
-    description: 'El profesional no pudo atender tu solicitud en este momento.',
-  },
+  pending:   { bg: '#D4A96A20', color: '#B85C1A', label: 'Pendiente',  description: 'Tu solicitud está siendo revisada por el profesional.' },
+  responded: { bg: '#1C141015', color: '#1C1410', label: 'Respondida', description: 'El profesional ha respondido a tu solicitud.' },
+  accepted:  { bg: '#6B7B6E20', color: '#3d4d40', label: 'Aceptada',   description: 'El profesional ha aceptado tu solicitud.' },
+  rejected:  { bg: '#1C141010', color: '#6B7B6E', label: 'Rechazada',  description: 'El profesional no pudo atender tu solicitud en este momento.' },
 }
 
 function formatDMY(dateStr: string) {
   if (!dateStr) return '—'
-  const d = new Date(dateStr)
-  return d.toLocaleDateString('es-SV', { day: '2-digit', month: '2-digit', year: 'numeric' })
+  return new Date(dateStr).toLocaleDateString('es-SV', { day: '2-digit', month: '2-digit', year: 'numeric' })
+}
+
+function Card({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
+  return (
+    <div style={{ backgroundColor: '#fff', border: '0.5px solid #1C141015', borderRadius: '12px', padding: '24px', ...style }}>
+      {children}
+    </div>
+  )
+}
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 16px' }}>
+      {children}
+    </p>
+  )
 }
 
 function FieldRow({ label, value }: { label: string; value: React.ReactNode }) {
@@ -49,80 +52,40 @@ function FieldRow({ label, value }: { label: string; value: React.ReactNode }) {
   )
 }
 
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <p style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 16px' }}>
-      {children}
-    </p>
-  )
-}
-
-function Card({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
-  return (
-    <div style={{
-      backgroundColor: '#fff',
-      border: '0.5px solid #1C141015',
-      borderRadius: '12px',
-      padding: '24px',
-      ...style,
-    }}>
-      {children}
-    </div>
-  )
-}
-
 function Initials({ name }: { name?: string }) {
   const letters = (name ?? '?').split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase()
   return (
-    <div style={{
-      width: 64, height: 64, borderRadius: '50%',
-      backgroundColor: '#B85C1A15',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      margin: '0 auto 12px',
-    }}>
+    <div style={{ width: 64, height: 64, borderRadius: '50%', backgroundColor: '#B85C1A15', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
       <span style={{ fontFamily: FONT_SERIF, fontSize: '22px', fontWeight: 700, color: '#B85C1A' }}>{letters}</span>
     </div>
   )
 }
 
-export default async function SolicitudDetailPage({
-  params,
-}: {
-  params: { country: string; id: string }
-}) {
+export default async function SolicitudDetailPage({ params }: { params: { country: string; id: string } }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const { data: solicitud } = await supabase
-    .from('quote_requests')
-    .select(`
-      *,
-      professional:professionals(
-        id,
-        bio,
-        short_description,
-        profiles(full_name, photo_url, phone)
-      ),
-      category:categories!quote_requests_category_id_fkey(
-        name, slug
-      ),
-      subcategory:categories!quote_requests_subcategory_id_fkey(
-        name, slug
-      ),
-      quote_request_photos(id, photo_url)
-    `)
-    .eq('id', params.id)
-    .eq('client_id', user.id)
-    .single()
+  const [{ data: solicitud }, { data: currentProfile }] = await Promise.all([
+    supabase
+      .from('quote_requests')
+      .select(`
+        *,
+        professional:professionals(
+          id, bio, short_description,
+          profiles(full_name, photo_url, phone)
+        ),
+        category:categories!quote_requests_category_id_fkey(name, slug),
+        subcategory:categories!quote_requests_subcategory_id_fkey(name, slug),
+        quote_request_photos(id, photo_url)
+      `)
+      .eq('id', params.id)
+      .eq('client_id', user.id)
+      .single(),
+    supabase.from('profiles').select('full_name, photo_url').eq('id', user.id).single(),
+  ])
 
   if (!solicitud) redirect(`/${params.country}/cliente/solicitudes`)
-
-  const { data: currentProfile } = await supabase
-    .from('profiles')
-    .select('full_name, photo_url')
-    .eq('id', user.id)
-    .single()
 
   const pro         = solicitud.professional as any
   const profProfile = Array.isArray(pro?.profiles) ? pro.profiles[0] : pro?.profiles
@@ -132,7 +95,6 @@ export default async function SolicitudDetailPage({
   const subcategory = solicitud.subcategory as any
   const badge       = STATUS_BADGE[solicitud.status] ?? STATUS_BADGE.pending
 
-  // Generate public URLs for photos stored as bucket paths
   const rawPhotos = (solicitud.quote_request_photos ?? []) as { id: string; photo_url: string }[]
   const photos = rawPhotos.map((p) => {
     const { data: { publicUrl } } = supabase.storage.from('quote-photos').getPublicUrl(p.photo_url)
@@ -140,7 +102,7 @@ export default async function SolicitudDetailPage({
   }).filter((p) => p.photo_url)
 
   return (
-    <div className="container mx-auto px-4 py-10 max-w-5xl">
+    <div className="container mx-auto px-4 py-10 max-w-6xl">
       <MarkAsVisited solicitudId={params.id} />
 
       {/* Back link */}
@@ -157,29 +119,22 @@ export default async function SolicitudDetailPage({
         Detalle de Solicitud
       </h1>
 
-      {/* 2-col layout */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px' }} className="sol-grid">
+      {/* 50/50 grid — messages sticky on right */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px', alignItems: 'start' }} className="sol-detail-grid">
 
-        {/* LEFT column */}
+        {/* LEFT — solicitud info + professional card */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
           {/* Info card */}
           <Card>
             <SectionLabel>Solicitud</SectionLabel>
-
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {category && (
-                <FieldRow label="Categoría" value={category.name} />
-              )}
-              {subcategory && (
-                <FieldRow label="Subcategoría" value={subcategory.name} />
-              )}
+              {category    && <FieldRow label="Categoría"    value={category.name} />}
+              {subcategory && <FieldRow label="Subcategoría" value={subcategory.name} />}
 
               {solicitud.required_date && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                  <span style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                    Fecha requerida
-                  </span>
+                  <span style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Fecha requerida</span>
                   <span style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 500, color: '#B85C1A', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <Calendar style={{ width: 15, height: 15, flexShrink: 0 }} />
                     {formatDMY(solicitud.required_date)}
@@ -188,9 +143,7 @@ export default async function SolicitudDetailPage({
               )}
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                <span style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                  Enviada el
-                </span>
+                <span style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Enviada el</span>
                 <span style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 500, color: '#B85C1A', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <Clock style={{ width: 15, height: 15, flexShrink: 0 }} />
                   {formatDMY(solicitud.created_at)}
@@ -198,37 +151,11 @@ export default async function SolicitudDetailPage({
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <span style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                  Descripción del trabajo
-                </span>
-                <p style={{ fontFamily: FONT_SANS, fontSize: '16px', color: '#1C1410', lineHeight: 1.7, margin: 0 }}>
-                  {solicitud.description}
-                </p>
+                <span style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Descripción del trabajo</span>
+                <p style={{ fontFamily: FONT_SANS, fontSize: '16px', color: '#1C1410', lineHeight: 1.7, margin: 0 }}>{solicitud.description}</p>
               </div>
             </div>
           </Card>
-
-          {/* Photos card */}
-          {photos.length > 0 && (
-            <Card>
-              <SectionLabel>Fotos adjuntas</SectionLabel>
-              <PhotoGallery photos={photos} />
-            </Card>
-          )}
-
-          {/* Messages */}
-          <MessageBoard
-            quoteRequestId={params.id}
-            currentUserId={user.id}
-            currentUserName={currentProfile?.full_name ?? 'Propietario'}
-            currentUserPhoto={currentProfile?.photo_url ?? undefined}
-            otherPartyName={proName}
-            otherPartyPhoto={proPhoto ?? undefined}
-          />
-        </div>
-
-        {/* RIGHT column */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
           {/* Status card */}
           <Card>
@@ -247,6 +174,14 @@ export default async function SolicitudDetailPage({
             </div>
           </Card>
 
+          {/* Photos */}
+          {photos.length > 0 && (
+            <Card>
+              <SectionLabel>Fotos adjuntas</SectionLabel>
+              <PhotoGallery photos={photos} />
+            </Card>
+          )}
+
           {/* Professional card */}
           <Card>
             {proPhoto ? (
@@ -257,50 +192,44 @@ export default async function SolicitudDetailPage({
             ) : (
               <Initials name={proName} />
             )}
-
-            <p style={{ fontFamily: FONT_SERIF, fontSize: '20px', fontWeight: 600, color: '#1C1410', textAlign: 'center', margin: '0 0 6px' }}>
-              {proName}
-            </p>
-
-            {category && (
-              <p style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#B85C1A', textAlign: 'center', margin: '0 0 8px' }}>
-                {category.name}
-              </p>
-            )}
-
+            <p style={{ fontFamily: FONT_SERIF, fontSize: '20px', fontWeight: 600, color: '#1C1410', textAlign: 'center', margin: '0 0 6px' }}>{proName}</p>
+            {category && <p style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#B85C1A', textAlign: 'center', margin: '0 0 8px' }}>{category.name}</p>}
             {pro?.short_description && (
-              <p style={{
-                fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E', textAlign: 'center',
-                margin: '8px 0 0',
-                display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden',
-              }}>
+              <p style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E', textAlign: 'center', margin: '8px 0 0', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                 {pro.short_description}
               </p>
             )}
-
             <Link
               href={`/${params.country}/profesional/${pro?.id}`}
-              style={{
-                display: 'block', width: '100%', textAlign: 'center',
-                backgroundColor: '#1C1410', color: '#D4A96A',
-                fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700,
-                padding: '12px', borderRadius: '8px',
-                textDecoration: 'none', marginTop: '16px',
-                boxSizing: 'border-box',
-              }}
+              style={{ display: 'block', width: '100%', textAlign: 'center', backgroundColor: '#1C1410', color: '#D4A96A', fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700, padding: '12px', borderRadius: '8px', textDecoration: 'none', marginTop: '16px', boxSizing: 'border-box' }}
               className="sol-pro-btn"
             >
               Ver perfil completo
             </Link>
           </Card>
         </div>
+
+        {/* RIGHT — sticky MessageBoard */}
+        <div className="sol-msg-sticky" style={{ backgroundColor: '#fff', border: '0.5px solid #1C141015', borderRadius: '12px', overflow: 'hidden' }}>
+          <MessageBoard
+            quoteRequestId={params.id}
+            currentUserId={user.id}
+            currentUserName={currentProfile?.full_name ?? 'Propietario'}
+            currentUserPhoto={currentProfile?.photo_url ?? undefined}
+            otherPartyName={proName}
+            otherPartyPhoto={proPhoto ?? undefined}
+          />
+        </div>
+
       </div>
 
       <style>{`
         .sol-back-link:hover { text-decoration: underline; }
         .sol-pro-btn:hover   { opacity: 0.88; }
+        .sol-msg-sticky      { height: 520px; }
         @media (min-width: 768px) {
-          .sol-grid { grid-template-columns: 2fr 1fr; }
+          .sol-detail-grid { grid-template-columns: 1fr 1fr; }
+          .sol-msg-sticky  { position: sticky; top: 24px; height: calc(100vh - 120px); min-height: 520px; }
         }
       `}</style>
     </div>

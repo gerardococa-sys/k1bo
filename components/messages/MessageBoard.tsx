@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { MessageSquare, MessageCircle, Send } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -11,7 +11,6 @@ interface Msg {
   sender_id: string
   message: string
   created_at: string
-  sender?: { full_name: string | null; photo_url?: string | null }
 }
 
 export interface MessageBoardProps {
@@ -31,26 +30,38 @@ export function MessageBoard({
   quoteRequestId,
   currentUserId,
   currentUserName,
-  currentUserPhoto,
   otherPartyName,
-  otherPartyPhoto,
 }: MessageBoardProps) {
-  const [msgs, setMsgs]     = useState<Msg[]>([])
-  const [text, setText]     = useState('')
+  const [msgs, setMsgs]       = useState<Msg[]>([])
+  const [text, setText]       = useState('')
   const [sending, setSending] = useState(false)
-  const endRef  = useRef<HTMLDivElement>(null)
-  const taRef   = useRef<HTMLTextAreaElement>(null)
+  const endRef = useRef<HTMLDivElement>(null)
+  const taRef  = useRef<HTMLTextAreaElement>(null)
 
-  useEffect(() => {
+  // Load messages — no profile join to keep query simple and avoid RLS edge-cases
+  const loadMessages = useCallback(async () => {
     const supabase = createClient()
-
-    supabase
+    const { data, error } = await supabase
       .from('quote_messages')
-      .select('*, sender:profiles(full_name, photo_url)')
+      .select('id, sender_id, message, created_at')
       .eq('quote_request_id', quoteRequestId)
       .order('created_at', { ascending: true })
-      .then(({ data }) => setMsgs((data as Msg[]) ?? []))
+    if (error) { console.error('Error cargando mensajes:', error); return }
+    setMsgs((prev) => {
+      // Only update if content actually changed (avoid unnecessary re-renders)
+      if (JSON.stringify(prev) === JSON.stringify(data ?? [])) return prev
+      return data ?? []
+    })
+  }, [quoteRequestId])
 
+  useEffect(() => {
+    loadMessages()
+
+    // 3-second polling as primary mechanism (works even without Realtime enabled)
+    const interval = setInterval(loadMessages, 3000)
+
+    // Realtime subscription as bonus (deduplicated with polling above)
+    const supabase = createClient()
     const channel = supabase
       .channel('msgs-' + quoteRequestId)
       .on('postgres_changes', {
@@ -58,23 +69,16 @@ export function MessageBoard({
         schema: 'public',
         table: 'quote_messages',
         filter: 'quote_request_id=eq.' + quoteRequestId,
-      }, (payload) => {
-        const raw = payload.new as any
-        setMsgs((prev) => {
-          if (prev.some((m) => m.id === raw.id)) return prev
-          return [...prev, {
-            ...raw,
-            sender: raw.sender_id === currentUserId
-              ? { full_name: currentUserName, photo_url: currentUserPhoto ?? null }
-              : { full_name: otherPartyName,  photo_url: otherPartyPhoto  ?? null },
-          }]
-        })
-      })
+      }, () => { loadMessages() })
       .subscribe()
 
-    return () => { supabase.removeChannel(channel) }
-  }, [quoteRequestId, currentUserId, currentUserName, otherPartyName])
+    return () => {
+      clearInterval(interval)
+      supabase.removeChannel(channel)
+    }
+  }, [quoteRequestId, loadMessages])
 
+  // Auto-scroll on new messages
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [msgs])
@@ -83,14 +87,21 @@ export function MessageBoard({
     if (!text.trim() || sending) return
     setSending(true)
     const supabase = createClient()
-    await supabase.from('quote_messages').insert({
+    const { error } = await supabase.from('quote_messages').insert({
       quote_request_id: quoteRequestId,
       sender_id: currentUserId,
       message: text.trim(),
     })
+    if (error) {
+      console.error('Error enviando mensaje:', error)
+      setSending(false)
+      return
+    }
     setText('')
     setSending(false)
     if (taRef.current) taRef.current.style.height = 'auto'
+    // Immediately reload so the sent message appears without waiting for next poll
+    loadMessages()
   }
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -105,19 +116,15 @@ export function MessageBoard({
   }
 
   return (
-    <div style={{
-      backgroundColor: '#fff',
-      border: '0.5px solid #1C141015',
-      borderRadius: '12px',
-      overflow: 'hidden',
-    }}>
-      {/* Header */}
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      {/* Header — compact */}
       <div style={{
         backgroundColor: '#1C1410',
-        padding: '16px 20px',
+        padding: '14px 18px',
         display: 'flex',
         alignItems: 'center',
         gap: '8px',
+        flexShrink: 0,
       }}>
         <MessageSquare style={{ width: 18, height: 18, color: '#D4A96A', flexShrink: 0 }} />
         <div>
@@ -130,9 +137,9 @@ export function MessageBoard({
         </div>
       </div>
 
-      {/* Messages area */}
+      {/* Messages area — fills available height */}
       <div style={{
-        height: 320,
+        flex: 1,
         overflowY: 'auto',
         padding: '16px',
         backgroundColor: '#F5F0E8',
@@ -158,9 +165,9 @@ export function MessageBoard({
           <>
             {msgs.map((m) => {
               const isOwn = m.sender_id === currentUserId
-              const name  = (m.sender as any)?.full_name ?? (isOwn ? currentUserName : otherPartyName)
+              const name  = isOwn ? currentUserName : otherPartyName
               return (
-                <div key={m.id} style={{ alignSelf: isOwn ? 'flex-end' : 'flex-start', maxWidth: '75%' }}>
+                <div key={m.id} style={{ alignSelf: isOwn ? 'flex-end' : 'flex-start', maxWidth: '78%' }}>
                   {!isOwn && (
                     <p style={{ fontFamily: FONT_SANS, fontSize: '11px', fontWeight: 600, color: '#B85C1A', margin: '0 0 3px' }}>
                       {name}
@@ -179,8 +186,8 @@ export function MessageBoard({
                     <p style={{
                       fontFamily: FONT_SANS,
                       fontSize: '11px',
-                      color:      isOwn ? 'rgba(245,240,232,0.50)' : '#6B7B6E',
-                      textAlign:  isOwn ? 'right' : 'left',
+                      color:     isOwn ? 'rgba(245,240,232,0.50)' : '#6B7B6E',
+                      textAlign: isOwn ? 'right' : 'left',
                       margin: '4px 0 0',
                     }}>
                       {fmtTime(m.created_at)}
@@ -202,6 +209,7 @@ export function MessageBoard({
         display: 'flex',
         gap: '10px',
         alignItems: 'flex-end',
+        flexShrink: 0,
       }}>
         <textarea
           ref={taRef}
