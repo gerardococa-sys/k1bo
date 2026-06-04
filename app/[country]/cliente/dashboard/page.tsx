@@ -10,7 +10,7 @@ import { STATUS_LABELS, STATUS_COLORS } from '@/lib/utils'
 import { FileText, User } from 'lucide-react'
 
 export default async function ClientDashboardPage({ params }: { params: { country: string } }) {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
@@ -22,15 +22,20 @@ export default async function ClientDashboardPage({ params }: { params: { countr
 
   if (!profile || profile.role !== 'client') redirect(`/${params.country}`)
 
-  const { data: quotes } = await supabase
-    .from('quote_requests')
-    .select('id, status, created_at, category:categories(name), professional:professionals(profile:profiles(full_name))')
-    .eq('client_id', user.id)
-    .order('created_at', { ascending: false })
-    .limit(5)
-
-  const pending = quotes?.filter((q) => q.status === 'pending').length ?? 0
-  const total = quotes?.length ?? 0
+  const [
+    { count: total },
+    { count: pending },
+    { data: quotes },
+  ] = await Promise.all([
+    supabase.from('quote_requests').select('*', { count: 'exact', head: true }).eq('client_id', user.id),
+    supabase.from('quote_requests').select('*', { count: 'exact', head: true }).eq('client_id', user.id).eq('status', 'pending'),
+    supabase
+      .from('quote_requests')
+      .select('id, status, created_at, category:categories(name), professional:professionals(profile:profiles(full_name))')
+      .eq('client_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(5),
+  ])
 
   return (
     <div className="container mx-auto px-4 py-8">

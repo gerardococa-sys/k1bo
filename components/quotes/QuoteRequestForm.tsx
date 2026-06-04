@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
+import { useParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -95,12 +97,46 @@ export function QuoteRequestForm({
     onSuccess?.()
   }
 
+  const params = useParams<{ country: string }>()
+  const country = params?.country ?? 'sv'
+
   if (submitted) {
     return (
       <div className="flex flex-col items-center gap-4 py-8 text-center">
         <CheckCircle2 className="h-16 w-16 text-green-500" />
         <h3 className="text-xl font-semibold">¡Solicitud enviada con éxito!</h3>
         <p className="text-muted-foreground">El profesional te contactará pronto.</p>
+        <div className="flex flex-col items-center gap-3 mt-2">
+          <Link
+            href={`/${country}/cliente/solicitudes`}
+            style={{
+              backgroundColor: '#1C1410',
+              color: '#D4A96A',
+              fontFamily: 'var(--font-sans, "DM Sans", system-ui, sans-serif)',
+              fontSize: '16px',
+              fontWeight: 700,
+              padding: '13px 28px',
+              borderRadius: '8px',
+              textDecoration: 'none',
+              display: 'inline-block',
+            }}
+          >
+            Ir a mis solicitudes
+          </Link>
+          <Link
+            href={`/${country}/profesional/${professional.id}`}
+            style={{
+              fontFamily: 'var(--font-sans, "DM Sans", system-ui, sans-serif)',
+              fontSize: '15px',
+              color: '#B85C1A',
+              textDecoration: 'none',
+            }}
+            className="quote-back-link"
+          >
+            Volver al perfil del profesional
+          </Link>
+        </div>
+        <style>{`.quote-back-link:hover { text-decoration: underline; }`}</style>
       </div>
     )
   }
