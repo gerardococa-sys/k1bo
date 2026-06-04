@@ -142,7 +142,7 @@ export default async function CountryPage({ params }: { params: { country: strin
 
       {/* Featured professionals */}
       {featuredPros && featuredPros.length > 0 && (
-        <section id="profesionales-destacados" className="bg-[#F9F9F9] py-16">
+        <section id="profesionales-destacados" className="py-16" style={{ backgroundColor: '#FFFFFF' }}>
           <div className="container mx-auto px-4">
             <h2
               style={{
@@ -226,15 +226,45 @@ export default async function CountryPage({ params }: { params: { country: strin
       <HowItWorks />
 
       {/* CTA */}
-      <section className="bg-white py-16">
+      <section className="py-16" style={{ backgroundColor: '#B85C1A' }}>
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-2xl font-bold mb-4">¿Eres profesional?</h2>
-          <p className="text-muted-foreground mb-6">
+          <h2
+            style={{
+              fontFamily: 'var(--font-serif,"Playfair Display",Georgia,serif)',
+              fontSize: '38px',
+              fontWeight: 700,
+              color: '#F5F0E8',
+              marginBottom: '12px',
+            }}
+          >
+            ¿Eres profesional?
+          </h2>
+          <p
+            style={{
+              fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)',
+              fontSize: '18px',
+              color: 'rgba(245,240,232,0.50)',
+              marginBottom: '28px',
+            }}
+          >
             Únete a Artifex7 y llega a más clientes en {countryName}.
           </p>
-          <Button size="lg" asChild>
-            <Link href="/registro/profesional">Registra tu negocio gratis</Link>
-          </Button>
+          <Link
+            href="/registro/profesional"
+            style={{
+              display: 'inline-block',
+              backgroundColor: '#F5F0E8',
+              color: '#1C1410',
+              fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)',
+              fontSize: '16px',
+              fontWeight: 700,
+              borderRadius: '8px',
+              padding: '15px 32px',
+              textDecoration: 'none',
+            }}
+          >
+            Registra tu negocio gratis
+          </Link>
         </div>
       </section>
     </div>

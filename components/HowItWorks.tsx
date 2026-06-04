@@ -3,14 +3,14 @@ const FONT_SANS  = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
 
 export function HowItWorks() {
   return (
-    <section id="como-funciona" style={{ backgroundColor: '#F9F9F9' }} className="py-16">
+    <section id="como-funciona" style={{ backgroundColor: '#1C1410' }} className="py-16">
       <div className="container mx-auto px-4">
         <h2
           style={{
             fontFamily: FONT_SERIF,
             fontSize: '42px',
             fontWeight: 700,
-            color: '#1C1410',
+            color: '#F5F0E8',
             textAlign: 'center',
             marginBottom: '8px',
           }}
@@ -21,7 +21,7 @@ export function HowItWorks() {
           style={{
             fontFamily: FONT_SANS,
             fontSize: '18px',
-            color: '#6B7B6E',
+            color: '#D4A96A',
             textAlign: 'center',
             marginBottom: '48px',
           }}
@@ -64,7 +64,7 @@ export function HowItWorks() {
                   fontFamily: FONT_SERIF,
                   fontSize: '20px',
                   fontWeight: 700,
-                  color: '#1C1410',
+                  color: '#F5F0E8',
                   marginTop: '16px',
                   marginBottom: 0,
                 }}
@@ -78,7 +78,7 @@ export function HowItWorks() {
                   fontFamily: FONT_SANS,
                   fontSize: '16px',
                   fontWeight: 400,
-                  color: '#6B7B6E',
+                  color: 'rgba(245,240,232,0.44)',
                   lineHeight: 1.65,
                   marginTop: '8px',
                   marginBottom: 0,
