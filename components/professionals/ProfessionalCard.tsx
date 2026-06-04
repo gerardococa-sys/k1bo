@@ -166,7 +166,7 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
           style={{
             fontFamily: FONT_SERIF,
             fontWeight: 600,
-            fontSize: '20px',
+            fontSize: '22px',
             color: '#1C1410',
             margin: 0,
             textAlign: 'center',
@@ -190,7 +190,7 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
             <span
               style={{
                 fontFamily: FONT_SANS,
-                fontSize: '15px',
+                fontSize: '16px',
                 fontWeight: 500,
                 color: '#B85C1A',
               }}
@@ -235,7 +235,7 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
               className="ax7-desc-clamp"
               style={{
                 fontFamily: FONT_SANS,
-                fontSize: '15px',
+                fontSize: '16px',
                 fontWeight: 400,
                 color: 'rgba(28,20,16,0.65)',
                 lineHeight: 1.65,
@@ -272,7 +272,7 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
                 gap: 3,
                 backgroundColor: '#6B7B6E15',
                 color: '#6B7B6E',
-                fontSize: '12px',
+                fontSize: '13px',
                 fontFamily: FONT_SANS,
                 fontWeight: 600,
                 borderRadius: '20px',
@@ -291,7 +291,7 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
                 gap: 3,
                 backgroundColor: '#1C141010',
                 color: '#6B7B6E',
-                fontSize: '12px',
+                fontSize: '13px',
                 fontFamily: FONT_SANS,
                 fontWeight: 600,
                 borderRadius: '20px',
@@ -317,7 +317,7 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
             color: '#D4A96A',
             fontFamily: FONT_SANS,
             fontWeight: 700,
-            fontSize: '16px',
+            fontSize: '17px',
             letterSpacing: '0.02em',
             borderRadius: '8px',
             padding: '15px 24px',

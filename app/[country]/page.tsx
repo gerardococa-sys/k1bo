@@ -88,7 +88,7 @@ export default async function CountryPage({ params }: { params: { country: strin
           <h1
             style={{
               fontFamily: 'var(--font-serif, "Playfair Display", Georgia, serif)',
-              fontSize: 'clamp(40px, 5.5vw, 56px)',
+              fontSize: 'clamp(48px, 6vw, 68px)',
               fontWeight: 700,
               color: '#F5F0E8',
               lineHeight: 1.15,
@@ -102,7 +102,7 @@ export default async function CountryPage({ params }: { params: { country: strin
           <p
             style={{
               fontFamily: 'var(--font-serif, "Playfair Display", Georgia, serif)',
-              fontSize: '22px',
+              fontSize: '26px',
               fontWeight: 400,
               fontStyle: 'italic',
               color: '#D4A96A',
@@ -147,7 +147,7 @@ export default async function CountryPage({ params }: { params: { country: strin
             <h2
               style={{
                 fontFamily: 'var(--font-serif,"Playfair Display",Georgia,serif)',
-                fontSize: '38px',
+                fontSize: '46px',
                 fontWeight: 700,
                 color: '#1C1410',
                 marginBottom: '8px',
@@ -158,7 +158,7 @@ export default async function CountryPage({ params }: { params: { country: strin
             <p
               style={{
                 fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)',
-                fontSize: '18px',
+                fontSize: '20px',
                 color: '#6B7B6E',
                 marginBottom: '32px',
               }}
@@ -181,7 +181,7 @@ export default async function CountryPage({ params }: { params: { country: strin
             <h2
               style={{
                 fontFamily: 'var(--font-serif,"Playfair Display",Georgia,serif)',
-                fontSize: '38px',
+                fontSize: '46px',
                 fontWeight: 700,
                 color: '#1C1410',
                 marginBottom: '8px',
@@ -192,7 +192,7 @@ export default async function CountryPage({ params }: { params: { country: strin
             <p
               style={{
                 fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)',
-                fontSize: '18px',
+                fontSize: '20px',
                 color: '#6B7B6E',
                 marginBottom: '32px',
               }}
@@ -226,14 +226,14 @@ export default async function CountryPage({ params }: { params: { country: strin
       <HowItWorks />
 
       {/* CTA */}
-      <section className="py-16" style={{ backgroundColor: '#B85C1A' }}>
+      <section className="py-16" style={{ backgroundColor: '#F5F0E8' }}>
         <div className="container mx-auto px-4 text-center">
           <h2
             style={{
               fontFamily: 'var(--font-serif,"Playfair Display",Georgia,serif)',
-              fontSize: '38px',
+              fontSize: '46px',
               fontWeight: 700,
-              color: '#F5F0E8',
+              color: '#1C1410',
               marginBottom: '12px',
             }}
           >
@@ -242,8 +242,8 @@ export default async function CountryPage({ params }: { params: { country: strin
           <p
             style={{
               fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)',
-              fontSize: '18px',
-              color: 'rgba(245,240,232,0.50)',
+              fontSize: '20px',
+              color: '#6B7B6E',
               marginBottom: '28px',
             }}
           >
@@ -253,13 +253,13 @@ export default async function CountryPage({ params }: { params: { country: strin
             href="/registro/profesional"
             style={{
               display: 'inline-block',
-              backgroundColor: '#F5F0E8',
-              color: '#1C1410',
+              backgroundColor: '#1C1410',
+              color: '#D4A96A',
               fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)',
-              fontSize: '16px',
+              fontSize: '17px',
               fontWeight: 700,
               borderRadius: '8px',
-              padding: '15px 32px',
+              padding: '16px 36px',
               textDecoration: 'none',
             }}
           >

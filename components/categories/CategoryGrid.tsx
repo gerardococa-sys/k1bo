@@ -56,7 +56,7 @@ export function CategoryGrid({ categories, countryPrefix, title, subtitle }: Cat
             style={{
               fontFamily: FONT_SERIF,
               fontWeight: 700,
-              fontSize: '42px',
+              fontSize: '46px',
               color: '#1C1410',
               margin: '0 0 10px',
             }}
@@ -64,7 +64,7 @@ export function CategoryGrid({ categories, countryPrefix, title, subtitle }: Cat
             {title}
           </h2>
           {subtitle && (
-            <p style={{ fontFamily: FONT_SANS, fontSize: '18px', fontWeight: 400, color: '#6B7B6E', margin: 0 }}>
+            <p style={{ fontFamily: FONT_SANS, fontSize: '20px', fontWeight: 400, color: '#6B7B6E', margin: 0 }}>
               {subtitle}
             </p>
           )}

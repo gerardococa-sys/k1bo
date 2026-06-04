@@ -100,7 +100,7 @@ export function Navbar({ countryPrefix: propPrefix }: NavbarProps) {
             <Link
               key={link.href}
               href={link.href}
-              className="font-sans text-[15px] font-medium transition-colors hover:opacity-100"
+              className="font-sans text-[16px] font-medium transition-colors hover:opacity-100"
               style={{ color: 'rgba(28,20,16,0.7)' }}
               onMouseEnter={e => (e.currentTarget.style.color = '#1C1410')}
               onMouseLeave={e => (e.currentTarget.style.color = 'rgba(28,20,16,0.7)')}
@@ -208,7 +208,7 @@ export function Navbar({ countryPrefix: propPrefix }: NavbarProps) {
             <Link
               key={link.href}
               href={link.href}
-              className="font-sans text-[15px] font-medium py-1"
+              className="font-sans text-[16px] font-medium py-1"
               style={{ color: 'rgba(28,20,16,0.7)' }}
               onClick={() => setMobileOpen(false)}
             >
