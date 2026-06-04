@@ -85,28 +85,28 @@ export function CategoryGrid({ categories, countryPrefix, title, subtitle }: Cat
               {/* Icon circle */}
               <div
                 style={{
-                  width: 52,
-                  height: 52,
+                  width: 56,
+                  height: 56,
                   borderRadius: '50%',
                   backgroundColor: '#B85C1A15',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  margin: '0 auto 11px',
+                  margin: '0 auto 14px',
                 }}
               >
-                <Icon style={{ width: 22, height: 22, color: '#B85C1A' }} />
+                <Icon style={{ width: 24, height: 24, color: '#B85C1A' }} />
               </div>
 
               {/* Name */}
               <p
                 style={{
                   fontFamily: FONT_SANS,
-                  fontSize: '13px',
+                  fontSize: '15px',
                   fontWeight: 500,
                   color: '#1C1410',
                   margin: 0,
-                  lineHeight: 1.35,
+                  lineHeight: 1.4,
                   textAlign: 'center',
                 }}
               >
@@ -118,31 +118,24 @@ export function CategoryGrid({ categories, countryPrefix, title, subtitle }: Cat
       </div>
 
       <style>{`
-        /* ── Grid responsive columns ──────────────────────────────── */
+        /* ── Grid: 2-col mobile → 3-col tablet → 4-col desktop ───── */
         .ax7-catgrid {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
           gap: 10px;
         }
 
-        /* sm (640px): 3 cols — item 10 alone in row 4, center it */
-        @media (min-width: 640px) {
+        /* md (768px): 3 cols — item 10 alone in row 4, center it */
+        @media (min-width: 768px) {
           .ax7-catgrid { grid-template-columns: repeat(3, 1fr); }
           .ax7-catgrid .ax7-catcard:nth-child(10) { grid-column-start: 2; }
         }
 
-        /* md (768px): 4 cols — items 9-10 in row 3, center them */
-        @media (min-width: 768px) {
-          .ax7-catgrid { grid-template-columns: repeat(4, 1fr); }
-          .ax7-catgrid .ax7-catcard:nth-child(10) { grid-column-start: auto; } /* reset sm */
-          .ax7-catgrid .ax7-catcard:nth-child(9)  { grid-column-start: 2; }
-        }
-
-        /* lg (1024px): 6 cols — items 7-10 in row 2, center them */
+        /* lg (1024px): 4 cols — items 9-10 in row 3, center them */
         @media (min-width: 1024px) {
-          .ax7-catgrid { grid-template-columns: repeat(6, 1fr); }
-          .ax7-catgrid .ax7-catcard:nth-child(9)  { grid-column-start: auto; } /* reset md */
-          .ax7-catgrid .ax7-catcard:nth-child(7)  { grid-column-start: 2; }
+          .ax7-catgrid { grid-template-columns: repeat(4, 1fr); }
+          .ax7-catgrid .ax7-catcard:nth-child(10) { grid-column-start: auto; } /* reset md */
+          .ax7-catgrid .ax7-catcard:nth-child(9)  { grid-column-start: 2; }
         }
 
         /* ── Card base ────────────────────────────────────────────── */
@@ -150,7 +143,8 @@ export function CategoryGrid({ categories, countryPrefix, title, subtitle }: Cat
           background-color: #fff;
           border: 0.5px solid #D4A96A40;
           border-radius: 12px;
-          padding: 20px 10px 16px;
+          padding: 24px 14px 20px;
+          min-height: 130px;
           display: block;
           transition: border-color 180ms, background-color 180ms, transform 180ms;
         }

@@ -65,63 +65,48 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
     <div
       style={{
         backgroundColor: '#FFFFFF',
-        border: isFeatured ? '0.5px solid #D4A96A80' : '0.5px solid #D4A96A50',
+        border: isFeatured ? '1.5px solid #D4A96A70' : '0.5px solid #1C141015',
         borderRadius: '12px',
         overflow: 'hidden',
-        boxShadow: isFeatured ? '0 0 0 1.5px #D4A96A30' : 'none',
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',
+        minHeight: '420px',
       }}
     >
-      {/* ── Featured badge ──────────────────────────────────────── */}
-      {isFeatured && (
+      {/* ── 1. Photo / Avatar section ────────────────────────────── */}
+      <div
+        style={{
+          height: 120,
+          backgroundColor: '#F5F0E8',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'relative',
+          flexShrink: 0,
+        }}
+      >
+        {/* Avatar 72px */}
         <div
           style={{
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            backgroundColor: '#1C1410',
-            color: '#D4A96A',
-            fontSize: '10px',
-            fontWeight: 600,
-            fontFamily: FONT_SANS,
-            padding: '3px 10px',
-            borderRadius: '0 12px 0 10px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 4,
-            zIndex: 1,
-          }}
-        >
-          <Star style={{ width: 10, height: 10, fill: '#D4A96A', color: '#D4A96A' }} />
-          Destacado
-        </div>
-      )}
-
-      {/* ── 1. Header ────────────────────────────────────────────── */}
-      <div style={{ padding: '16px 16px 0', display: 'flex', gap: 12 }}>
-
-        {/* Avatar */}
-        <div
-          style={{
-            width: 52,
-            height: 52,
+            width: 72,
+            height: 72,
             borderRadius: '50%',
-            flexShrink: 0,
             overflow: 'hidden',
-            backgroundColor: '#B85C1A20',
+            border: '3px solid #F5F0E8',
+            backgroundColor: '#B85C1A15',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            boxShadow: '0 2px 8px rgba(28,20,16,0.12)',
           }}
         >
           {profile?.photo_url ? (
             <Image
               src={profile.photo_url}
               alt={profile.full_name ?? ''}
-              width={52}
-              height={52}
+              width={72}
+              height={72}
               style={{ objectFit: 'cover', width: '100%', height: '100%' }}
             />
           ) : (
@@ -129,7 +114,7 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
               style={{
                 fontFamily: FONT_SERIF,
                 fontWeight: 600,
-                fontSize: '18px',
+                fontSize: '24px',
                 color: '#B85C1A',
                 lineHeight: 1,
               }}
@@ -139,169 +124,202 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
           )}
         </div>
 
-        {/* Name / category / stars */}
-        <div style={{ flex: 1, minWidth: 0, paddingTop: 2 }}>
-
-          {/* Name */}
-          <p
+        {/* Featured badge — top-right of photo section */}
+        {isFeatured && (
+          <div
             style={{
-              fontFamily: FONT_SERIF,
-              fontWeight: 600,
-              fontSize: '16px',
+              position: 'absolute',
+              top: 10,
+              right: 10,
+              backgroundColor: '#D4A96A',
               color: '#1C1410',
-              margin: '0 0 2px',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              paddingRight: isFeatured ? 80 : 0,
+              fontSize: '10px',
+              fontWeight: 700,
+              fontFamily: FONT_SANS,
+              padding: '3px 10px',
+              borderRadius: '20px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4,
             }}
           >
-            {profile?.full_name}
-          </p>
+            <Star style={{ width: 10, height: 10, fill: '#1C1410', color: '#1C1410' }} />
+            Destacado
+          </div>
+        )}
+      </div>
 
-          {/* Category */}
-          {primaryCategory && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 6 }}>
-              <CategoryIcon style={{ width: 11, height: 11, color: '#B85C1A', flexShrink: 0 }} />
-              <span
-                style={{
-                  fontFamily: FONT_SANS,
-                  fontSize: '13px',
-                  fontWeight: 500,
-                  color: '#B85C1A',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {primaryCategory.name}
-              </span>
-            </div>
-          )}
+      {/* ── 2. Body ──────────────────────────────────────────────── */}
+      <div
+        style={{
+          padding: '16px 18px',
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 8,
+        }}
+      >
+        {/* Name */}
+        <p
+          style={{
+            fontFamily: FONT_SERIF,
+            fontWeight: 600,
+            fontSize: '18px',
+            color: '#1C1410',
+            margin: 0,
+            textAlign: 'center',
+            lineHeight: 1.25,
+          }}
+        >
+          {profile?.full_name}
+        </p>
 
-          {/* Stars + count */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Star
-                key={i}
-                style={{
-                  width: 11,
-                  height: 11,
-                  fill:  i < Math.round(avgRating) ? '#D4A96A' : '#D4A96A30',
-                  color: i < Math.round(avgRating) ? '#D4A96A' : '#D4A96A30',
-                }}
-              />
-            ))}
+        {/* Category */}
+        {primaryCategory && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 5,
+            }}
+          >
+            <CategoryIcon style={{ width: 13, height: 13, color: '#B85C1A', flexShrink: 0 }} />
             <span
               style={{
                 fontFamily: FONT_SANS,
-                fontSize: '11px',
-                color: '#1C141060',
-                marginLeft: 4,
+                fontSize: '14px',
+                fontWeight: 500,
+                color: '#B85C1A',
               }}
             >
-              ({totalReviews})
+              {primaryCategory.name}
             </span>
           </div>
+        )}
+
+        {/* Stars + count */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 3 }}>
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Star
+              key={i}
+              style={{
+                width: 15,
+                height: 15,
+                fill:  i < Math.round(avgRating) ? '#D4A96A' : '#D4A96A25',
+                color: i < Math.round(avgRating) ? '#D4A96A' : '#D4A96A25',
+              }}
+            />
+          ))}
+          <span
+            style={{
+              fontFamily: FONT_SANS,
+              fontSize: '12px',
+              color: '#1C141060',
+              marginLeft: 4,
+            }}
+          >
+            ({totalReviews})
+          </span>
+        </div>
+
+        {/* Separator */}
+        <div style={{ borderTop: '0.5px solid #1C141010', margin: '4px 0' }} />
+
+        {/* Description — flex:1 keeps uniform height across cards */}
+        <div style={{ flex: 1 }}>
+          {descriptionText ? (
+            <p
+              className="ax7-desc-clamp"
+              style={{
+                fontFamily: FONT_SANS,
+                fontSize: '14px',
+                fontWeight: 400,
+                color: 'rgba(28,20,16,0.65)',
+                lineHeight: 1.6,
+                margin: 0,
+                textAlign: 'center',
+              }}
+            >
+              {descriptionText}
+            </p>
+          ) : (
+            <p
+              style={{
+                fontFamily: FONT_SANS,
+                fontSize: '14px',
+                color: 'rgba(28,20,16,0.28)',
+                lineHeight: 1.6,
+                margin: 0,
+                fontStyle: 'italic',
+                textAlign: 'center',
+              }}
+            >
+              Perfil en construcción
+            </p>
+          )}
+        </div>
+
+        {/* Badges */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 5 }}>
+          {profile?.verified && (
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 3,
+                backgroundColor: '#6B7B6E15',
+                color: '#6B7B6E',
+                fontSize: '12px',
+                fontFamily: FONT_SANS,
+                fontWeight: 600,
+                borderRadius: '20px',
+                padding: '3px 9px',
+              }}
+            >
+              <ShieldCheck style={{ width: 11, height: 11 }} />
+              Verificado
+            </span>
+          )}
+          {coverageText && (
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 3,
+                backgroundColor: '#1C141010',
+                color: '#6B7B6E',
+                fontSize: '12px',
+                fontFamily: FONT_SANS,
+                fontWeight: 600,
+                borderRadius: '20px',
+                padding: '3px 9px',
+              }}
+            >
+              <MapPin style={{ width: 11, height: 11 }} />
+              {coverageText}
+            </span>
+          )}
         </div>
       </div>
 
-      {/* ── 2. Description ───────────────────────────────────────── */}
-      <div
-        style={{
-          padding: '10px 16px 12px',
-          borderBottom: '0.5px solid #D4A96A25',
-          flex: 1,
-        }}
-      >
-        {descriptionText ? (
-          <p
-            className="ax7-lineclamp"
-            style={{
-              fontFamily: FONT_SANS,
-              fontSize: '13px',
-              fontWeight: 400,
-              color: 'rgba(28,20,16,0.67)',
-              lineHeight: 1.55,
-              margin: 0,
-            }}
-          >
-            {descriptionText}
-          </p>
-        ) : (
-          /* Placeholder keeps height uniform when no description exists */
-          <p
-            style={{
-              fontFamily: FONT_SANS,
-              fontSize: '13px',
-              color: 'rgba(28,20,16,0.30)',
-              lineHeight: 1.55,
-              margin: 0,
-              fontStyle: 'italic',
-            }}
-          >
-            Perfil en construcción
-          </p>
-        )}
-      </div>
-
-      {/* ── 3. Badges ────────────────────────────────────────────── */}
-      <div style={{ padding: '10px 16px', display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-        {profile?.verified && (
-          <span
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 3,
-              backgroundColor: '#6B7B6E15',
-              color: '#6B7B6E',
-              fontSize: '10px',
-              fontFamily: FONT_SANS,
-              fontWeight: 600,
-              borderRadius: '20px',
-              padding: '2px 8px',
-            }}
-          >
-            <ShieldCheck style={{ width: 10, height: 10 }} />
-            Verificado
-          </span>
-        )}
-        {coverageText && (
-          <span
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 3,
-              backgroundColor: '#D4A96A15',
-              color: '#B85C1A',
-              fontSize: '10px',
-              fontFamily: FONT_SANS,
-              fontWeight: 600,
-              borderRadius: '20px',
-              padding: '2px 8px',
-            }}
-          >
-            <MapPin style={{ width: 10, height: 10 }} />
-            {coverageText}
-          </span>
-        )}
-      </div>
-
-      {/* ── 4. CTA button ────────────────────────────────────────── */}
-      <div style={{ padding: '0 14px 14px' }}>
+      {/* ── 3. CTA footer ────────────────────────────────────────── */}
+      <div style={{ padding: '0 16px 18px', flexShrink: 0 }}>
         <Link
           href={`/${countryPrefix}/profesional/${professional.id}`}
+          className="ax7-procard-btn"
           style={{
             display: 'block',
             textAlign: 'center',
-            backgroundColor: '#B85C1A',
-            color: '#F5F0E8',
+            backgroundColor: '#1C1410',
+            color: '#D4A96A',
             fontFamily: FONT_SANS,
             fontWeight: 600,
-            fontSize: '13px',
-            borderRadius: '6px',
-            padding: '9px',
+            fontSize: '15px',
+            borderRadius: '8px',
+            padding: '13px',
             textDecoration: 'none',
+            transition: 'background-color 150ms',
           }}
         >
           Ver Perfil Completo
@@ -309,11 +327,14 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
       </div>
 
       <style>{`
-        .ax7-lineclamp {
+        .ax7-desc-clamp {
           display: -webkit-box;
-          -webkit-line-clamp: 2;
+          -webkit-line-clamp: 3;
           -webkit-box-orient: vertical;
           overflow: hidden;
+        }
+        .ax7-procard-btn:hover {
+          background-color: #2a1f18 !important;
         }
       `}</style>
     </div>

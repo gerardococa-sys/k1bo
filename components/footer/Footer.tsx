@@ -9,7 +9,7 @@ const COL_DIVIDER = '0.5px solid rgba(245,240,232,0.08)'
 
 const colTitleStyle: React.CSSProperties = {
   fontFamily: 'var(--font-sans, DM Sans, system-ui, sans-serif)',
-  fontSize: '10px',
+  fontSize: '12px',
   fontWeight: 600,
   letterSpacing: '0.1em',
   textTransform: 'uppercase',
@@ -19,7 +19,7 @@ const colTitleStyle: React.CSSProperties = {
 
 const linkStyle: React.CSSProperties = {
   fontFamily: 'var(--font-sans, DM Sans, system-ui, sans-serif)',
-  fontSize: '12px',
+  fontSize: '14px',
   color: 'rgba(245,240,232,0.38)',
   display: 'block',
   transition: 'color 0.15s',
@@ -124,7 +124,7 @@ export function Footer({ countryPrefix }: FooterProps) {
                 className="flex items-center gap-2 hover-footer-link"
                 style={{
                   fontFamily: 'var(--font-sans, DM Sans, system-ui, sans-serif)',
-                  fontSize: '12px',
+                  fontSize: '14px',
                   color: '#D4A96A',
                 }}
               >
@@ -141,7 +141,7 @@ export function Footer({ countryPrefix }: FooterProps) {
                   className="flex items-center gap-2"
                   style={{
                     fontFamily: 'var(--font-sans, DM Sans, system-ui, sans-serif)',
-                    fontSize: '12px',
+                    fontSize: '14px',
                     color: 'rgba(245,240,232,0.22)',
                   }}
                 >

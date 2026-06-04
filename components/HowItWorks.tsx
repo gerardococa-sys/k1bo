@@ -1,9 +1,34 @@
+const FONT_SERIF = 'var(--font-serif, "Playfair Display", Georgia, serif)'
+const FONT_SANS  = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
+
 export function HowItWorks() {
   return (
-    <section id="como-funciona" className="bg-[#F9F9F9] py-16">
+    <section id="como-funciona" style={{ backgroundColor: '#F9F9F9' }} className="py-16">
       <div className="container mx-auto px-4">
-        <h2 className="text-2xl font-bold text-center mb-2">¿Cómo funciona Artifex7?</h2>
-        <p className="text-center text-muted-foreground mb-12">Simple y rápido</p>
+        <h2
+          style={{
+            fontFamily: FONT_SERIF,
+            fontSize: '36px',
+            fontWeight: 700,
+            color: '#1C1410',
+            textAlign: 'center',
+            marginBottom: '8px',
+          }}
+        >
+          ¿Cómo funciona Artifex7?
+        </h2>
+        <p
+          style={{
+            fontFamily: FONT_SANS,
+            fontSize: '17px',
+            color: '#6B7B6E',
+            textAlign: 'center',
+            marginBottom: '48px',
+          }}
+        >
+          Simple y rápido
+        </p>
+
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5">
           {[
             { n: 1, title: 'Busca',      desc: 'Elige la categoría del servicio que necesitas' },
@@ -12,12 +37,52 @@ export function HowItWorks() {
             { n: 4, title: 'Cotiza',     desc: 'Solicita cotización (registro gratuito)' },
             { n: 5, title: 'Decide',     desc: 'Acepta o rechaza la propuesta' },
           ].map((s) => (
-            <div key={s.n} className="text-center">
-              <div className="h-12 w-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xl font-bold mx-auto mb-3">
+            <div key={s.n} style={{ textAlign: 'center' }}>
+              {/* Step number circle */}
+              <div
+                style={{
+                  width: 52,
+                  height: 52,
+                  borderRadius: '50%',
+                  backgroundColor: '#B85C1A',
+                  color: '#F5F0E8',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto 14px',
+                  fontFamily: FONT_SANS,
+                  fontSize: '22px',
+                  fontWeight: 700,
+                }}
+              >
                 {s.n}
               </div>
-              <p className="font-semibold mb-1">{s.title}</p>
-              <p className="text-sm text-muted-foreground">{s.desc}</p>
+
+              {/* Step title */}
+              <p
+                style={{
+                  fontFamily: FONT_SANS,
+                  fontSize: '17px',
+                  fontWeight: 600,
+                  color: '#1C1410',
+                  marginBottom: '6px',
+                }}
+              >
+                {s.title}
+              </p>
+
+              {/* Step description */}
+              <p
+                style={{
+                  fontFamily: FONT_SANS,
+                  fontSize: '15px',
+                  color: '#6B7B6E',
+                  lineHeight: 1.6,
+                  margin: 0,
+                }}
+              >
+                {s.desc}
+              </p>
             </div>
           ))}
         </div>

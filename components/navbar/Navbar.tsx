@@ -90,7 +90,7 @@ export function Navbar({ countryPrefix: propPrefix }: NavbarProps) {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
 
         {/* Logo */}
-        <Link href={base} className="font-serif text-xl font-bold" style={{ color: '#1C1410' }}>
+        <Link href={base} className="font-serif font-bold" style={{ color: '#1C1410', fontSize: '22px' }}>
           Artifex<span style={{ color: '#B85C1A' }}>7</span>
         </Link>
 
@@ -100,7 +100,7 @@ export function Navbar({ countryPrefix: propPrefix }: NavbarProps) {
             <Link
               key={link.href}
               href={link.href}
-              className="font-sans text-[14px] font-medium transition-colors hover:opacity-100"
+              className="font-sans text-[15px] font-medium transition-colors hover:opacity-100"
               style={{ color: 'rgba(28,20,16,0.7)' }}
               onMouseEnter={e => (e.currentTarget.style.color = '#1C1410')}
               onMouseLeave={e => (e.currentTarget.style.color = 'rgba(28,20,16,0.7)')}
@@ -158,23 +158,25 @@ export function Navbar({ countryPrefix: propPrefix }: NavbarProps) {
             <div className="hidden items-center gap-2 md:flex">
               <Link
                 href="/login"
-                className="font-sans text-sm font-medium px-4 py-1.5 transition-opacity hover:opacity-80"
+                className="font-sans font-medium px-4 py-1.5 transition-opacity hover:opacity-80"
                 style={{
                   border: '1.5px solid #B85C1A',
                   color: '#B85C1A',
                   backgroundColor: 'transparent',
                   borderRadius: '6px',
+                  fontSize: '14px',
                 }}
               >
                 Iniciar sesión
               </Link>
               <Link
                 href="/registro/cliente"
-                className="font-sans text-sm font-semibold px-4 py-1.5 transition-opacity hover:opacity-90"
+                className="font-sans font-semibold px-4 py-1.5 transition-opacity hover:opacity-90"
                 style={{
                   backgroundColor: '#B85C1A',
                   color: '#F5F0E8',
                   borderRadius: '6px',
+                  fontSize: '14px',
                 }}
               >
                 Registrarse
@@ -206,7 +208,7 @@ export function Navbar({ countryPrefix: propPrefix }: NavbarProps) {
             <Link
               key={link.href}
               href={link.href}
-              className="font-sans text-[14px] font-medium py-1"
+              className="font-sans text-[15px] font-medium py-1"
               style={{ color: 'rgba(28,20,16,0.7)' }}
               onClick={() => setMobileOpen(false)}
             >
@@ -221,12 +223,13 @@ export function Navbar({ countryPrefix: propPrefix }: NavbarProps) {
             >
               <Link
                 href="/login"
-                className="font-sans text-sm font-medium text-center py-2 transition-opacity hover:opacity-80"
+                className="font-sans font-medium text-center py-2 transition-opacity hover:opacity-80"
                 style={{
                   border: '1.5px solid #B85C1A',
                   color: '#B85C1A',
                   backgroundColor: 'transparent',
                   borderRadius: '6px',
+                  fontSize: '14px',
                 }}
                 onClick={() => setMobileOpen(false)}
               >
@@ -234,11 +237,12 @@ export function Navbar({ countryPrefix: propPrefix }: NavbarProps) {
               </Link>
               <Link
                 href="/registro/cliente"
-                className="font-sans text-sm font-semibold text-center py-2 transition-opacity hover:opacity-90"
+                className="font-sans font-semibold text-center py-2 transition-opacity hover:opacity-90"
                 style={{
                   backgroundColor: '#B85C1A',
                   color: '#F5F0E8',
                   borderRadius: '6px',
+                  fontSize: '14px',
                 }}
                 onClick={() => setMobileOpen(false)}
               >

@@ -144,9 +144,28 @@ export default async function CountryPage({ params }: { params: { country: strin
       {featuredPros && featuredPros.length > 0 && (
         <section id="profesionales-destacados" className="bg-[#F9F9F9] py-16">
           <div className="container mx-auto px-4">
-            <h2 className="text-2xl font-bold mb-2">Profesionales Destacados</h2>
-            <p className="text-muted-foreground mb-8">Los mejores profesionales de {countryName}</p>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <h2
+              style={{
+                fontFamily: 'var(--font-serif,"Playfair Display",Georgia,serif)',
+                fontSize: '36px',
+                fontWeight: 700,
+                color: '#1C1410',
+                marginBottom: '8px',
+              }}
+            >
+              Profesionales Destacados
+            </h2>
+            <p
+              style={{
+                fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)',
+                fontSize: '17px',
+                color: '#6B7B6E',
+                marginBottom: '32px',
+              }}
+            >
+              Los mejores profesionales de {countryName}
+            </p>
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
               {featuredPros.map((pro) => (
                 <ProfessionalCard key={pro.id} professional={pro as any} countryPrefix={params.country} />
               ))}
@@ -159,8 +178,27 @@ export default async function CountryPage({ params }: { params: { country: strin
       {reviews && reviews.length > 0 && (
         <section className="bg-white py-16">
           <div className="container mx-auto px-4">
-            <h2 className="text-2xl font-bold mb-2">Testimonios de Clientes</h2>
-            <p className="text-muted-foreground mb-8">Lo que dicen nuestros clientes</p>
+            <h2
+              style={{
+                fontFamily: 'var(--font-serif,"Playfair Display",Georgia,serif)',
+                fontSize: '36px',
+                fontWeight: 700,
+                color: '#1C1410',
+                marginBottom: '8px',
+              }}
+            >
+              Testimonios de Clientes
+            </h2>
+            <p
+              style={{
+                fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)',
+                fontSize: '17px',
+                color: '#6B7B6E',
+                marginBottom: '32px',
+              }}
+            >
+              Lo que dicen nuestros clientes
+            </p>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {reviews.map((review) => (
                 <div key={review.id} className="rounded-lg bg-white border p-5">
