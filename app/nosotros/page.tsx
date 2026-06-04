@@ -23,7 +23,7 @@ export default async function NosotrosPage() {
   return (
     <div>
       {/* Hero */}
-      <section style={{ backgroundColor: '#1B3A6B' }} className="text-white py-20 px-4">
+      <section style={{ backgroundColor: '#1C1410' }} className="text-white py-20 px-4">
         <div className="container mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold">Nosotros</h1>
         </div>

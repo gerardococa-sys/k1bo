@@ -51,20 +51,20 @@ export function CategoryGrid({ categories, countryPrefix, title, subtitle }: Cat
     <div>
       {/* Optional section header */}
       {title && (
-        <div style={{ marginBottom: '28px' }}>
+        <div style={{ marginBottom: '36px' }}>
           <h2
             style={{
               fontFamily: FONT_SERIF,
               fontWeight: 700,
-              fontSize: '38px',
+              fontSize: '42px',
               color: '#1C1410',
-              margin: '0 0 8px',
+              margin: '0 0 10px',
             }}
           >
             {title}
           </h2>
           {subtitle && (
-            <p style={{ fontFamily: FONT_SANS, fontSize: '18px', color: '#6B7B6E', margin: 0 }}>
+            <p style={{ fontFamily: FONT_SANS, fontSize: '18px', fontWeight: 400, color: '#6B7B6E', margin: 0 }}>
               {subtitle}
             </p>
           )}
@@ -85,24 +85,24 @@ export function CategoryGrid({ categories, countryPrefix, title, subtitle }: Cat
               {/* Icon circle */}
               <div
                 style={{
-                  width: 56,
-                  height: 56,
+                  width: 64,
+                  height: 64,
                   borderRadius: '50%',
-                  backgroundColor: '#B85C1A15',
+                  backgroundColor: '#B85C1A12',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  margin: '0 auto 14px',
+                  flexShrink: 0,
                 }}
               >
-                <Icon style={{ width: 24, height: 24, color: '#B85C1A' }} />
+                <Icon style={{ width: 26, height: 26, color: '#B85C1A' }} />
               </div>
 
               {/* Name */}
               <p
                 style={{
                   fontFamily: FONT_SANS,
-                  fontSize: '15px',
+                  fontSize: '16px',
                   fontWeight: 500,
                   color: '#1C1410',
                   margin: 0,
@@ -125,27 +125,26 @@ export function CategoryGrid({ categories, countryPrefix, title, subtitle }: Cat
           gap: 10px;
         }
 
-        /* md (768px): 3 cols — item 10 alone in row 4, center it */
         @media (min-width: 768px) {
           .ax7-catgrid { grid-template-columns: repeat(3, 1fr); }
-          .ax7-catgrid .ax7-catcard:nth-child(10) { grid-column-start: 2; }
         }
 
-        /* lg (1024px): 4 cols — items 9-10 right-aligned (cols 3 y 4) */
         @media (min-width: 1024px) {
           .ax7-catgrid { grid-template-columns: repeat(4, 1fr); }
-          .ax7-catgrid .ax7-catcard:nth-child(9)  { grid-column-start: 3; }
-          .ax7-catgrid .ax7-catcard:nth-child(10) { grid-column-start: 4; }
         }
 
         /* ── Card base ────────────────────────────────────────────── */
         .ax7-catcard {
-          background-color: #fff;
-          border: 0.5px solid #D4A96A40;
-          border-radius: 12px;
-          padding: 24px 14px 20px;
-          min-height: 130px;
-          display: block;
+          background-color: #ffffff;
+          border: 0.5px solid #1C141012;
+          border-radius: 14px;
+          padding: 28px 16px 24px;
+          min-height: 160px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 14px;
           transition: border-color 180ms, background-color 180ms, transform 180ms;
         }
 

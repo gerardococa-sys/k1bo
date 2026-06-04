@@ -109,7 +109,7 @@ export default async function CountryPage({ params }: { params: { country: strin
               marginBottom: '20px',
             }}
           >
-            Maestros de la Instalación y el Acabado.
+            La red de los maestros de la construcción.
           </p>
 
           {/* Subtitle */}
@@ -129,7 +129,7 @@ export default async function CountryPage({ params }: { params: { country: strin
       </section>
 
       {/* Categories */}
-      <section id="categorias" className="bg-white py-16">
+      <section id="categorias" className="py-16" style={{ backgroundColor: '#F5F0E8' }}>
         <div className="container mx-auto px-4">
           <CategoryGrid
             categories={categories ?? []}
