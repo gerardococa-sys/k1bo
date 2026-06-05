@@ -26,7 +26,14 @@ function MessageBoard({ quoteRequestId, currentUserId, otherPartyName }: Props) 
       .select('id, message, sender_id, created_at')
       .eq('quote_request_id', quoteRequestId)
       .order('created_at', { ascending: true })
-    if (error) { console.error('Error cargando mensajes:', error); return }
+    if (error) {
+      console.error('RLS/Error cargando mensajes:', JSON.stringify(error))
+      setError('Error cargando: ' + error.message)
+      return
+    }
+    console.log('Mensajes cargados:', data?.length,
+      '| quoteRequestId:', quoteRequestId,
+      '| currentUserId:', currentUserId)
     if (data) setMessages(data)
   }
 
@@ -43,8 +50,8 @@ function MessageBoard({ quoteRequestId, currentUserId, otherPartyName }: Props) 
         message: newMessage.trim(),
       })
     if (error) {
-      console.error('Error enviando:', error)
-      setError('No se pudo enviar. Intenta de nuevo.')
+      console.error('RLS/Error enviando:', JSON.stringify(error))
+      setError('Error: ' + error.message + ' | Code: ' + error.code)
     } else {
       setNewMessage('')
       await loadMessages()
@@ -57,11 +64,45 @@ function MessageBoard({ quoteRequestId, currentUserId, otherPartyName }: Props) 
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  // Carga inicial + polling cada 4 segundos
+  // Log de montaje para verificar que los props llegan correctos
+  useEffect(() => {
+    console.log('MessageBoard montado:', {
+      quoteRequestId,
+      currentUserId,
+      otherPartyName,
+    })
+  }, [])
+
+  // Carga inicial + polling cada 4 segundos + suscripción realtime
   useEffect(() => {
     loadMessages()
     const interval = setInterval(loadMessages, 4000)
-    return () => clearInterval(interval)
+
+    const supabase = createClient()
+    const channel = supabase
+      .channel('room-' + quoteRequestId)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'quote_messages',
+          filter: `quote_request_id=eq.${quoteRequestId}`,
+        },
+        (payload) => {
+          setMessages((prev) => {
+            const exists = prev.find((m) => m.id === payload.new.id)
+            if (exists) return prev
+            return [...prev, payload.new]
+          })
+        }
+      )
+      .subscribe()
+
+    return () => {
+      clearInterval(interval)
+      supabase.removeChannel(channel)
+    }
   }, [quoteRequestId])
 
   function formatTime(ts: string) {
