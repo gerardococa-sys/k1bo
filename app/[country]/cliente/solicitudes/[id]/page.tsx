@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { Calendar, Clock } from 'lucide-react'
+import { Calendar, Clock, Check, Download, X } from 'lucide-react'
 import { PhotoGallery } from '@/components/quotes/PhotoGallery'
 import MessageBoard from '@/components/messages/MessageBoard'
 
@@ -65,10 +65,13 @@ export default function SolicitudDetailPage() {
   const router = useRouter()
   const params = useParams<{ country: string; id: string }>()
 
-  const [userId, setUserId]       = useState('')
-  const [solicitud, setSolicitud] = useState<any>(null)
-  const [photos, setPhotos]       = useState<{ photo_url: string }[]>([])
-  const [loading, setLoading]     = useState(true)
+  const [userId,           setUserId]           = useState('')
+  const [solicitud,        setSolicitud]        = useState<any>(null)
+  const [photos,           setPhotos]           = useState<{ photo_url: string }[]>([])
+  const [pdfSignedUrl,     setPdfSignedUrl]     = useState<string | null>(null)
+  const [loading,          setLoading]          = useState(true)
+  const [actionLoading,    setActionLoading]    = useState(false)
+  const [confirmRejectOpen, setConfirmRejectOpen] = useState(false)
 
   useEffect(() => {
     async function load() {
@@ -108,10 +111,34 @@ export default function SolicitudDetailPage() {
         .filter((p) => p.photo_url)
       setPhotos(photoList)
 
+      if (data.quote_pdf_url) {
+        const { data: signedData } = await supabase.storage
+          .from('quote-pdfs')
+          .createSignedUrl(data.quote_pdf_url, 3600)
+        setPdfSignedUrl(signedData?.signedUrl ?? null)
+      }
+
       setLoading(false)
     }
     load()
   }, [params.id])
+
+  async function handleAccept() {
+    setActionLoading(true)
+    const supabase = createClient()
+    await supabase.from('quote_requests').update({ status: 'accepted' }).eq('id', params.id)
+    setSolicitud((prev: any) => ({ ...prev, status: 'accepted' }))
+    setActionLoading(false)
+  }
+
+  async function handleReject() {
+    setActionLoading(true)
+    const supabase = createClient()
+    await supabase.from('quote_requests').update({ status: 'rejected' }).eq('id', params.id)
+    setSolicitud((prev: any) => ({ ...prev, status: 'rejected' }))
+    setConfirmRejectOpen(false)
+    setActionLoading(false)
+  }
 
   if (loading) {
     return (
@@ -128,6 +155,14 @@ export default function SolicitudDetailPage() {
   const category    = solicitud.category    as any
   const subcategory = solicitud.subcategory as any
   const badge       = STATUS_BADGE[solicitud.status] ?? STATUS_BADGE.pending
+
+  const showCotizacion = solicitud.status === 'responded' || solicitud.status === 'accepted'
+
+  // Parse materials list (split by newline, filter empty lines)
+  const materialLines = (solicitud.quote_materials as string | null)
+    ?.split('\n')
+    .map((l: string) => l.replace(/^[-•*]\s*/, '').trim())
+    .filter(Boolean) ?? []
 
   return (
     <div className="container mx-auto px-4 py-10 max-w-6xl">
@@ -201,6 +236,113 @@ export default function SolicitudDetailPage() {
             </div>
           </Card>
 
+          {/* Cotización recibida */}
+          {showCotizacion && (
+            <div style={{
+              backgroundColor: '#fff',
+              border: '1.5px solid #D4A96A50',
+              borderRadius: '12px',
+              padding: '24px',
+            }}>
+              <div style={{ marginBottom: '20px' }}>
+                <span style={{
+                  fontFamily: FONT_SANS, fontSize: '11px', fontWeight: 700,
+                  textTransform: 'uppercase', letterSpacing: '0.05em',
+                  background: '#D4A96A20', color: '#B85C1A',
+                  padding: '4px 12px', borderRadius: '20px',
+                }}>
+                  Cotización recibida
+                </span>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+
+                {/* Descripción */}
+                <div>
+                  <p style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 10px' }}>
+                    Descripción del trabajo a realizar
+                  </p>
+                  <p style={{ fontFamily: FONT_SANS, fontSize: '16px', color: '#1C1410', lineHeight: 1.7, margin: 0 }}>
+                    {solicitud.quote_description ?? '—'}
+                  </p>
+                </div>
+
+                {/* Materiales */}
+                {materialLines.length > 0 && (
+                  <div>
+                    <p style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 10px' }}>
+                      Materiales incluidos
+                    </p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      {materialLines.map((line: string, i: number) => (
+                        <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                          <Check style={{ width: 16, height: 16, color: '#6B7B6E', flexShrink: 0, marginTop: '2px' }} />
+                          <span style={{ fontFamily: FONT_SANS, fontSize: '15px', color: '#1C1410', lineHeight: 1.5 }}>
+                            {line}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* PDF */}
+                {pdfSignedUrl && (
+                  <div>
+                    <a
+                      href={pdfSignedUrl}
+                      download
+                      style={{
+                        display: 'inline-flex', alignItems: 'center', gap: '8px',
+                        background: '#1C1410', color: '#D4A96A',
+                        fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700,
+                        padding: '12px 20px', borderRadius: '8px',
+                        textDecoration: 'none',
+                      }}
+                    >
+                      <Download style={{ width: 16, height: 16 }} />
+                      Descargar cotización PDF
+                    </a>
+                  </div>
+                )}
+
+                {/* Botones aceptar / rechazar */}
+                {solicitud.status === 'responded' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '4px' }}>
+                    <button
+                      onClick={handleAccept}
+                      disabled={actionLoading}
+                      style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        background: '#1C1410', color: '#D4A96A',
+                        fontFamily: FONT_SANS, fontSize: '16px', fontWeight: 700,
+                        padding: '13px', borderRadius: '8px', width: '100%',
+                        border: 'none', cursor: actionLoading ? 'not-allowed' : 'pointer',
+                        opacity: actionLoading ? 0.6 : 1,
+                      }}
+                    >
+                      {actionLoading ? 'Procesando...' : 'Aceptar cotización'}
+                    </button>
+                    <button
+                      onClick={() => setConfirmRejectOpen(true)}
+                      disabled={actionLoading}
+                      style={{
+                        background: 'transparent', color: '#B85C1A',
+                        border: '1.5px solid #B85C1A', borderRadius: '8px',
+                        fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700,
+                        padding: '13px', width: '100%',
+                        cursor: actionLoading ? 'not-allowed' : 'pointer',
+                        opacity: actionLoading ? 0.6 : 1,
+                      }}
+                    >
+                      Rechazar cotización
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Photos */}
           {photos.length > 0 && (
             <Card>
@@ -246,8 +388,70 @@ export default function SolicitudDetailPage() {
             />
           )}
         </div>
-
       </div>
+
+      {/* Modal de confirmación de rechazo */}
+      {confirmRejectOpen && (
+        <div
+          onClick={() => setConfirmRejectOpen(false)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 9999,
+            backgroundColor: 'rgba(28,20,16,0.6)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: '24px',
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              backgroundColor: '#fff', borderRadius: '16px',
+              padding: '32px', maxWidth: '420px', width: '100%',
+              boxShadow: '0 20px 60px rgba(28,20,16,0.2)',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+              <h3 style={{ fontFamily: FONT_SERIF, fontSize: '22px', fontWeight: 700, color: '#1C1410', margin: 0 }}>
+                ¿Rechazar cotización?
+              </h3>
+              <button
+                onClick={() => setConfirmRejectOpen(false)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6B7B6E', padding: '2px', display: 'flex' }}
+              >
+                <X style={{ width: 20, height: 20 }} />
+              </button>
+            </div>
+            <p style={{ fontFamily: FONT_SANS, fontSize: '15px', color: '#6B7B6E', lineHeight: 1.6, margin: '0 0 24px' }}>
+              Si rechazas esta cotización, el profesional será notificado y la solicitud quedará marcada como rechazada.
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <button
+                onClick={handleReject}
+                disabled={actionLoading}
+                style={{
+                  background: '#B85C1A', color: '#fff',
+                  fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700,
+                  padding: '13px', borderRadius: '8px', width: '100%',
+                  border: 'none', cursor: actionLoading ? 'not-allowed' : 'pointer',
+                  opacity: actionLoading ? 0.6 : 1,
+                }}
+              >
+                {actionLoading ? 'Procesando...' : 'Sí, rechazar'}
+              </button>
+              <button
+                onClick={() => setConfirmRejectOpen(false)}
+                style={{
+                  background: 'transparent', color: '#6B7B6E',
+                  fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 600,
+                  padding: '13px', borderRadius: '8px', width: '100%',
+                  border: '1px solid #1C141020', cursor: 'pointer',
+                }}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <style>{`
         .sol-back-link:hover { text-decoration: underline; }
