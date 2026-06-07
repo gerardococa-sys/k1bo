@@ -380,6 +380,36 @@ export default function SolicitudDetailPage() {
                 </div>
               )}
 
+              {/* Aviso de espera cuando se solicitaron cambios */}
+              {solicitud.status === 'revision' && (
+                <div style={{
+                  display: 'flex', alignItems: 'flex-start', gap: '10px',
+                  background: '#D4A96A12', border: '1px solid #D4A96A40',
+                  borderRadius: '8px', padding: '14px 16px', marginTop: '8px',
+                }}>
+                  <span style={{ fontSize: '20px', flexShrink: 0 }}>⏳</span>
+                  <div>
+                    <p style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#1C1410', margin: '0 0 4px' }}>
+                      Cambios solicitados
+                    </p>
+                    <p style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#6B7B6E', lineHeight: 1.6, margin: 0 }}>
+                      Has solicitado cambios al profesional. Recibirás una notificación cuando envíe la cotización actualizada.
+                    </p>
+                    <Link
+                      href={`/${params.country}/mensajes?solicitud=${params.id}`}
+                      style={{
+                        display: 'inline-flex', alignItems: 'center', gap: '6px',
+                        marginTop: '10px', fontFamily: FONT_SANS, fontSize: '13px',
+                        fontWeight: 600, color: '#B85C1A', textDecoration: 'none',
+                      }}
+                    >
+                      <MessageSquare style={{ width: 14, height: 14 }} />
+                      Enviar mensaje al profesional →
+                    </Link>
+                  </div>
+                </div>
+              )}
+
               {/* Aceptar / Solicitar cambios / Rechazar */}
               {solicitud.status === 'responded' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '4px' }}>
