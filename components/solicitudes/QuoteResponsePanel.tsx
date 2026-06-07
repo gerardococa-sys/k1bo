@@ -74,7 +74,7 @@ export function QuoteResponsePanel({
 
   function addMaterial() {
     setMaterials((prev) => [...prev, {
-      id:          crypto.randomUUID(),
+      id:          `mat-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
       cantidad:    1,
       descripcion: '',
       valorUnit:   0,

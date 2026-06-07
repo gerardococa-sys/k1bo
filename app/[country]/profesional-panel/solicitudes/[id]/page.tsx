@@ -3,10 +3,34 @@ export const dynamic = 'force-dynamic'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import dynamicImport from 'next/dynamic'
 import { Calendar, Clock, MessageSquare } from 'lucide-react'
 import { PhotoGallery } from '@/components/quotes/PhotoGallery'
-import { MarkAsVisited } from '@/components/messages/MarkAsVisited'
-import { QuoteResponsePanel } from '@/components/solicitudes/QuoteResponsePanel'
+
+const MarkAsVisited = dynamicImport(
+  () => import('@/components/messages/MarkAsVisited').then(mod => ({ default: mod.MarkAsVisited })),
+  { ssr: false }
+)
+
+const QuoteResponsePanel = dynamicImport(
+  () => import('@/components/solicitudes/QuoteResponsePanel').then(mod => ({ default: mod.QuoteResponsePanel })),
+  {
+    ssr: false,
+    loading: () => (
+      <div style={{
+        padding: '24px',
+        textAlign: 'center',
+        fontFamily: 'DM Sans, sans-serif',
+        color: '#6B7B6E',
+        background: '#fff',
+        borderRadius: '12px',
+        border: '0.5px solid #1C141015',
+      }}>
+        Cargando formulario...
+      </div>
+    ),
+  }
+)
 
 const FONT_SERIF = 'var(--font-serif, "Playfair Display", Georgia, serif)'
 const FONT_SANS  = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
