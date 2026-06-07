@@ -28,7 +28,6 @@ interface Props {
   quoteDescription: string | null
   quoteMaterials:   string | null
   quotePdfUrl:      string | null
-  quotePdfSignedUrl: string | null
   rejectionReason:  string | null
   respondedAt:      string | null
   laborCost:        number | null
@@ -37,7 +36,7 @@ interface Props {
 
 export function QuoteResponsePanel({
   solicitudId, userId, country, status,
-  quoteDescription, quoteMaterials, quotePdfSignedUrl,
+  quoteDescription, quoteMaterials, quotePdfUrl,
   rejectionReason, respondedAt,
   laborCost: initialLaborCost, materialsCost: initialMaterialsCost,
 }: Props) {
@@ -55,6 +54,7 @@ export function QuoteResponsePanel({
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const total = (Number(laborCost) || 0) + (Number(materialsCost) || 0)
+
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -211,21 +211,27 @@ export function QuoteResponsePanel({
                 </div>
               )}
 
-              {quotePdfSignedUrl && (
+              {quotePdfUrl && (
                 <div>
-                  <a
-                    href={quotePdfSignedUrl}
-                    download
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const supabase = createClient()
+                      const { data } = await supabase.storage
+                        .from('quote-pdfs')
+                        .createSignedUrl(quotePdfUrl, 3600)
+                      if (data?.signedUrl) window.open(data.signedUrl, '_blank')
+                    }}
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: '8px',
                       color: '#B85C1A', border: '1px solid #B85C1A40', borderRadius: '6px',
                       padding: '8px 14px', fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600,
-                      textDecoration: 'none', background: 'transparent',
+                      background: 'transparent', cursor: 'pointer',
                     }}
                   >
                     <FileDown style={{ width: 16, height: 16 }} />
-                    Descargar cotización PDF
-                  </a>
+                    Ver cotización PDF
+                  </button>
                 </div>
               )}
             </div>

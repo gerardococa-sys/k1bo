@@ -72,18 +72,16 @@ export default async function ProSolicitudDetailPage({ params }: { params: { cou
 
   if (!solicitud) redirect(`/${params.country}/profesional-panel/solicitudes`)
 
-  // Generate signed URL for PDF download (read-only view)
-  let pdfSignedUrl: string | null = null
-  if ((solicitud as any).quote_pdf_url) {
-    const { data: signedData } = await supabase.storage
-      .from('quote-pdfs')
-      .createSignedUrl((solicitud as any).quote_pdf_url, 3600)
-    pdfSignedUrl = signedData?.signedUrl ?? null
-  }
+  const client     = (solicitud as any).client
+  const clientName = client?.full_name ?? 'Propietario'
 
-  const client      = (solicitud as any).client
-  const clientName  = client?.full_name  ?? 'Propietario'
-  const clientPhoto = client?.photo_url  as string | undefined
+  // Generate public URL for avatar (photo_url may be a relative path)
+  const clientPhotoRaw = client?.photo_url as string | null
+  const clientPhoto = clientPhotoRaw
+    ? clientPhotoRaw.startsWith('http')
+      ? clientPhotoRaw
+      : supabase.storage.from('avatars').getPublicUrl(clientPhotoRaw).data.publicUrl
+    : undefined
   const category    = (solicitud as any).category
   const subcategory = (solicitud as any).subcategory
 
@@ -215,7 +213,6 @@ export default async function ProSolicitudDetailPage({ params }: { params: { cou
             quoteDescription={(solicitud as any).quote_description ?? null}
             quoteMaterials={(solicitud as any).quote_materials ?? null}
             quotePdfUrl={(solicitud as any).quote_pdf_url ?? null}
-            quotePdfSignedUrl={pdfSignedUrl}
             rejectionReason={(solicitud as any).rejection_reason ?? null}
             respondedAt={(solicitud as any).responded_at ?? null}
             laborCost={(solicitud as any).labor_cost ?? null}
