@@ -54,6 +54,7 @@ export default function RegistroClientePage() {
   const [svCountryId, setSvCountryId] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
+  const [phoneCountryCode, setPhoneCountryCode] = useState('+503')
 
   const { register, handleSubmit, setError, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -141,6 +142,7 @@ export default function RegistroClientePage() {
       full_name: data.full_name,
       photo_url,
       phone: data.phone,
+      phone_country_code: phoneCountryCode,
       date_of_birth: data.date_of_birth,
       address: data.address ?? null,
       department_id: selectedDept || null,
@@ -229,7 +231,35 @@ export default function RegistroClientePage() {
 
           <div className="space-y-2">
             <Label htmlFor="phone">Teléfono *</Label>
-            <Input id="phone" placeholder="7777-8888" {...register('phone')} />
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <select
+                value={phoneCountryCode}
+                onChange={(e) => setPhoneCountryCode(e.target.value)}
+                style={{
+                  padding: '10px 12px',
+                  borderRadius: '8px',
+                  border: '1px solid rgba(212,169,106,0.25)',
+                  background: '#F5F0E8',
+                  fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)',
+                  fontSize: '15px',
+                  color: '#1C1410',
+                  width: '140px',
+                  flexShrink: 0,
+                }}
+              >
+                <option value="+503">🇸🇻 +503</option>
+                <option value="+502">🇬🇹 +502</option>
+                <option value="+504">🇭🇳 +504</option>
+                <option value="+505">🇳🇮 +505</option>
+                <option value="+506">🇨🇷 +506</option>
+                <option value="+507">🇵🇦 +507</option>
+                <option value="+501">🇧🇿 +501</option>
+                <option disabled>──────────</option>
+                <option value="+1">🇺🇸 +1</option>
+                <option value="+52">🇲🇽 +52</option>
+              </select>
+              <Input id="phone" type="tel" placeholder="7XXX-XXXX" style={{ flex: 1 }} {...register('phone')} />
+            </div>
             {errors.phone && <p className="text-sm text-destructive">{errors.phone.message}</p>}
           </div>
 

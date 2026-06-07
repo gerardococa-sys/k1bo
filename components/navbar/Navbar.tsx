@@ -87,7 +87,7 @@ export function Navbar({ countryPrefix: propPrefix }: NavbarProps) {
   const navLinks = [
     { label: 'Nosotros',      href: '/nosotros' },
     { label: 'Categorías',    href: `${base}#categorias` },
-    { label: 'Profesionales', href: `${base}#profesionales-destacados` },
+    { label: 'Profesionales', href: `${base}/profesionales` },
     { label: 'Propietarios',  href: propietariosHref },
     { label: 'Cómo funciona', href: `${base}#como-funciona` },
   ]

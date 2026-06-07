@@ -43,6 +43,22 @@ export default async function CotizarPage({
   const categories = (pro.categories as any[]) ?? []
   const mainCategory = categories[0]?.category
 
+  if (!mainCategory) {
+    return (
+      <div className="container mx-auto px-4 py-8 max-w-lg text-center">
+        <p className="text-muted-foreground">Este profesional aún no tiene categorías configuradas.</p>
+      </div>
+    )
+  }
+
+  if (!country?.id) {
+    return (
+      <div className="container mx-auto px-4 py-8 max-w-lg text-center">
+        <p className="text-muted-foreground">Error de configuración. Intenta de nuevo.</p>
+      </div>
+    )
+  }
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-lg">
       <h1 className="text-2xl font-bold mb-6">Solicitar Cotización</h1>
@@ -50,7 +66,7 @@ export default async function CotizarPage({
         professional={pro as any}
         category={mainCategory}
         clientId={clientProfile.id}
-        countryId={country?.id ?? ''}
+        countryId={country.id}
       />
     </div>
   )

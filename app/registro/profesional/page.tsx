@@ -66,6 +66,8 @@ export default function RegistroProfesionalPage() {
   const [shortDesc, setShortDesc] = useState('')
   const [bio, setBio] = useState('')
 
+  const [phoneCountryCode, setPhoneCountryCode] = useState('+503')
+
   // Step 4 — portfolio
   const [portfolioFiles, setPortfolioFiles] = useState<File[]>([])
 
@@ -123,6 +125,7 @@ export default function RegistroProfesionalPage() {
       full_name: data.full_name,
       photo_url,
       phone: data.phone,
+      phone_country_code: phoneCountryCode,
       date_of_birth: data.date_of_birth,
     })
 
@@ -132,6 +135,7 @@ export default function RegistroProfesionalPage() {
       covers_entire_country: false,
       featured: false,
       total_projects: 0,
+      whatsapp: phoneCountryCode + data.phone,
     })
 
     setStep(2)
@@ -257,7 +261,35 @@ export default function RegistroProfesionalPage() {
             </div>
             <div className="space-y-2">
               <Label>Teléfono *</Label>
-              <Input placeholder="7777-8888" {...step1Form.register('phone')} />
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <select
+                  value={phoneCountryCode}
+                  onChange={(e) => setPhoneCountryCode(e.target.value)}
+                  style={{
+                    padding: '10px 12px',
+                    borderRadius: '8px',
+                    border: '1px solid rgba(212,169,106,0.25)',
+                    background: '#F5F0E8',
+                    fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)',
+                    fontSize: '15px',
+                    color: '#1C1410',
+                    width: '140px',
+                    flexShrink: 0,
+                  }}
+                >
+                  <option value="+503">🇸🇻 +503</option>
+                  <option value="+502">🇬🇹 +502</option>
+                  <option value="+504">🇭🇳 +504</option>
+                  <option value="+505">🇳🇮 +505</option>
+                  <option value="+506">🇨🇷 +506</option>
+                  <option value="+507">🇵🇦 +507</option>
+                  <option value="+501">🇧🇿 +501</option>
+                  <option disabled>──────────</option>
+                  <option value="+1">🇺🇸 +1</option>
+                  <option value="+52">🇲🇽 +52</option>
+                </select>
+                <Input type="tel" placeholder="7XXX-XXXX" style={{ flex: 1 }} {...step1Form.register('phone')} />
+              </div>
               {step1Form.formState.errors.phone && <p className="text-sm text-destructive">{step1Form.formState.errors.phone.message}</p>}
             </div>
             <div className="space-y-2">

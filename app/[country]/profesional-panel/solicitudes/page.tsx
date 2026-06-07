@@ -93,20 +93,21 @@ export default function ProSolicitudesPage() {
           responded_at,
           status,
           description,
-          client:profiles!quote_requests_client_id_fkey(
+          client:profiles!client_id(
             full_name,
             photo_url
           ),
-          category:categories!quote_requests_category_id_fkey(
+          category:categories!category_id(
             name
           ),
-          subcategory:categories!quote_requests_subcategory_id_fkey(
+          subcategory:categories!subcategory_id(
             name
           )
         `)
         .eq('professional_id', user.id)
         .order('created_at', { ascending: false })
-        .then(({ data }) => {
+        .then(({ data, error }) => {
+          if (error) console.error('[solicitudes] query error:', error)
           setSolicitudes(data ?? [])
           setLoading(false)
         })

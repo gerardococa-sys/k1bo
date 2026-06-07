@@ -80,6 +80,7 @@ export function Footer({ countryPrefix }: FooterProps) {
             <p style={colTitleStyle}>Profesionales</p>
             <div>
               {[
+                { label: 'Directorio',     href: `${base}/profesionales` },
                 { label: 'Registrarse',    href: '/registro' },
                 { label: 'Iniciar sesión', href: '/login' },
               ].map(({ label, href }) => (
