@@ -77,6 +77,7 @@ interface FiltersPanelProps {
   filters:          Filters
   setFilter:        (key: keyof Filters, value: string) => void
   clearFilters:     () => void
+  onSearch:         () => void
   hasActiveFilters: boolean
   parentCategories: Category[]
   subcategories:    Category[]
@@ -88,6 +89,7 @@ function FiltersPanel({
   filters,
   setFilter,
   clearFilters,
+  onSearch,
   hasActiveFilters,
   parentCategories,
   subcategories,
@@ -185,6 +187,20 @@ function FiltersPanel({
         </div>
       )}
 
+      {/* Buscar */}
+      <button
+        onClick={onSearch}
+        style={{
+          width: '100%',
+          background: '#1C1410', color: '#D4A96A',
+          fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700,
+          padding: '12px', borderRadius: '8px',
+          border: 'none', cursor: 'pointer',
+        }}
+      >
+        Buscar profesionales
+      </button>
+
       {hasActiveFilters && (
         <Button
           variant="outline"
@@ -227,6 +243,7 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
   const [departments,      setDepartments]      = useState<Department[]>([])
   const [municipalities,   setMunicipalities]   = useState<Municipality[]>([])
   const [filters,          setFiltersState]     = useState<Filters>(DEFAULT_FILTERS)
+  const [appliedFilters,   setAppliedFilters]   = useState<Filters>(DEFAULT_FILTERS)
   const [orderBy,          setOrderBy]          = useState<OrderBy>('featured')
   const [loading,          setLoading]          = useState(true)
   const [mobileOpen,       setMobileOpen]       = useState(false)
@@ -261,11 +278,13 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
           covers_entire_country,
           account_type,
           created_at,
-          profile:profiles(
+          profiles(
             full_name,
             photo_url,
             verified,
             active,
+            department_id,
+            municipality_id,
             department:departments(id, name),
             municipality:municipalities(id, name)
           ),
@@ -278,9 +297,15 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
           reviews:reviews(rating)
         `)
         .order('featured', { ascending: false })
+        .order('created_at', { ascending: false })
 
       const adapted = (pros ?? [])
-        .filter(p => (p.profile as any)?.active !== false && (p.profile as any)?.verified)
+        .filter(p => {
+          const prof = Array.isArray((p as any).profiles)
+            ? (p as any).profiles[0]
+            : (p as any).profiles
+          return prof?.active !== false
+        })
         .map(pro => ({
           ...pro,
           avg_rating: (pro.reviews as any[])?.length
@@ -309,51 +334,52 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
     [filters.categoria, allCategories],
   )
 
-  // Filtered + sorted results
+  // Filtered + sorted results — usa appliedFilters (se aplican al hacer clic en "Buscar")
   const filtrados = useMemo(() => {
     if (!profesionales) return []
 
     let result = profesionales.filter(pro => {
-      // Acceso defensivo al perfil (puede ser objeto o array según FK setup en PostgREST)
-      const profile = Array.isArray(pro.profile) ? pro.profile[0] : pro.profile
+      const profile = Array.isArray((pro as any).profiles)
+        ? (pro as any).profiles[0]
+        : (pro as any).profiles
       if (!profile) return false
 
       // Filtro nombre
-      if (filters.nombre && filters.nombre.trim() !== '') {
+      if (appliedFilters.nombre && appliedFilters.nombre.trim() !== '') {
         const nombre = (profile.full_name ?? '').toLowerCase()
-        if (!nombre.includes(filters.nombre.toLowerCase())) return false
+        if (!nombre.includes(appliedFilters.nombre.toLowerCase())) return false
       }
 
       // Filtro categoría / subcategoría
-      if (filters.subcategoria && filters.subcategoria !== '') {
+      if (appliedFilters.subcategoria && appliedFilters.subcategoria !== '') {
         const cats = (pro.categories as any[]) ?? []
         const tiene = cats.some(pc => {
           const cat = Array.isArray(pc.category) ? pc.category[0] : pc.category
-          return cat?.id === filters.subcategoria
+          return cat?.id === appliedFilters.subcategoria
         })
         if (!tiene) return false
-      } else if (filters.categoria && filters.categoria !== '') {
+      } else if (appliedFilters.categoria && appliedFilters.categoria !== '') {
         const cats = (pro.categories as any[]) ?? []
         const tiene = cats.some(pc => {
           const cat = Array.isArray(pc.category) ? pc.category[0] : pc.category
-          return cat?.id === filters.categoria || cat?.parent_id === filters.categoria
+          return cat?.id === appliedFilters.categoria || cat?.parent_id === appliedFilters.categoria
         })
         if (!tiene) return false
       }
 
       // Filtro tipo
-      if (filters.tipo !== 'all' && pro.account_type !== filters.tipo) return false
+      if (appliedFilters.tipo !== 'all' && pro.account_type !== appliedFilters.tipo) return false
 
       // Filtro departamento
-      if (filters.departamento && filters.departamento !== '') {
+      if (appliedFilters.departamento && appliedFilters.departamento !== '') {
         const dept = Array.isArray(profile.department) ? profile.department[0] : profile.department
-        if (dept?.id !== filters.departamento) return false
+        if (dept?.id !== appliedFilters.departamento) return false
       }
 
       // Filtro municipio
-      if (filters.municipio && filters.municipio !== '') {
+      if (appliedFilters.municipio && appliedFilters.municipio !== '') {
         const mun = Array.isArray(profile.municipality) ? profile.municipality[0] : profile.municipality
-        if (mun?.id !== filters.municipio) return false
+        if (mun?.id !== appliedFilters.municipio) return false
       }
 
       return true
@@ -368,7 +394,7 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
     }
 
     return result
-  }, [profesionales, filters, orderBy])
+  }, [profesionales, appliedFilters, orderBy])
 
   const setFilter = (key: keyof Filters, value: string) => {
     setFiltersState(prev => {
@@ -379,8 +405,14 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
     })
   }
 
+  const handleSearch = () => {
+    setAppliedFilters({ ...filters })
+    setMobileOpen(false)
+  }
+
   const clearFilters = () => {
     setFiltersState(DEFAULT_FILTERS)
+    setAppliedFilters(DEFAULT_FILTERS)
     setMobileOpen(false)
   }
 
@@ -393,7 +425,7 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
   ).length
 
   const filterProps: FiltersPanelProps = {
-    filters, setFilter, clearFilters, hasActiveFilters,
+    filters, setFilter, clearFilters, onSearch: handleSearch, hasActiveFilters,
     parentCategories, subcategories, departments, municipalities,
   }
 

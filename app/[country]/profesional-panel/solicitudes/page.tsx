@@ -74,78 +74,53 @@ function StatusBadge({ status }: { status: string }) {
 export default function ProSolicitudesPage() {
   const params = useParams<{ country: string }>()
 
-  const [solicitudes,   setSolicitudes]   = useState<any[]>([])
-  const [loading,       setLoading]       = useState(true)
-  const [activeFilter,  setActiveFilter]  = useState('all')
-  const [hoveredRow,    setHoveredRow]    = useState<string | null>(null)
-  const [debugInfo,     setDebugInfo]     = useState('')
+  const [solicitudes,  setSolicitudes]  = useState<any[]>([])
+  const [loading,      setLoading]      = useState(true)
+  const [activeFilter, setActiveFilter] = useState('all')
+  const [hoveredRow,   setHoveredRow]   = useState<string | null>(null)
 
   useEffect(() => {
     async function load() {
-      // createClient() dentro del useEffect garantiza que la sesión esté disponible
       const supabase = createClient()
 
-      // Paso 1: obtener usuario autenticado
       const { data: { user }, error: authError } = await supabase.auth.getUser()
+      if (authError || !user) { setLoading(false); return }
 
-      if (authError || !user) {
-        setDebugInfo('Sin usuario: ' + (authError?.message ?? 'sesión vacía'))
-        setLoading(false)
-        return
-      }
-
-      setDebugInfo('user.id: ' + user.id)
-
-      // Paso 2: query simple sin joins — confirma que RLS y el filtro funcionan
-      const { data: rawData, error: rawError } = await supabase
-        .from('quote_requests')
-        .select('id, professional_id, client_id, status, created_at')
-        .eq('professional_id', user.id)
-
-      console.log('[solicitudes] raw query:', rawData, rawError)
-      setDebugInfo(prev =>
-        prev +
-        ' | Solicitudes raw: ' + (rawData?.length ?? 0) +
-        (rawError ? ' | Error: ' + JSON.stringify(rawError) : '')
-      )
-
-      if (rawError) {
-        setLoading(false)
-        return
-      }
-
-      // Paso 3: query completa con joins — usa nombres completos de FK constraints
+      // Query plana — evita problemas con nombres de FK constraints
       const { data, error } = await supabase
         .from('quote_requests')
-        .select(`
-          id,
-          created_at,
-          required_date,
-          responded_at,
-          status,
-          description,
-          client:profiles!quote_requests_client_id_fkey(
-            full_name,
-            photo_url
-          ),
-          category:categories!quote_requests_category_id_fkey(
-            name
-          ),
-          subcategory:categories!quote_requests_subcategory_id_fkey(
-            name
-          )
-        `)
+        .select('id, created_at, required_date, responded_at, status, description, client_id, category_id, subcategory_id')
         .eq('professional_id', user.id)
         .order('created_at', { ascending: false })
 
-      if (error) {
-        console.error('[solicitudes] error en query con joins:', JSON.stringify(error))
-        // Fallback: usar datos raw sin joins si el join falla
-        setSolicitudes(rawData ?? [])
-      } else {
+      if (error || !data?.length) {
+        if (error) console.error('[solicitudes]', error)
         setSolicitudes(data ?? [])
+        setLoading(false)
+        return
       }
 
+      // IDs únicos para lookups
+      const clientIds  = [...new Set(data.map(s => s.client_id).filter(Boolean))]
+      const catIds     = [...new Set([
+        ...data.map(s => s.category_id),
+        ...data.map(s => s.subcategory_id),
+      ].filter(Boolean))]
+
+      const [{ data: clientsData }, { data: catsData }] = await Promise.all([
+        supabase.from('profiles').select('id, full_name, photo_url').in('id', clientIds),
+        supabase.from('categories').select('id, name').in('id', catIds),
+      ])
+
+      const clientsMap = Object.fromEntries((clientsData ?? []).map(c => [c.id, c]))
+      const catsMap    = Object.fromEntries((catsData    ?? []).map(c => [c.id, c]))
+
+      setSolicitudes(data.map(s => ({
+        ...s,
+        clientData:      clientsMap[s.client_id]      ?? null,
+        categoryData:    catsMap[s.category_id]        ?? null,
+        subcategoryData: catsMap[s.subcategory_id]     ?? null,
+      })))
       setLoading(false)
     }
     load()
@@ -159,29 +134,12 @@ export default function ProSolicitudesPage() {
     return (
       <div style={{ fontFamily: FONT_SANS, color: '#6B7B6E', padding: '48px 24px', textAlign: 'center' }}>
         Cargando...
-        {debugInfo && (
-          <pre style={{ fontSize: '11px', color: '#6B7B6E', marginTop: '12px', whiteSpace: 'pre-wrap' }}>
-            {debugInfo}
-          </pre>
-        )}
       </div>
     )
   }
 
   return (
     <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '32px 24px' }}>
-
-      {/* Debug temporal — quitar después de confirmar que funciona */}
-      {debugInfo && (
-        <div style={{
-          background: '#1C141008', padding: '10px 16px',
-          fontSize: '12px', color: '#6B7B6E',
-          fontFamily: 'monospace', marginBottom: '16px',
-          borderRadius: '6px', wordBreak: 'break-all',
-        }}>
-          {debugInfo} | Solicitudes: {solicitudes.length}
-        </div>
-      )}
 
       {/* Volver */}
       <Link
@@ -277,10 +235,10 @@ export default function ProSolicitudesPage() {
 
             {/* Filas */}
             {filtered.map((s) => {
-              const client      = Array.isArray(s.client)      ? s.client[0]      : s.client
-              const category    = Array.isArray(s.category)    ? s.category[0]    : s.category
-              const subcategory = Array.isArray(s.subcategory) ? s.subcategory[0] : s.subcategory
-              const clientName  = client?.full_name ?? 'Propietario'
+              const client      = s.clientData
+              const category    = s.categoryData
+              const subcategory = s.subcategoryData
+              const clientName  = client?.full_name ?? '—'
               const isHovered   = hoveredRow === s.id
 
               return (
@@ -378,10 +336,10 @@ export default function ProSolicitudesPage() {
           {/* ── CARDS MOBILE ── */}
           <div className="pro-sol-cards">
             {filtered.map((s) => {
-              const client      = Array.isArray(s.client)      ? s.client[0]      : s.client
-              const category    = Array.isArray(s.category)    ? s.category[0]    : s.category
-              const subcategory = Array.isArray(s.subcategory) ? s.subcategory[0] : s.subcategory
-              const clientName  = client?.full_name ?? 'Propietario'
+              const client      = s.clientData
+              const category    = s.categoryData
+              const subcategory = s.subcategoryData
+              const clientName  = client?.full_name ?? '—'
 
               return (
                 <div key={s.id} style={{
