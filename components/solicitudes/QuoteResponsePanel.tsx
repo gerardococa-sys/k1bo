@@ -112,10 +112,23 @@ export function QuoteResponsePanel({
       let pdfUrl: string | null = null
       if (pdfFile) {
         const path = `${userId}/${solicitudId}/cotizacion.pdf`
-        const { error: uploadError } = await supabase.storage
+
+        console.log('[PDF upload] userId:', userId)
+        console.log('[PDF upload] solicitudId:', solicitudId)
+        console.log('[PDF upload] path:', path)
+        console.log('[PDF upload] file:', pdfFile.name, pdfFile.size, pdfFile.type)
+
+        const { data: uploadData, error: uploadError } = await supabase.storage
           .from('quote-pdfs')
           .upload(path, pdfFile, { upsert: true, contentType: 'application/pdf' })
-        if (uploadError) throw uploadError
+
+        console.log('[PDF upload] result:', uploadData, uploadError)
+
+        if (uploadError) {
+          setError('Error al subir PDF: ' + uploadError.message)
+          setSubmitting(false)
+          return
+        }
         pdfUrl = path
       }
 
