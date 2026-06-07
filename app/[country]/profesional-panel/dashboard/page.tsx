@@ -35,6 +35,19 @@ export default async function ProDashboardPage({ params }: { params: { country: 
     .order('created_at', { ascending: false })
     .limit(5)
 
+  const { count: pendingCount } = await supabase
+    .from('quote_requests')
+    .select('*', { count: 'exact', head: true })
+    .eq('professional_id', user.id)
+    .eq('status', 'pending')
+
+  const { count: totalCount } = await supabase
+    .from('quote_requests')
+    .select('*', { count: 'exact', head: true })
+    .eq('professional_id', user.id)
+
+  console.log('[dashboard] pending:', pendingCount, 'total:', totalCount, 'user:', user.id)
+
   const { data: reviews } = await supabase
     .from('reviews')
     .select('rating')
@@ -44,7 +57,7 @@ export default async function ProDashboardPage({ params }: { params: { country: 
     ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
     : 0
 
-  const pending = quotes?.filter((q) => q.status === 'pending').length ?? 0
+  const pending = pendingCount ?? 0
 
   return (
     <div className="container mx-auto px-4 py-8">

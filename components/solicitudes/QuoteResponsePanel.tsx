@@ -31,23 +31,30 @@ interface Props {
   quotePdfSignedUrl: string | null
   rejectionReason:  string | null
   respondedAt:      string | null
+  laborCost:        number | null
+  materialsCost:    number | null
 }
 
 export function QuoteResponsePanel({
   solicitudId, userId, country, status,
   quoteDescription, quoteMaterials, quotePdfSignedUrl,
   rejectionReason, respondedAt,
+  laborCost: initialLaborCost, materialsCost: initialMaterialsCost,
 }: Props) {
   const router     = useRouter()
 
   const [description,     setDescription]     = useState('')
   const [materials,       setMaterials]       = useState('')
+  const [laborCost,       setLaborCost]       = useState<number | ''>('')
+  const [materialsCost,   setMaterialsCost]   = useState<number | ''>('')
   const [pdfFile,         setPdfFile]         = useState<File | null>(null)
   const [rejectionOpen,   setRejectionOpen]   = useState(false)
   const [rejectionText,   setRejectionText]   = useState('')
   const [error,           setError]           = useState<string | null>(null)
   const [submitting,      setSubmitting]      = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const total = (Number(laborCost) || 0) + (Number(materialsCost) || 0)
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -80,6 +87,8 @@ export function QuoteResponsePanel({
           quote_description: description.trim(),
           quote_materials:   materials.trim() || null,
           quote_pdf_url:     pdfUrl,
+          labor_cost:        laborCost !== '' ? Number(laborCost) : null,
+          materials_cost:    materialsCost !== '' ? Number(materialsCost) : null,
           responded_at:      new Date().toISOString(),
         })
         .eq('id', solicitudId)
@@ -179,6 +188,29 @@ export function QuoteResponsePanel({
                 </div>
               )}
 
+              {(initialLaborCost != null || initialMaterialsCost != null) && (
+                <div style={{ background: '#F5F0E8', borderRadius: '8px', padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {initialLaborCost != null && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E' }}>Mano de obra</span>
+                      <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#1C1410' }}>${initialLaborCost.toFixed(2)}</span>
+                    </div>
+                  )}
+                  {initialMaterialsCost != null && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E' }}>Materiales estimados</span>
+                      <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#1C1410' }}>${initialMaterialsCost.toFixed(2)}</span>
+                    </div>
+                  )}
+                  {initialLaborCost != null && initialMaterialsCost != null && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #D4A96A40', paddingTop: '8px' }}>
+                      <span style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700, color: '#1C1410' }}>Total estimado</span>
+                      <span style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700, color: '#1C1410' }}>${(initialLaborCost + initialMaterialsCost).toFixed(2)}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {quotePdfSignedUrl && (
                 <div>
                   <a
@@ -207,7 +239,7 @@ export function QuoteResponsePanel({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       <h2 style={{ fontFamily: FONT_SERIF, fontSize: '24px', fontWeight: 700, color: '#1C1410', margin: 0 }}>
-        Responder solicitud
+        Enviar Cotización
       </h2>
 
       <div style={{
@@ -220,7 +252,58 @@ export function QuoteResponsePanel({
         gap:             '20px',
       }}>
 
-        {/* Campo 1: Descripción */}
+        {/* Campo: Mano de obra */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <label style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#1C1410' }}>
+            Valor de mano de obra (USD){' '}
+            <span style={{ fontWeight: 400, color: '#6B7B6E' }}>(opcional)</span>
+          </label>
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            value={laborCost}
+            onChange={(e) => setLaborCost(e.target.value === '' ? '' : Number(e.target.value))}
+            placeholder="0.00"
+            style={{
+              border: '1px solid #D4A96A40', borderRadius: '8px',
+              padding: '10px 14px', fontSize: '15px', fontFamily: FONT_SANS,
+              background: '#F5F0E8', outline: 'none',
+              color: '#1C1410', width: '100%', boxSizing: 'border-box',
+            }}
+          />
+        </div>
+
+        {/* Campo: Materiales estimados */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <label style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#1C1410' }}>
+            Valor estimado de materiales (USD){' '}
+            <span style={{ fontWeight: 400, color: '#6B7B6E' }}>(opcional)</span>
+          </label>
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            value={materialsCost}
+            onChange={(e) => setMaterialsCost(e.target.value === '' ? '' : Number(e.target.value))}
+            placeholder="0.00"
+            style={{
+              border: '1px solid #D4A96A40', borderRadius: '8px',
+              padding: '10px 14px', fontSize: '15px', fontFamily: FONT_SANS,
+              background: '#F5F0E8', outline: 'none',
+              color: '#1C1410', width: '100%', boxSizing: 'border-box',
+            }}
+          />
+        </div>
+
+        {/* Total estimado */}
+        {(laborCost !== '' || materialsCost !== '') && total > 0 && (
+          <p style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700, color: '#1C1410', margin: 0 }}>
+            Total estimado: ${total.toFixed(2)}
+          </p>
+        )}
+
+        {/* Campo: Descripción */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           <label style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#1C1410' }}>
             Descripción del trabajo a realizar{' '}

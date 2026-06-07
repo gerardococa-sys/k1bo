@@ -119,9 +119,9 @@ export default async function ProSolicitudDetailPage({ params }: { params: { cou
         {/* ── COLUMNA IZQUIERDA ── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
-          {/* Card: Solicitud recibida */}
+          {/* Card: Cotización recibida */}
           <Card>
-            <SectionLabel>Solicitud recibida</SectionLabel>
+            <SectionLabel>Cotización recibida</SectionLabel>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
               {category && <FieldRow label="Categoría" value={category.name} />}
@@ -218,6 +218,8 @@ export default async function ProSolicitudDetailPage({ params }: { params: { cou
             quotePdfSignedUrl={pdfSignedUrl}
             rejectionReason={(solicitud as any).rejection_reason ?? null}
             respondedAt={(solicitud as any).responded_at ?? null}
+            laborCost={(solicitud as any).labor_cost ?? null}
+            materialsCost={(solicitud as any).materials_cost ?? null}
           />
         </div>
       </div>

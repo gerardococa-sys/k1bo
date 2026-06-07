@@ -57,6 +57,7 @@ export function AvailabilityCalendar({ availability }: Props) {
     defaultView: 'month-grid',
     views: [createViewMonthGrid()],
     selectedDate: todayStr,
+    firstDayOfWeek: 0,
     calendars: {
       available: {
         colorName: 'available',
