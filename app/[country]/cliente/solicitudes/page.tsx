@@ -28,7 +28,23 @@ function Avatar({ name, photoUrl, size = 32 }: { name?: string; photoUrl?: strin
     return (
       <div style={{ width: size, height: size, borderRadius: '50%', overflow: 'hidden', flexShrink: 0 }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={photoUrl} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <img
+          src={photoUrl}
+          alt={name}
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          onError={(e) => {
+            const t = e.target as HTMLImageElement
+            t.style.display = 'none'
+            const p = t.parentElement
+            if (p) {
+              p.style.background = '#B85C1A15'
+              p.style.display = 'flex'
+              p.style.alignItems = 'center'
+              p.style.justifyContent = 'center'
+              p.innerHTML = `<span style="font-family:DM Sans,sans-serif;font-size:12px;font-weight:600;color:#B85C1A">${(name ?? '?').split(' ').slice(0, 2).map((w: string) => w[0]).join('').toUpperCase()}</span>`
+            }
+          }}
+        />
       </div>
     )
   }

@@ -155,10 +155,13 @@ export default function SolicitudDetailPage() {
   const badge       = STATUS_BADGE[solicitud.status] ?? STATUS_BADGE.pending
   const showCotizacion = solicitud.status === 'responded' || solicitud.status === 'accepted'
 
-  const materialLines = (solicitud.quote_materials as string | null)
-    ?.split('\n')
-    .map((l: string) => l.replace(/^[-•*]\s*/, '').trim())
-    .filter(Boolean) ?? []
+  const materialsList = (solicitud.quote_materials_list as { cantidad: number; descripcion: string; valorUnit: number; precioTotal: number }[] | null) ?? null
+  const materialLines = materialsList
+    ? []
+    : (solicitud.quote_materials as string | null)
+        ?.split('\n')
+        .map((l: string) => l.replace(/^[-•*]\s*/, '').trim())
+        .filter(Boolean) ?? []
 
   return (
     <div style={{ maxWidth: '780px', margin: '0 auto', padding: '32px 24px' }}>
@@ -254,8 +257,52 @@ export default function SolicitudDetailPage() {
                 </p>
               </div>
 
-              {/* Materiales */}
-              {materialLines.length > 0 && (
+              {/* Materiales — tabla estructurada (nuevo formato) */}
+              {materialsList && materialsList.length > 0 && (
+                <div>
+                  <p style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 10px' }}>
+                    Lista de materiales
+                  </p>
+                  <div style={{ border: '1px solid #D4A96A30', borderRadius: '8px', overflow: 'hidden' }}>
+                    <div style={{
+                      display: 'grid', gridTemplateColumns: '70px 1fr 110px 110px',
+                      background: '#F5F0E8', padding: '8px 12px', gap: '8px',
+                    }}>
+                      {['Cant.', 'Descripción', 'Val. unit.', 'Total'].map((h) => (
+                        <div key={h} style={{ fontFamily: FONT_SANS, fontSize: '11px', fontWeight: 700, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                          {h}
+                        </div>
+                      ))}
+                    </div>
+                    {materialsList.map((m, i) => (
+                      <div key={i} style={{
+                        display: 'grid', gridTemplateColumns: '70px 1fr 110px 110px',
+                        padding: '10px 12px', gap: '8px',
+                        borderTop: '1px solid #1C141008', alignItems: 'center',
+                      }}>
+                        <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#1C1410' }}>{m.cantidad}</span>
+                        <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#1C1410' }}>{m.descripcion}</span>
+                        <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E' }}>${Number(m.valorUnit).toFixed(2)}</span>
+                        <span style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#1C1410' }}>${Number(m.precioTotal).toFixed(2)}</span>
+                      </div>
+                    ))}
+                    <div style={{
+                      display: 'flex', justifyContent: 'flex-end', gap: '16px',
+                      padding: '10px 12px', borderTop: '1px solid #D4A96A30', background: '#F5F0E840',
+                    }}>
+                      <span style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 700, color: '#6B7B6E', textTransform: 'uppercase' }}>
+                        Subtotal materiales
+                      </span>
+                      <span style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 700, color: '#1C1410', minWidth: '80px', textAlign: 'right' }}>
+                        ${materialsList.reduce((s, m) => s + Number(m.precioTotal), 0).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Materiales — formato antiguo (texto) */}
+              {!materialsList && materialLines.length > 0 && (
                 <div>
                   <p style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 10px' }}>
                     Materiales incluidos
@@ -366,7 +413,23 @@ export default function SolicitudDetailPage() {
           {proPhoto ? (
             <div style={{ width: 64, height: 64, borderRadius: '50%', overflow: 'hidden', margin: '0 auto 12px' }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={proPhoto} alt={proName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <img
+                src={proPhoto}
+                alt={proName}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                onError={(e) => {
+                  const t = e.target as HTMLImageElement
+                  t.style.display = 'none'
+                  const p = t.parentElement
+                  if (p) {
+                    p.style.background = '#B85C1A15'
+                    p.style.display = 'flex'
+                    p.style.alignItems = 'center'
+                    p.style.justifyContent = 'center'
+                    p.innerHTML = `<span style="font-family:DM Sans,sans-serif;font-size:22px;font-weight:700;color:#B85C1A">${proName.split(' ').slice(0, 2).map((w: string) => w[0]).join('').toUpperCase()}</span>`
+                  }
+                }}
+              />
             </div>
           ) : (
             <Initials name={proName} />

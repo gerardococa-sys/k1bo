@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { Send, FileUp, FileText, FileDown, X, ChevronDown } from 'lucide-react'
+import { Send, FileUp, FileText, FileDown, X, ChevronDown, Plus, Trash2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
 const FONT_SERIF = 'var(--font-serif, "Playfair Display", Georgia, serif)'
@@ -20,6 +20,16 @@ function formatDMY(dateStr: string | null | undefined) {
   return new Date(dateStr).toLocaleDateString('es-SV', { day: '2-digit', month: '2-digit', year: 'numeric' })
 }
 
+interface MaterialItem {
+  id:          string
+  cantidad:    number
+  descripcion: string
+  valorUnit:   number
+  precioTotal: number
+}
+
+type StoredMaterial = Omit<MaterialItem, 'id'>
+
 interface Props {
   solicitudId:      string
   userId:           string
@@ -27,6 +37,7 @@ interface Props {
   status:           string
   quoteDescription: string | null
   quoteMaterials:   string | null
+  materialsList:    StoredMaterial[] | null
   quotePdfUrl:      string | null
   rejectionReason:  string | null
   respondedAt:      string | null
@@ -36,25 +47,53 @@ interface Props {
 
 export function QuoteResponsePanel({
   solicitudId, userId, country, status,
-  quoteDescription, quoteMaterials, quotePdfUrl,
-  rejectionReason, respondedAt,
+  quoteDescription, quoteMaterials, materialsList,
+  quotePdfUrl, rejectionReason, respondedAt,
   laborCost: initialLaborCost, materialsCost: initialMaterialsCost,
 }: Props) {
-  const router     = useRouter()
+  const router = useRouter()
 
-  const [description,     setDescription]     = useState('')
-  const [materials,       setMaterials]       = useState('')
-  const [laborCost,       setLaborCost]       = useState<number | ''>('')
-  const [materialsCost,   setMaterialsCost]   = useState<number | ''>('')
-  const [pdfFile,         setPdfFile]         = useState<File | null>(null)
-  const [rejectionOpen,   setRejectionOpen]   = useState(false)
-  const [rejectionText,   setRejectionText]   = useState('')
-  const [error,           setError]           = useState<string | null>(null)
-  const [submitting,      setSubmitting]      = useState(false)
+  const [description,   setDescription]   = useState('')
+  const [materials,     setMaterials]     = useState<MaterialItem[]>([])
+  const [laborCost,     setLaborCost]     = useState<number | ''>('')
+  const [materialsCost, setMaterialsCost] = useState<number | ''>('')
+  const [pdfFile,       setPdfFile]       = useState<File | null>(null)
+  const [rejectionOpen, setRejectionOpen] = useState(false)
+  const [rejectionText, setRejectionText] = useState('')
+  const [error,         setError]         = useState<string | null>(null)
+  const [submitting,    setSubmitting]    = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const total = (Number(laborCost) || 0) + (Number(materialsCost) || 0)
+  const totalMateriales = materials.reduce((sum, m) => sum + m.precioTotal, 0)
 
+  useEffect(() => {
+    setMaterialsCost(totalMateriales > 0 ? totalMateriales : '')
+  }, [totalMateriales])
+
+  const totalEstimado = (Number(laborCost) || 0) + (Number(materialsCost) || 0)
+
+  function addMaterial() {
+    setMaterials((prev) => [...prev, {
+      id:          crypto.randomUUID(),
+      cantidad:    1,
+      descripcion: '',
+      valorUnit:   0,
+      precioTotal: 0,
+    }])
+  }
+
+  function updateMaterial(id: string, field: 'cantidad' | 'descripcion' | 'valorUnit', rawValue: string) {
+    setMaterials((prev) => prev.map((m) => {
+      if (m.id !== id) return m
+      const updated = { ...m, [field]: field === 'descripcion' ? rawValue : (Number(rawValue) || 0) }
+      updated.precioTotal = updated.cantidad * updated.valorUnit
+      return updated
+    }))
+  }
+
+  function removeMaterial(id: string) {
+    setMaterials((prev) => prev.filter((m) => m.id !== id))
+  }
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -80,16 +119,21 @@ export function QuoteResponsePanel({
         pdfUrl = path
       }
 
+      const materialsForDB = materials.length > 0
+        ? materials.map(({ id: _id, ...rest }) => rest)
+        : null
+
       const { error: updateError } = await supabase
         .from('quote_requests')
         .update({
-          status:            'responded',
-          quote_description: description.trim(),
-          quote_materials:   materials.trim() || null,
-          quote_pdf_url:     pdfUrl,
-          labor_cost:        laborCost !== '' ? Number(laborCost) : null,
-          materials_cost:    materialsCost !== '' ? Number(materialsCost) : null,
-          responded_at:      new Date().toISOString(),
+          status:               'responded',
+          quote_description:    description.trim(),
+          quote_materials:      null,
+          quote_materials_list: materialsForDB,
+          quote_pdf_url:        pdfUrl,
+          labor_cost:           laborCost     !== '' ? Number(laborCost)     : null,
+          materials_cost:       materialsCost !== '' ? Number(materialsCost) : null,
+          responded_at:         new Date().toISOString(),
         })
         .eq('id', solicitudId)
 
@@ -124,6 +168,13 @@ export function QuoteResponsePanel({
       setError(e.message ?? 'Ocurrió un error al rechazar la solicitud')
       setSubmitting(false)
     }
+  }
+
+  const cellInput: React.CSSProperties = {
+    border: '1px solid #D4A96A30', borderRadius: '6px',
+    padding: '7px 8px', fontSize: '13px', fontFamily: FONT_SANS,
+    background: '#FDFAF5', color: '#1C1410',
+    width: '100%', boxSizing: 'border-box', outline: 'none',
   }
 
   /* ── READ-ONLY VIEW ─────────────────────────────────────────── */
@@ -177,7 +228,52 @@ export function QuoteResponsePanel({
                 </p>
               </div>
 
-              {quoteMaterials && (
+              {/* Materials table — new structured format */}
+              {materialsList && materialsList.length > 0 && (
+                <div>
+                  <p style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 10px' }}>
+                    Lista de materiales
+                  </p>
+                  <div style={{ border: '1px solid #D4A96A30', borderRadius: '8px', overflow: 'hidden' }}>
+                    <div style={{
+                      display: 'grid', gridTemplateColumns: '70px 1fr 110px 110px',
+                      background: '#F5F0E8', padding: '8px 12px', gap: '8px',
+                    }}>
+                      {['Cant.', 'Descripción', 'Val. unit.', 'Total'].map((h) => (
+                        <div key={h} style={{ fontFamily: FONT_SANS, fontSize: '11px', fontWeight: 700, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                          {h}
+                        </div>
+                      ))}
+                    </div>
+                    {materialsList.map((m, i) => (
+                      <div key={i} style={{
+                        display: 'grid', gridTemplateColumns: '70px 1fr 110px 110px',
+                        padding: '10px 12px', gap: '8px',
+                        borderTop: '1px solid #1C141008', alignItems: 'center',
+                      }}>
+                        <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#1C1410' }}>{m.cantidad}</span>
+                        <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#1C1410' }}>{m.descripcion}</span>
+                        <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E' }}>${Number(m.valorUnit).toFixed(2)}</span>
+                        <span style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#1C1410' }}>${Number(m.precioTotal).toFixed(2)}</span>
+                      </div>
+                    ))}
+                    <div style={{
+                      display: 'flex', justifyContent: 'flex-end', gap: '16px',
+                      padding: '10px 12px', borderTop: '1px solid #D4A96A30', background: '#F5F0E840',
+                    }}>
+                      <span style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 700, color: '#6B7B6E', textTransform: 'uppercase' }}>
+                        Subtotal materiales
+                      </span>
+                      <span style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 700, color: '#1C1410', minWidth: '80px', textAlign: 'right' }}>
+                        ${materialsList.reduce((s, m) => s + Number(m.precioTotal), 0).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Fallback: old text format */}
+              {!materialsList && quoteMaterials && (
                 <div>
                   <p style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>
                     Materiales
@@ -258,58 +354,7 @@ export function QuoteResponsePanel({
         gap:             '20px',
       }}>
 
-        {/* Campo: Mano de obra */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <label style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#1C1410' }}>
-            Valor de mano de obra (USD){' '}
-            <span style={{ fontWeight: 400, color: '#6B7B6E' }}>(opcional)</span>
-          </label>
-          <input
-            type="number"
-            min="0"
-            step="0.01"
-            value={laborCost}
-            onChange={(e) => setLaborCost(e.target.value === '' ? '' : Number(e.target.value))}
-            placeholder="0.00"
-            style={{
-              border: '1px solid #D4A96A40', borderRadius: '8px',
-              padding: '10px 14px', fontSize: '15px', fontFamily: FONT_SANS,
-              background: '#F5F0E8', outline: 'none',
-              color: '#1C1410', width: '100%', boxSizing: 'border-box',
-            }}
-          />
-        </div>
-
-        {/* Campo: Materiales estimados */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <label style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#1C1410' }}>
-            Valor estimado de materiales (USD){' '}
-            <span style={{ fontWeight: 400, color: '#6B7B6E' }}>(opcional)</span>
-          </label>
-          <input
-            type="number"
-            min="0"
-            step="0.01"
-            value={materialsCost}
-            onChange={(e) => setMaterialsCost(e.target.value === '' ? '' : Number(e.target.value))}
-            placeholder="0.00"
-            style={{
-              border: '1px solid #D4A96A40', borderRadius: '8px',
-              padding: '10px 14px', fontSize: '15px', fontFamily: FONT_SANS,
-              background: '#F5F0E8', outline: 'none',
-              color: '#1C1410', width: '100%', boxSizing: 'border-box',
-            }}
-          />
-        </div>
-
-        {/* Total estimado */}
-        {(laborCost !== '' || materialsCost !== '') && total > 0 && (
-          <p style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700, color: '#1C1410', margin: 0 }}>
-            Total estimado: ${total.toFixed(2)}
-          </p>
-        )}
-
-        {/* Campo: Descripción */}
+        {/* Campo 1: Descripción */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           <label style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#1C1410' }}>
             Descripción del trabajo a realizar{' '}
@@ -330,27 +375,186 @@ export function QuoteResponsePanel({
           />
         </div>
 
-        {/* Campo 2: Materiales */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        {/* Campo 2: Lista de materiales */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <label style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#1C1410' }}>
             Lista de materiales{' '}
             <span style={{ fontWeight: 400, color: '#6B7B6E' }}>(opcional)</span>
           </label>
-          <textarea
-            rows={4}
-            value={materials}
-            onChange={(e) => setMaterials(e.target.value)}
-            placeholder={'Ej:\n- 10 m² de tabla roca 1/2\'\'\n- 5 kg de masilla\n- Perfiles metálicos...'}
+
+          {materials.length > 0 && (
+            <div style={{ border: '1px solid #D4A96A30', borderRadius: '8px', overflow: 'hidden' }}>
+              {/* Headers */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: '80px 1fr 120px 120px 36px',
+                background: '#F5F0E8', padding: '8px 12px', gap: '6px',
+              }}>
+                {['Cant.', 'Descripción', 'Val. unit.', 'Total', ''].map((h, i) => (
+                  <div key={i} style={{ fontFamily: FONT_SANS, fontSize: '11px', fontWeight: 700, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                    {h}
+                  </div>
+                ))}
+              </div>
+
+              {/* Rows */}
+              {materials.map((m) => (
+                <div key={m.id} style={{
+                  display: 'grid',
+                  gridTemplateColumns: '80px 1fr 120px 120px 36px',
+                  padding: '8px 12px', gap: '6px',
+                  borderTop: '1px solid #1C141008', alignItems: 'center',
+                }}>
+                  <input
+                    type="number"
+                    min="0"
+                    step="1"
+                    value={m.cantidad}
+                    onChange={(e) => updateMaterial(m.id, 'cantidad', e.target.value)}
+                    style={cellInput}
+                  />
+                  <input
+                    type="text"
+                    value={m.descripcion}
+                    onChange={(e) => updateMaterial(m.id, 'descripcion', e.target.value)}
+                    placeholder="Descripción"
+                    style={cellInput}
+                  />
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={m.valorUnit}
+                    onChange={(e) => updateMaterial(m.id, 'valorUnit', e.target.value)}
+                    style={cellInput}
+                  />
+                  <div style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#1C1410', paddingLeft: '4px' }}>
+                    ${m.precioTotal.toFixed(2)}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeMaterial(m.id)}
+                    style={{
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      color: '#B85C1A60', padding: '4px', display: 'flex',
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = '#B85C1A')}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = '#B85C1A60')}
+                  >
+                    <Trash2 style={{ width: 15, height: 15 }} />
+                  </button>
+                </div>
+              ))}
+
+              {/* Subtotal row */}
+              <div style={{
+                display: 'flex', justifyContent: 'flex-end', gap: '16px',
+                padding: '8px 48px 8px 12px',
+                borderTop: '1px solid #D4A96A30', background: '#F5F0E840',
+              }}>
+                <span style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 700, color: '#6B7B6E', textTransform: 'uppercase' }}>
+                  Subtotal
+                </span>
+                <span style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 700, color: '#1C1410', minWidth: '70px', textAlign: 'right' }}>
+                  ${totalMateriales.toFixed(2)}
+                </span>
+              </div>
+            </div>
+          )}
+
+          <button
+            type="button"
+            onClick={addMaterial}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: '6px',
+              alignSelf: 'flex-start',
+              fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600,
+              color: '#B85C1A', background: 'transparent',
+              border: '1px dashed #B85C1A50', borderRadius: '6px',
+              padding: '7px 14px', cursor: 'pointer',
+            }}
+          >
+            <Plus style={{ width: 14, height: 14 }} />
+            Agregar material
+          </button>
+        </div>
+
+        {/* Campo 3: Mano de obra */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <label style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#1C1410' }}>
+            Valor de mano de obra (USD){' '}
+            <span style={{ color: '#B85C1A' }}>*</span>
+          </label>
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            value={laborCost}
+            onChange={(e) => setLaborCost(e.target.value === '' ? '' : Number(e.target.value))}
+            placeholder="0.00"
             style={{
               border: '1px solid #D4A96A40', borderRadius: '8px',
-              padding: '12px 14px', fontSize: '15px', fontFamily: FONT_SANS,
-              background: '#F5F0E8', resize: 'vertical', outline: 'none',
-              color: '#1C1410', lineHeight: 1.6,
+              padding: '10px 14px', fontSize: '15px', fontFamily: FONT_SANS,
+              background: '#F5F0E8', outline: 'none',
+              color: '#1C1410', width: '100%', boxSizing: 'border-box',
             }}
           />
         </div>
 
-        {/* Campo 3: PDF */}
+        {/* Campo 4: Materiales estimados (auto-filled from table) */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <label style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#1C1410' }}>
+            Valor estimado de materiales (USD){' '}
+            <span style={{ fontWeight: 400, color: '#6B7B6E' }}>
+              {materials.length > 0 ? '(calculado automáticamente)' : '(opcional)'}
+            </span>
+          </label>
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            value={materialsCost}
+            onChange={(e) => setMaterialsCost(e.target.value === '' ? '' : Number(e.target.value))}
+            placeholder="0.00"
+            style={{
+              border: '1px solid #D4A96A40', borderRadius: '8px',
+              padding: '10px 14px', fontSize: '15px', fontFamily: FONT_SANS,
+              background: materials.length > 0 ? '#F5F0E850' : '#F5F0E8',
+              outline: 'none', color: '#1C1410',
+              width: '100%', boxSizing: 'border-box',
+            }}
+          />
+        </div>
+
+        {/* Resumen total — dark card */}
+        {totalEstimado > 0 && (
+          <div style={{
+            background: '#1C1410', borderRadius: '10px',
+            padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '10px',
+          }}>
+            {laborCost !== '' && Number(laborCost) > 0 && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#D4A96A80' }}>Mano de obra</span>
+                <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#D4A96A' }}>${Number(laborCost).toFixed(2)}</span>
+              </div>
+            )}
+            {materialsCost !== '' && Number(materialsCost) > 0 && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#D4A96A80' }}>Materiales</span>
+                <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#D4A96A' }}>${Number(materialsCost).toFixed(2)}</span>
+              </div>
+            )}
+            <div style={{
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              borderTop: '1px solid #D4A96A30', paddingTop: '10px',
+            }}>
+              <span style={{ fontFamily: FONT_SANS, fontSize: '16px', fontWeight: 700, color: '#D4A96A' }}>Total estimado</span>
+              <span style={{ fontFamily: FONT_SERIF, fontSize: '22px', fontWeight: 700, color: '#D4A96A' }}>${totalEstimado.toFixed(2)}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Campo: PDF */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           <label style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#1C1410' }}>
             Cotización en PDF{' '}
@@ -411,7 +615,7 @@ export function QuoteResponsePanel({
         </div>
 
         {/* Separador */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '8px 0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '4px 0' }}>
           <div style={{ flex: 1, height: '1px', background: '#1C141012' }} />
           <span style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#6B7B6E' }}>— o —</span>
           <div style={{ flex: 1, height: '1px', background: '#1C141012' }} />
@@ -485,15 +689,15 @@ export function QuoteResponsePanel({
         <button
           type="button"
           onClick={enviarCotizacion}
-          disabled={!description.trim() || submitting}
+          disabled={!description.trim() || laborCost === '' || submitting}
           style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
             background: '#1C1410', color: '#D4A96A',
             fontFamily: FONT_SANS, fontSize: '16px', fontWeight: 700,
             padding: '14px', borderRadius: '8px', width: '100%',
             border: 'none',
-            cursor: !description.trim() || submitting ? 'not-allowed' : 'pointer',
-            opacity: !description.trim() || submitting ? 0.5 : 1,
+            cursor: !description.trim() || laborCost === '' || submitting ? 'not-allowed' : 'pointer',
+            opacity: !description.trim() || laborCost === '' || submitting ? 0.5 : 1,
           }}
         >
           <Send style={{ width: 18, height: 18 }} />

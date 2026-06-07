@@ -139,9 +139,15 @@ export default function ClientProfilePage() {
     if (avatar) {
       const ext = avatar.name.split('.').pop()
       const path = `${userId}/avatar.${ext}`
-      await supabase.storage.from('avatars').upload(path, avatar, { upsert: true })
-      const { data: url } = supabase.storage.from('avatars').getPublicUrl(path)
-      photo_url = url.publicUrl
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(path, avatar, { upsert: true })
+      if (uploadError) {
+        toast.error('Error al subir la foto: ' + uploadError.message)
+        return
+      }
+      const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
+      photo_url = publicUrl
     }
 
     const { error } = await supabase.from('profiles').update({
@@ -212,7 +218,12 @@ export default function ClientProfilePage() {
             {avatarPreview ? (
               <div style={{ width: 88, height: 88, borderRadius: '50%', overflow: 'hidden', border: '3px solid #D4A96A' }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={avatarPreview} alt="Foto de perfil" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <img
+                  src={avatarPreview}
+                  alt="Foto de perfil"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                />
               </div>
             ) : (
               <div style={{ width: 88, height: 88, borderRadius: '50%', backgroundColor: '#B85C1A12', border: '3px solid #D4A96A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

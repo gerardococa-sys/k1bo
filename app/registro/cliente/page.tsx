@@ -128,10 +128,12 @@ export default function RegistroClientePage() {
     if (avatar) {
       const ext = avatar.name.split('.').pop()
       const path = `${auth.user.id}/avatar.${ext}`
-      const { data: upload } = await supabase.storage.from('avatars').upload(path, avatar)
-      if (upload) {
-        const { data: url } = supabase.storage.from('avatars').getPublicUrl(path)
-        photo_url = url.publicUrl
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(path, avatar)
+      if (!uploadError) {
+        const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
+        photo_url = publicUrl
       }
     }
 
@@ -275,7 +277,12 @@ export default function RegistroClientePage() {
               <div className="flex justify-center">
                 <div style={{ width: 72, height: 72, borderRadius: '50%', overflow: 'hidden', border: '3px solid #D4A96A' }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={avatarPreview} alt="Vista previa" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <img
+                    src={avatarPreview}
+                    alt="Vista previa"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                  />
                 </div>
               </div>
             )}

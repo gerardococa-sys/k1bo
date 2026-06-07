@@ -249,7 +249,12 @@ export default function ProProfilePage() {
                 }}>
                   {avatarPreview ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={avatarPreview} alt="Foto de perfil" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img
+                      src={avatarPreview}
+                      alt="Foto de perfil"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                    />
                   ) : (
                     <span style={{ fontFamily: FONT_SERIF, fontSize: '28px', color: '#B85C1A', fontWeight: 700 }}>
                       {getInitials(fullName || 'P')}

@@ -165,7 +165,23 @@ export default async function ProSolicitudDetailPage({ params }: { params: { cou
               {clientPhoto ? (
                 <div style={{ width: 48, height: 48, borderRadius: '50%', overflow: 'hidden', flexShrink: 0 }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={clientPhoto} alt={clientName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <img
+                    src={clientPhoto}
+                    alt={clientName}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    onError={(e) => {
+                      const t = e.target as HTMLImageElement
+                      t.style.display = 'none'
+                      const p = t.parentElement
+                      if (p) {
+                        p.style.background = '#B85C1A15'
+                        p.style.display = 'flex'
+                        p.style.alignItems = 'center'
+                        p.style.justifyContent = 'center'
+                        p.innerHTML = `<span style="font-family:DM Sans,sans-serif;font-size:16px;font-weight:700;color:#B85C1A">${clientName.split(' ').slice(0, 2).map((w: string) => w[0]).join('').toUpperCase()}</span>`
+                      }
+                    }}
+                  />
                 </div>
               ) : (
                 <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#B85C1A15', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -212,6 +228,7 @@ export default async function ProSolicitudDetailPage({ params }: { params: { cou
             status={(solicitud as any).status ?? 'pending'}
             quoteDescription={(solicitud as any).quote_description ?? null}
             quoteMaterials={(solicitud as any).quote_materials ?? null}
+            materialsList={(solicitud as any).quote_materials_list ?? null}
             quotePdfUrl={(solicitud as any).quote_pdf_url ?? null}
             rejectionReason={(solicitud as any).rejection_reason ?? null}
             respondedAt={(solicitud as any).responded_at ?? null}

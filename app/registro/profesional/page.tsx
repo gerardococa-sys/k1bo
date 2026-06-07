@@ -111,10 +111,12 @@ export default function RegistroProfesionalPage() {
     if (avatar) {
       const ext = avatar.name.split('.').pop()
       const path = `${auth.user.id}/avatar.${ext}`
-      const { data: up } = await supabase.storage.from('avatars').upload(path, avatar)
-      if (up) {
-        const { data: url } = supabase.storage.from('avatars').getPublicUrl(path)
-        photo_url = url.publicUrl
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(path, avatar)
+      if (!uploadError) {
+        const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
+        photo_url = publicUrl
       }
     }
 
