@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { FileX, Eye } from 'lucide-react'
 import { UnreadDot } from '@/components/messages/UnreadDot'
+import { ClientAvatar } from '@/components/ui/ClientAvatar'
 
 const FONT_SERIF = 'var(--font-serif, "Playfair Display", Georgia, serif)'
 const FONT_SANS  = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
@@ -22,43 +23,6 @@ function formatDMY(dateStr: string | null | undefined) {
   return new Date(dateStr).toLocaleDateString('es-SV', { day: '2-digit', month: '2-digit', year: 'numeric' })
 }
 
-function Avatar({ name, photoUrl, size = 32 }: { name?: string; photoUrl?: string | null; size?: number }) {
-  const letters = (name ?? '?').split(' ').slice(0, 2).map((w: string) => w[0]).join('').toUpperCase()
-  if (photoUrl) {
-    return (
-      <div style={{ width: size, height: size, borderRadius: '50%', overflow: 'hidden', flexShrink: 0 }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={photoUrl}
-          alt={name}
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          onError={(e) => {
-            const t = e.target as HTMLImageElement
-            t.style.display = 'none'
-            const p = t.parentElement
-            if (p) {
-              p.style.background = '#B85C1A15'
-              p.style.display = 'flex'
-              p.style.alignItems = 'center'
-              p.style.justifyContent = 'center'
-              p.innerHTML = `<span style="font-family:DM Sans,sans-serif;font-size:12px;font-weight:600;color:#B85C1A">${(name ?? '?').split(' ').slice(0, 2).map((w: string) => w[0]).join('').toUpperCase()}</span>`
-            }
-          }}
-        />
-      </div>
-    )
-  }
-  return (
-    <div style={{
-      width: size, height: size, borderRadius: '50%', flexShrink: 0,
-      background: '#B85C1A15', display: 'flex', alignItems: 'center', justifyContent: 'center',
-    }}>
-      <span style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 600, color: '#B85C1A' }}>
-        {letters}
-      </span>
-    </div>
-  )
-}
 
 function StatusBadge({ status }: { status: string }) {
   const b = STATUS_BADGE[status] ?? STATUS_BADGE.pending
@@ -218,7 +182,7 @@ export default async function ClientSolicitudesPage({ params }: { params: { coun
 
                   {/* Profesional */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Avatar name={proName} photoUrl={proPhoto} size={32} />
+                    <ClientAvatar name={proName} photoUrl={proPhoto} size={32} />
                     <span style={{
                       fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 500,
                       color: '#1C1410', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
@@ -309,7 +273,7 @@ export default async function ClientSolicitudesPage({ params }: { params: { coun
 
                   {/* Profesional */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-                    <Avatar name={proName} photoUrl={proPhoto} size={32} />
+                    <ClientAvatar name={proName} photoUrl={proPhoto} size={32} />
                     <span style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 500, color: '#1C1410' }}>
                       {proName}
                     </span>
