@@ -269,17 +269,14 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
         setDepartments((depts ?? []) as Department[])
       }
 
-      // Paso 1: todos los profesionales (sin account_type — puede no existir aún)
+      // Paso 1: profesionales — solo columnas que existen en la tabla
       const { data: pros, error: prosError } = await supabase
         .from('professionals')
-        .select('id, featured, bio, short_description, covers_entire_country, created_at')
+        .select('id, featured, bio, short_description, covers_entire_country')
         .order('featured', { ascending: false })
-        .order('created_at', { ascending: false })
-
-      console.log('[profesionales] pros:', pros?.length, prosError)
 
       if (!pros?.length) {
-        console.log('[profesionales] Sin profesionales — abortando:', prosError)
+        if (prosError) console.error('[profesionales] error al cargar:', prosError)
         setLoading(false)
         return
       }
@@ -293,7 +290,7 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
         { data: reviews },
       ] = await Promise.all([
         supabase.from('profiles')
-          .select('id, full_name, photo_url, verified, active, department_id, municipality_id')
+          .select('id, full_name, photo_url, verified, active, department_id, municipality_id, created_at')
           .in('id', proIds),
         supabase.from('professional_categories')
           .select('professional_id, category_id')
@@ -303,8 +300,6 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
           .in('professional_id', proIds),
       ])
 
-      console.log('[profesionales] profiles:', profiles?.length)
-      console.log('[profesionales] proCategories:', proCategories?.length)
 
       // Paso 5: nombres de categorías
       const catIds = Array.from(
@@ -365,8 +360,8 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
 
           return {
             ...pro,
-            account_type:  (pro as any).account_type ?? 'independent',
-            // profile en singular — es lo que espera ProfessionalCard
+            account_type:  'independent',
+            created_at:    profile.created_at ?? null,
             profile: {
               ...profile,
               department:   dept,
@@ -378,13 +373,6 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
           }
         })
         .filter(Boolean)
-
-      console.log('[profesionales] assembled:', assembled.length)
-      console.log('[profesionales] primer pro:', assembled[0])
-      console.log('[profesionales] FINAL assembled:', assembled.length, assembled.map((p: any) => ({
-        id: p?.id,
-        name: p?.profile?.full_name,
-      })))
 
       setProfesionales(assembled)
       setLoading(false)
