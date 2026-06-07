@@ -12,7 +12,8 @@ const FONT_SANS  = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
 
 const STATUS_BADGE: Record<string, { bg: string; color: string; label: string }> = {
   pending:   { bg: '#D4A96A20', color: '#B85C1A', label: 'Pendiente'  },
-  responded: { bg: '#1C141015', color: '#1C1410', label: 'Respondida' },
+  responded: { bg: '#1C141015', color: '#1C1410', label: 'Cotizada' },
+  revision:  { bg: '#D4A96A15', color: '#B85C1A', label: 'En revisión' },
   accepted:  { bg: '#6B7B6E20', color: '#3d4d40', label: 'Aceptada'   },
   rejected:  { bg: '#1C141010', color: '#6B7B6E', label: 'Rechazada'  },
   completed: { bg: '#1C141015', color: '#1C1410', label: 'Finalizada' },
@@ -38,13 +39,30 @@ function StatusBadge({ status }: { status: string }) {
   )
 }
 
-export default async function ClientSolicitudesPage({ params }: { params: { country: string } }) {
+export default async function ClientSolicitudesPage({
+  params,
+  searchParams,
+}: {
+  params:       { country: string }
+  searchParams: { page?: string; size?: string }
+}) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
   const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
   if (!profile || profile.role !== 'client') redirect(`/${params.country}`)
+
+  const pageSize = [10, 20, 50, 100].includes(Number(searchParams.size))
+    ? Number(searchParams.size) : 10
+  const page = Math.max(1, Number(searchParams.page ?? 1))
+  const from = (page - 1) * pageSize
+  const to   = from + pageSize - 1
+
+  const { count: total } = await supabase
+    .from('quote_requests')
+    .select('*', { count: 'exact', head: true })
+    .eq('client_id', user.id)
 
   const { data: solicitudes } = await supabase
     .from('quote_requests')
@@ -59,8 +77,11 @@ export default async function ClientSolicitudesPage({ params }: { params: { coun
     `)
     .eq('client_id', user.id)
     .order('created_at', { ascending: false })
+    .range(from, to)
 
-  const total = solicitudes?.length ?? 0
+  const totalPages = Math.ceil((total ?? 0) / pageSize)
+  const hasPrev = page > 1
+  const hasNext = page < totalPages
 
   const solicitudIds = (solicitudes ?? []).map((s: any) => s.id)
   let latestMsgMap: Record<string, string> = {}
@@ -97,7 +118,7 @@ export default async function ClientSolicitudesPage({ params }: { params: { coun
           fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#6B7B6E',
           background: '#1C141010', padding: '4px 12px', borderRadius: '20px',
         }}>
-          {total} {total === 1 ? 'solicitud' : 'solicitudes'}
+          {total ?? 0} {(total ?? 0) === 1 ? 'solicitud' : 'solicitudes'}
         </span>
       </div>
 
@@ -121,7 +142,7 @@ export default async function ClientSolicitudesPage({ params }: { params: { coun
         </div>
       )}
 
-      {total > 0 && (
+      {(total ?? 0) > 0 && (
         <>
           {/* ── TABLA DESKTOP ── */}
           <div className="cli-sol-table" style={{
@@ -329,6 +350,67 @@ export default async function ClientSolicitudesPage({ params }: { params: { coun
             })}
           </div>
         </>
+      )}
+
+      {/* Paginación */}
+      {(total ?? 0) > 0 && (
+        <div style={{
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          marginTop: '20px', flexWrap: 'wrap', gap: '12px',
+        }}>
+          {/* Selector de registros por página */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E' }}>Mostrar:</span>
+            {[10, 20, 50, 100].map((size) => (
+              <Link
+                key={size}
+                href={`?page=1&size=${size}`}
+                style={{
+                  fontFamily: FONT_SANS, fontSize: '13px',
+                  fontWeight: pageSize === size ? 700 : 400,
+                  color: pageSize === size ? '#B85C1A' : '#6B7B6E',
+                  padding: '4px 10px', borderRadius: '6px',
+                  background: pageSize === size ? '#B85C1A12' : 'transparent',
+                  border: pageSize === size ? '1px solid #B85C1A40' : '1px solid transparent',
+                  textDecoration: 'none',
+                }}
+              >
+                {size}
+              </Link>
+            ))}
+          </div>
+
+          {/* Info y navegación */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E' }}>
+              {from + 1}–{Math.min(to + 1, total ?? 0)} de {total ?? 0}
+            </span>
+            {hasPrev && (
+              <Link
+                href={`?page=${page - 1}&size=${pageSize}`}
+                style={{
+                  fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600,
+                  color: '#B85C1A', border: '1px solid #B85C1A40',
+                  borderRadius: '6px', padding: '6px 12px', textDecoration: 'none',
+                }}
+              >
+                ← Anterior
+              </Link>
+            )}
+            {hasNext && (
+              <Link
+                href={`?page=${page + 1}&size=${pageSize}`}
+                style={{
+                  fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600,
+                  color: '#B85C1A', border: '1px solid #B85C1A40',
+                  borderRadius: '6px', padding: '6px 12px', textDecoration: 'none',
+                }}
+              >
+                Siguiente →
+              </Link>
+            )}
+          </div>
+        </div>
       )}
 
       <style>{`

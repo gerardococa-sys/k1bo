@@ -23,12 +23,14 @@ export default async function ClientDashboardPage({ params }: { params: { countr
   if (!profile || profile.role !== 'client') redirect(`/${params.country}`)
 
   const [
-    { count: total },
-    { count: pending },
+    { count: pendingCount },
+    { count: respondedCount },
+    { count: acceptedCount },
     { data: quotes },
   ] = await Promise.all([
-    supabase.from('quote_requests').select('*', { count: 'exact', head: true }).eq('client_id', user.id),
     supabase.from('quote_requests').select('*', { count: 'exact', head: true }).eq('client_id', user.id).eq('status', 'pending'),
+    supabase.from('quote_requests').select('*', { count: 'exact', head: true }).eq('client_id', user.id).eq('status', 'responded'),
+    supabase.from('quote_requests').select('*', { count: 'exact', head: true }).eq('client_id', user.id).eq('status', 'accepted'),
     supabase
       .from('quote_requests')
       .select('id, status, created_at, category:categories(name), professional:professionals(profile:profiles(full_name))')
@@ -42,21 +44,29 @@ export default async function ClientDashboardPage({ params }: { params: { countr
       <h1 className="text-2xl font-bold mb-2">Dashboard del Propietario</h1>
       <p className="text-muted-foreground mb-8">Bienvenido, {profile.full_name}</p>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mb-8">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-8">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground">Solicitudes pendientes</CardTitle>
+            <CardTitle className="text-sm text-muted-foreground">Solicitudes pendientes de cotización</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-primary">{pending}</p>
+            <p className="text-3xl font-bold text-primary">{pendingCount ?? 0}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground">Total solicitudes</CardTitle>
+            <CardTitle className="text-sm text-muted-foreground">Solicitudes respondidas</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold">{total}</p>
+            <p className="text-3xl font-bold">{respondedCount ?? 0}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm text-muted-foreground">Solicitudes Aceptadas</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">{acceptedCount ?? 0}</p>
           </CardContent>
         </Card>
       </div>
@@ -66,7 +76,7 @@ export default async function ClientDashboardPage({ params }: { params: { countr
           <Link href={`/${params.country}/cliente/solicitudes`}>
             <FileText className="h-5 w-5 text-primary" />
             <div className="text-left">
-              <p className="font-semibold">Mis Solicitudes</p>
+              <p className="font-semibold">Mis solicitudes de cotización</p>
               <p className="text-xs text-muted-foreground">Ver todas tus solicitudes</p>
             </div>
           </Link>

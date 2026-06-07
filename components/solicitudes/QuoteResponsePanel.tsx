@@ -2,15 +2,16 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { Send, FileUp, FileText, FileDown, X, ChevronDown, Plus, Trash2 } from 'lucide-react'
+import { Send, FileUp, FileText, FileDown, X, ChevronDown, Plus, Trash2, RefreshCw } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
 const FONT_SERIF = 'var(--font-serif, "Playfair Display", Georgia, serif)'
 const FONT_SANS  = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
 
 const STATUS_BADGE: Record<string, { bg: string; color: string; label: string }> = {
-  responded: { bg: '#1C141015', color: '#1C1410',  label: 'Respondida' },
-  accepted:  { bg: '#6B7B6E20', color: '#3d4d40',  label: 'Aceptada'   },
+  responded: { bg: '#1C141015', color: '#1C1410',  label: 'Cotizada'    },
+  revision:  { bg: '#D4A96A15', color: '#B85C1A',  label: 'En revisión' },
+  accepted:  { bg: '#6B7B6E20', color: '#3d4d40',  label: 'Aceptada'    },
   rejected:  { bg: '#B85C1A08', color: '#B85C1A',  label: 'Rechazada'  },
   completed: { bg: '#1C141015', color: '#1C1410',  label: 'Finalizada' },
 }
@@ -69,6 +70,20 @@ export function QuoteResponsePanel({
   useEffect(() => {
     setMaterialsCost(totalMateriales > 0 ? totalMateriales : '')
   }, [totalMateriales])
+
+  useEffect(() => {
+    if (status !== 'revision') return
+    if (quoteDescription)   setDescription(quoteDescription)
+    if (initialLaborCost    != null) setLaborCost(initialLaborCost)
+    if (initialMaterialsCost != null) setMaterialsCost(initialMaterialsCost)
+    if (materialsList && materialsList.length > 0) {
+      setMaterials(materialsList.map((m) => ({
+        ...m,
+        id: `mat-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      })))
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const totalEstimado = (Number(laborCost) || 0) + (Number(materialsCost) || 0)
 
@@ -151,7 +166,7 @@ export function QuoteResponsePanel({
           quote_description:    description.trim(),
           quote_materials:      null,
           quote_materials_list: materialsForDB,
-          quote_pdf_url:        pdfUrl,
+          quote_pdf_url:        pdfUrl ?? (status === 'revision' ? quotePdfUrl : null),
           labor_cost:           laborCost     !== '' ? Number(laborCost)     : null,
           materials_cost:       materialsCost !== '' ? Number(materialsCost) : null,
           responded_at:         new Date().toISOString(),
@@ -205,7 +220,7 @@ export function QuoteResponsePanel({
   }
 
   /* ── READ-ONLY VIEW ─────────────────────────────────────────── */
-  if (status !== 'pending') {
+  if (status !== 'pending' && status !== 'revision') {
     const isRejected = status === 'rejected'
     const badge = STATUS_BADGE[status]
 
@@ -364,12 +379,30 @@ export function QuoteResponsePanel({
     )
   }
 
-  /* ── FORM VIEW (status === 'pending') ───────────────────────── */
+  /* ── FORM VIEW (status === 'pending' | 'revision') ─────────── */
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       <h2 style={{ fontFamily: FONT_SERIF, fontSize: '24px', fontWeight: 700, color: '#1C1410', margin: 0 }}>
-        Enviar Cotización
+        {status === 'revision' ? 'Editar Cotización' : 'Enviar Cotización'}
       </h2>
+
+      {status === 'revision' && (
+        <div style={{
+          background: '#D4A96A15', border: '1px solid #D4A96A50',
+          borderRadius: '10px', padding: '14px 16px',
+          display: 'flex', alignItems: 'flex-start', gap: '10px',
+        }}>
+          <RefreshCw style={{ width: 16, height: 16, color: '#B85C1A', flexShrink: 0, marginTop: '2px' }} />
+          <div>
+            <p style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#B85C1A', margin: '0 0 3px' }}>
+              Cotización en revisión
+            </p>
+            <p style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#6B7B6E', margin: 0, lineHeight: 1.5 }}>
+              El propietario ha solicitado cambios. Edita la cotización y vuelve a enviarla.
+            </p>
+          </div>
+        </div>
+      )}
 
       <div style={{
         backgroundColor: '#fff',
@@ -528,55 +561,30 @@ export function QuoteResponsePanel({
           />
         </div>
 
-        {/* Campo 4: Materiales estimados (auto-filled from table) */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <label style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#1C1410' }}>
-            Valor estimado de materiales (USD){' '}
-            <span style={{ fontWeight: 400, color: '#6B7B6E' }}>
-              {materials.length > 0 ? '(calculado automáticamente)' : '(opcional)'}
-            </span>
-          </label>
-          <input
-            type="number"
-            min="0"
-            step="0.01"
-            value={materialsCost}
-            onChange={(e) => setMaterialsCost(e.target.value === '' ? '' : Number(e.target.value))}
-            placeholder="0.00"
-            style={{
-              border: '1px solid #D4A96A40', borderRadius: '8px',
-              padding: '10px 14px', fontSize: '15px', fontFamily: FONT_SANS,
-              background: materials.length > 0 ? '#F5F0E850' : '#F5F0E8',
-              outline: 'none', color: '#1C1410',
-              width: '100%', boxSizing: 'border-box',
-            }}
-          />
-        </div>
-
-        {/* Resumen total — dark card */}
+        {/* Resumen total */}
         {totalEstimado > 0 && (
           <div style={{
-            background: '#1C1410', borderRadius: '10px',
+            background: '#F5F0E8', borderRadius: '10px',
             padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '10px',
           }}>
             {laborCost !== '' && Number(laborCost) > 0 && (
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#D4A96A80' }}>Mano de obra</span>
-                <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#D4A96A' }}>${Number(laborCost).toFixed(2)}</span>
+                <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E' }}>Mano de obra</span>
+                <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#1C1410' }}>${Number(laborCost).toFixed(2)}</span>
               </div>
             )}
             {materialsCost !== '' && Number(materialsCost) > 0 && (
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#D4A96A80' }}>Materiales</span>
-                <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#D4A96A' }}>${Number(materialsCost).toFixed(2)}</span>
+                <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E' }}>Materiales</span>
+                <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#1C1410' }}>${Number(materialsCost).toFixed(2)}</span>
               </div>
             )}
             <div style={{
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              borderTop: '1px solid #D4A96A30', paddingTop: '10px',
+              borderTop: '1px solid #D4A96A40', paddingTop: '10px',
             }}>
-              <span style={{ fontFamily: FONT_SANS, fontSize: '16px', fontWeight: 700, color: '#D4A96A' }}>Total estimado</span>
-              <span style={{ fontFamily: FONT_SERIF, fontSize: '22px', fontWeight: 700, color: '#D4A96A' }}>${totalEstimado.toFixed(2)}</span>
+              <span style={{ fontFamily: FONT_SANS, fontSize: '16px', fontWeight: 700, color: '#1C1410' }}>Total estimado</span>
+              <span style={{ fontFamily: FONT_SERIF, fontSize: '20px', fontWeight: 700, color: '#B85C1A' }}>${totalEstimado.toFixed(2)}</span>
             </div>
           </div>
         )}

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { Calendar, Clock, Check, Download, X, MessageSquare } from 'lucide-react'
+import { Calendar, Clock, Check, Download, X, MessageSquare, RefreshCw } from 'lucide-react'
 import { PhotoGallery } from '@/components/quotes/PhotoGallery'
 
 const FONT_SERIF = 'var(--font-serif, "Playfair Display", Georgia, serif)'
@@ -12,8 +12,9 @@ const FONT_SANS  = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
 
 const STATUS_BADGE: Record<string, { bg: string; color: string; label: string; description: string }> = {
   pending:   { bg: '#D4A96A20', color: '#B85C1A', label: 'Pendiente',  description: 'Tu solicitud está siendo revisada por el profesional.' },
-  responded: { bg: '#1C141015', color: '#1C1410', label: 'Respondida', description: 'El profesional ha respondido con una cotización.' },
-  accepted:  { bg: '#6B7B6E20', color: '#3d4d40', label: 'Aceptada',   description: 'Has aceptado la cotización del profesional.' },
+  responded: { bg: '#1C141015', color: '#1C1410', label: 'Cotizada',     description: 'El profesional ha respondido con una cotización.' },
+  revision:  { bg: '#D4A96A15', color: '#B85C1A', label: 'En revisión', description: 'Has solicitado cambios. El profesional está revisando tu solicitud.' },
+  accepted:  { bg: '#6B7B6E20', color: '#3d4d40', label: 'Aceptada',    description: 'Has aceptado la cotización del profesional.' },
   rejected:  { bg: '#1C141010', color: '#6B7B6E', label: 'Rechazada',  description: 'El profesional no pudo atender tu solicitud en este momento.' },
 }
 
@@ -138,6 +139,14 @@ export default function SolicitudDetailPage() {
     setActionLoading(false)
   }
 
+  async function handleRequestRevision() {
+    setActionLoading(true)
+    const supabase = createClient()
+    await supabase.from('quote_requests').update({ status: 'revision' }).eq('id', params.id)
+    setSolicitud((prev: any) => ({ ...prev, status: 'revision' }))
+    setActionLoading(false)
+  }
+
   if (loading) {
     return (
       <div style={{ fontFamily: FONT_SANS, padding: '64px 24px', textAlign: 'center', color: '#6B7B6E' }}>
@@ -153,7 +162,7 @@ export default function SolicitudDetailPage() {
   const category    = solicitud.category    as any
   const subcategory = solicitud.subcategory as any
   const badge       = STATUS_BADGE[solicitud.status] ?? STATUS_BADGE.pending
-  const showCotizacion = solicitud.status === 'responded' || solicitud.status === 'accepted'
+  const showCotizacion = solicitud.status === 'responded' || solicitud.status === 'accepted' || solicitud.status === 'revision'
 
   const materialsList = (solicitud.quote_materials_list as { cantidad: number; descripcion: string; valorUnit: number; precioTotal: number }[] | null) ?? null
   const materialLines = materialsList
@@ -176,9 +185,23 @@ export default function SolicitudDetailPage() {
       </Link>
 
       {/* Title */}
-      <h1 style={{ fontFamily: FONT_SERIF, fontSize: '38px', fontWeight: 700, color: '#1C1410', margin: '0 0 28px' }}>
-        Detalle de Solicitud
+      <h1 style={{ fontFamily: FONT_SERIF, fontSize: '38px', fontWeight: 700, color: '#1C1410', margin: '0 0 12px' }}>
+        Detalle de Solicitud de Cotización
       </h1>
+
+      {/* Código */}
+      <div style={{
+        display: 'inline-flex', alignItems: 'center', gap: '8px',
+        background: '#1C141008', padding: '6px 14px',
+        borderRadius: '8px', marginBottom: '24px',
+      }}>
+        <span style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+          Código
+        </span>
+        <span style={{ fontFamily: 'monospace', fontSize: '14px', fontWeight: 700, color: '#1C1410' }}>
+          {params.id.substring(0, 8).toUpperCase()}
+        </span>
+      </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
@@ -321,26 +344,20 @@ export default function SolicitudDetailPage() {
               )}
 
               {/* Costos */}
-              {(solicitud.labor_cost != null || solicitud.materials_cost != null) && (
+              {showCotizacion && (
                 <div style={{ background: '#F5F0E8', borderRadius: '8px', padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {solicitud.labor_cost != null && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E' }}>Mano de obra</span>
-                      <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#1C1410' }}>${Number(solicitud.labor_cost).toFixed(2)}</span>
-                    </div>
-                  )}
-                  {solicitud.materials_cost != null && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E' }}>Materiales estimados</span>
-                      <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#1C1410' }}>${Number(solicitud.materials_cost).toFixed(2)}</span>
-                    </div>
-                  )}
-                  {solicitud.labor_cost != null && solicitud.materials_cost != null && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #D4A96A40', paddingTop: '8px' }}>
-                      <span style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700, color: '#1C1410' }}>Total estimado</span>
-                      <span style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700, color: '#1C1410' }}>${(Number(solicitud.labor_cost) + Number(solicitud.materials_cost)).toFixed(2)}</span>
-                    </div>
-                  )}
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E' }}>Mano de obra</span>
+                    <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#1C1410' }}>${Number(solicitud.labor_cost ?? 0).toFixed(2)}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E' }}>Materiales</span>
+                    <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#1C1410' }}>${Number(solicitud.materials_cost ?? 0).toFixed(2)}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #D4A96A40', paddingTop: '8px' }}>
+                    <span style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700, color: '#1C1410' }}>Total estimado</span>
+                    <span style={{ fontFamily: FONT_SANS, fontSize: '17px', fontWeight: 700, color: '#B85C1A' }}>${(Number(solicitud.labor_cost ?? 0) + Number(solicitud.materials_cost ?? 0)).toFixed(2)}</span>
+                  </div>
                 </div>
               )}
 
@@ -363,9 +380,10 @@ export default function SolicitudDetailPage() {
                 </div>
               )}
 
-              {/* Aceptar / Rechazar */}
+              {/* Aceptar / Solicitar cambios / Rechazar */}
               {solicitud.status === 'responded' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '4px' }}>
+                  {/* A) Aceptar */}
                   <button
                     onClick={handleAccept}
                     disabled={actionLoading}
@@ -380,10 +398,12 @@ export default function SolicitudDetailPage() {
                   >
                     {actionLoading ? 'Procesando...' : 'Aceptar cotización'}
                   </button>
+                  {/* B) Solicitar cambios */}
                   <button
-                    onClick={() => setConfirmRejectOpen(true)}
+                    onClick={handleRequestRevision}
                     disabled={actionLoading}
                     style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
                       background: 'transparent', color: '#B85C1A',
                       border: '1.5px solid #B85C1A', borderRadius: '8px',
                       fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700,
@@ -392,8 +412,31 @@ export default function SolicitudDetailPage() {
                       opacity: actionLoading ? 0.6 : 1,
                     }}
                   >
+                    <RefreshCw style={{ width: 16, height: 16 }} />
+                    {actionLoading ? 'Procesando...' : 'Solicitar cambios'}
+                  </button>
+                  {/* C) Rechazar */}
+                  <button
+                    onClick={() => setConfirmRejectOpen(true)}
+                    disabled={actionLoading}
+                    style={{
+                      background: 'transparent', color: '#6B7B6E',
+                      border: '1px solid #1C141020', borderRadius: '8px',
+                      fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 600,
+                      padding: '13px', width: '100%',
+                      cursor: actionLoading ? 'not-allowed' : 'pointer',
+                      opacity: actionLoading ? 0.6 : 1,
+                    }}
+                  >
                     Rechazar cotización
                   </button>
+                  {/* D) Aviso */}
+                  <p style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#6B7B6E', margin: '4px 0 0', lineHeight: 1.6 }}>
+                    Si necesitas comunicarte con el profesional para explicar los cambios,{' '}
+                    <Link href={`/${params.country}/mensajes?solicitud=${params.id}`} style={{ color: '#B85C1A', textDecoration: 'underline' }}>
+                      usa el chat de mensajes
+                    </Link>.
+                  </p>
                 </div>
               )}
             </div>

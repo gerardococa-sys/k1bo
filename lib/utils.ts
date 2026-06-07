@@ -56,7 +56,7 @@ export const DAY_LABELS: Record<string, string> = {
 
 export const STATUS_LABELS: Record<string, string> = {
   pending: 'Pendiente',
-  responded: 'Respondida',
+  responded: 'Cotizada',
   accepted: 'Aceptada',
   rejected: 'Rechazada',
 }

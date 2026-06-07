@@ -13,7 +13,8 @@ const FONT_SANS  = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
 
 const STATUS_BADGE: Record<string, { bg: string; color: string; label: string }> = {
   pending:   { bg: '#D4A96A20', color: '#B85C1A', label: 'Pendiente'  },
-  responded: { bg: '#1C141015', color: '#6B7B6E', label: 'Respondida' },
+  responded: { bg: '#1C141015', color: '#6B7B6E', label: 'Cotizada' },
+  revision:  { bg: '#D4A96A15', color: '#B85C1A', label: 'En revisión' },
   accepted:  { bg: '#6B7B6E20', color: '#3d4d40', label: 'Aceptada'   },
   rejected:  { bg: '#1C141010', color: '#9B9B9B', label: 'Rechazada'  },
   completed: { bg: '#1C141015', color: '#1C1410', label: 'Finalizada' },
@@ -22,8 +23,9 @@ const STATUS_BADGE: Record<string, { bg: string; color: string; label: string }>
 const FILTER_OPTIONS = [
   { value: 'all',       label: 'Todos'      },
   { value: 'pending',   label: 'Pendiente'  },
-  { value: 'responded', label: 'Respondida' },
-  { value: 'accepted',  label: 'Aceptada'   },
+  { value: 'responded', label: 'Cotizada'     },
+  { value: 'revision',  label: 'En revisión' },
+  { value: 'accepted',  label: 'Aceptada'    },
   { value: 'rejected',  label: 'Rechazada'  },
   { value: 'completed', label: 'Finalizada' },
 ]
