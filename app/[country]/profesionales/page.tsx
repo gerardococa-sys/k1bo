@@ -22,6 +22,7 @@ type Filters = {
   tipo:         string
   departamento: string
   municipio:    string
+  distrito:     string
 }
 
 const DEFAULT_FILTERS: Filters = {
@@ -31,6 +32,7 @@ const DEFAULT_FILTERS: Filters = {
   tipo:         'all',
   departamento: '',
   municipio:    '',
+  distrito:     '',
 }
 
 const TIPO_OPTIONS = [
@@ -309,25 +311,50 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
 
   // Filtered + sorted results
   const filtrados = useMemo(() => {
+    if (!profesionales) return []
+
     let result = profesionales.filter(pro => {
-      const profile = pro.profile
-      const nombre  = (profile?.full_name ?? '').toLowerCase()
+      // Acceso defensivo al perfil (puede ser objeto o array según FK setup en PostgREST)
+      const profile = Array.isArray(pro.profile) ? pro.profile[0] : pro.profile
+      if (!profile) return false
 
-      if (filters.nombre && !nombre.includes(filters.nombre.toLowerCase())) return false
-
-      if (filters.subcategoria) {
-        if (!(pro.categories as any[])?.some(
-          (pc: any) => pc.category?.id === filters.subcategoria,
-        )) return false
-      } else if (filters.categoria) {
-        if (!(pro.categories as any[])?.some(
-          (pc: any) => pc.category?.id === filters.categoria || pc.category?.parent_id === filters.categoria,
-        )) return false
+      // Filtro nombre
+      if (filters.nombre && filters.nombre.trim() !== '') {
+        const nombre = (profile.full_name ?? '').toLowerCase()
+        if (!nombre.includes(filters.nombre.toLowerCase())) return false
       }
 
+      // Filtro categoría / subcategoría
+      if (filters.subcategoria && filters.subcategoria !== '') {
+        const cats = (pro.categories as any[]) ?? []
+        const tiene = cats.some(pc => {
+          const cat = Array.isArray(pc.category) ? pc.category[0] : pc.category
+          return cat?.id === filters.subcategoria
+        })
+        if (!tiene) return false
+      } else if (filters.categoria && filters.categoria !== '') {
+        const cats = (pro.categories as any[]) ?? []
+        const tiene = cats.some(pc => {
+          const cat = Array.isArray(pc.category) ? pc.category[0] : pc.category
+          return cat?.id === filters.categoria || cat?.parent_id === filters.categoria
+        })
+        if (!tiene) return false
+      }
+
+      // Filtro tipo
       if (filters.tipo !== 'all' && pro.account_type !== filters.tipo) return false
-      if (filters.departamento && profile?.department?.id !== filters.departamento) return false
-      if (filters.municipio   && profile?.municipality?.id !== filters.municipio)   return false
+
+      // Filtro departamento
+      if (filters.departamento && filters.departamento !== '') {
+        const dept = Array.isArray(profile.department) ? profile.department[0] : profile.department
+        if (dept?.id !== filters.departamento) return false
+      }
+
+      // Filtro municipio
+      if (filters.municipio && filters.municipio !== '') {
+        const mun = Array.isArray(profile.municipality) ? profile.municipality[0] : profile.municipality
+        if (mun?.id !== filters.municipio) return false
+      }
 
       return true
     })

@@ -4,7 +4,7 @@ export const dynamic = 'force-dynamic'
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { useRouter, useParams } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { ChevronLeft, Eye, Inbox } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -72,19 +72,50 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 export default function ProSolicitudesPage() {
-  const supabase = createClient()
-  const router   = useRouter()
-  const params   = useParams<{ country: string }>()
+  const params = useParams<{ country: string }>()
 
-  const [solicitudes, setSolicitudes] = useState<any[]>([])
-  const [loading, setLoading]         = useState(true)
-  const [activeFilter, setActiveFilter] = useState('all')
-  const [hoveredRow, setHoveredRow]   = useState<string | null>(null)
+  const [solicitudes,   setSolicitudes]   = useState<any[]>([])
+  const [loading,       setLoading]       = useState(true)
+  const [activeFilter,  setActiveFilter]  = useState('all')
+  const [hoveredRow,    setHoveredRow]    = useState<string | null>(null)
+  const [debugInfo,     setDebugInfo]     = useState('')
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) { router.push('/login'); return }
-      supabase
+    async function load() {
+      // createClient() dentro del useEffect garantiza que la sesión esté disponible
+      const supabase = createClient()
+
+      // Paso 1: obtener usuario autenticado
+      const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+      if (authError || !user) {
+        setDebugInfo('Sin usuario: ' + (authError?.message ?? 'sesión vacía'))
+        setLoading(false)
+        return
+      }
+
+      setDebugInfo('user.id: ' + user.id)
+
+      // Paso 2: query simple sin joins — confirma que RLS y el filtro funcionan
+      const { data: rawData, error: rawError } = await supabase
+        .from('quote_requests')
+        .select('id, professional_id, client_id, status, created_at')
+        .eq('professional_id', user.id)
+
+      console.log('[solicitudes] raw query:', rawData, rawError)
+      setDebugInfo(prev =>
+        prev +
+        ' | Solicitudes raw: ' + (rawData?.length ?? 0) +
+        (rawError ? ' | Error: ' + JSON.stringify(rawError) : '')
+      )
+
+      if (rawError) {
+        setLoading(false)
+        return
+      }
+
+      // Paso 3: query completa con joins — usa nombres completos de FK constraints
+      const { data, error } = await supabase
         .from('quote_requests')
         .select(`
           id,
@@ -93,25 +124,31 @@ export default function ProSolicitudesPage() {
           responded_at,
           status,
           description,
-          client:profiles!client_id(
+          client:profiles!quote_requests_client_id_fkey(
             full_name,
             photo_url
           ),
-          category:categories!category_id(
+          category:categories!quote_requests_category_id_fkey(
             name
           ),
-          subcategory:categories!subcategory_id(
+          subcategory:categories!quote_requests_subcategory_id_fkey(
             name
           )
         `)
         .eq('professional_id', user.id)
         .order('created_at', { ascending: false })
-        .then(({ data, error }) => {
-          if (error) console.error('[solicitudes] query error:', error)
-          setSolicitudes(data ?? [])
-          setLoading(false)
-        })
-    })
+
+      if (error) {
+        console.error('[solicitudes] error en query con joins:', JSON.stringify(error))
+        // Fallback: usar datos raw sin joins si el join falla
+        setSolicitudes(rawData ?? [])
+      } else {
+        setSolicitudes(data ?? [])
+      }
+
+      setLoading(false)
+    }
+    load()
   }, [])
 
   const filtered = activeFilter === 'all'
@@ -122,12 +159,29 @@ export default function ProSolicitudesPage() {
     return (
       <div style={{ fontFamily: FONT_SANS, color: '#6B7B6E', padding: '48px 24px', textAlign: 'center' }}>
         Cargando...
+        {debugInfo && (
+          <pre style={{ fontSize: '11px', color: '#6B7B6E', marginTop: '12px', whiteSpace: 'pre-wrap' }}>
+            {debugInfo}
+          </pre>
+        )}
       </div>
     )
   }
 
   return (
     <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '32px 24px' }}>
+
+      {/* Debug temporal — quitar después de confirmar que funciona */}
+      {debugInfo && (
+        <div style={{
+          background: '#1C141008', padding: '10px 16px',
+          fontSize: '12px', color: '#6B7B6E',
+          fontFamily: 'monospace', marginBottom: '16px',
+          borderRadius: '6px', wordBreak: 'break-all',
+        }}>
+          {debugInfo} | Solicitudes: {solicitudes.length}
+        </div>
+      )}
 
       {/* Volver */}
       <Link
@@ -223,9 +277,9 @@ export default function ProSolicitudesPage() {
 
             {/* Filas */}
             {filtered.map((s) => {
-              const client      = s.client as any
-              const category    = s.category as any
-              const subcategory = s.subcategory as any
+              const client      = Array.isArray(s.client)      ? s.client[0]      : s.client
+              const category    = Array.isArray(s.category)    ? s.category[0]    : s.category
+              const subcategory = Array.isArray(s.subcategory) ? s.subcategory[0] : s.subcategory
               const clientName  = client?.full_name ?? 'Propietario'
               const isHovered   = hoveredRow === s.id
 
@@ -324,9 +378,9 @@ export default function ProSolicitudesPage() {
           {/* ── CARDS MOBILE ── */}
           <div className="pro-sol-cards">
             {filtered.map((s) => {
-              const client      = s.client as any
-              const category    = s.category as any
-              const subcategory = s.subcategory as any
+              const client      = Array.isArray(s.client)      ? s.client[0]      : s.client
+              const category    = Array.isArray(s.category)    ? s.category[0]    : s.category
+              const subcategory = Array.isArray(s.subcategory) ? s.subcategory[0] : s.subcategory
               const clientName  = client?.full_name ?? 'Propietario'
 
               return (
@@ -376,9 +430,9 @@ export default function ProSolicitudesPage() {
                     gap: '8px', marginBottom: '14px',
                   }}>
                     {[
-                      { label: 'Solicitud',   val: s.created_at   },
-                      { label: 'Requerida',   val: s.required_date },
-                      { label: 'Cotización',  val: s.responded_at  },
+                      { label: 'Solicitud',  val: s.created_at    },
+                      { label: 'Requerida',  val: s.required_date },
+                      { label: 'Cotización', val: s.responded_at  },
                     ].map(({ label, val }) => (
                       <div key={label}>
                         <div style={{ fontFamily: FONT_SANS, fontSize: '10px', fontWeight: 700, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '2px' }}>
@@ -417,8 +471,8 @@ export default function ProSolicitudesPage() {
         .pro-sol-ver-btn:hover { background: #B85C1A10 !important; }
 
         /* Desktop: tabla visible, cards ocultos */
-        .pro-sol-table  { display: block; }
-        .pro-sol-cards  { display: none; }
+        .pro-sol-table { display: block; }
+        .pro-sol-cards { display: none; }
 
         /* Mobile: tabla oculta, cards visibles */
         @media (max-width: 767px) {
