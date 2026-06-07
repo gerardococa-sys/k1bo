@@ -136,7 +136,7 @@ function FiltersPanel({
         </select>
       </div>
 
-      {/* Subcategoría — solo visible cuando hay categoria seleccionada */}
+      {/* Subcategoría — solo cuando hay categoría seleccionada */}
       {subcategories.length > 0 && (
         <div>
           <label style={filterLabelStyle}>Subcategoría</label>
@@ -176,7 +176,7 @@ function FiltersPanel({
         </select>
       </div>
 
-      {/* Municipio — solo visible cuando hay departamento */}
+      {/* Municipio — solo cuando hay departamento */}
       {municipalities.length > 0 && (
         <div>
           <label style={filterLabelStyle}>Municipio</label>
@@ -248,11 +248,12 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
   const [loading,          setLoading]          = useState(true)
   const [mobileOpen,       setMobileOpen]       = useState(false)
 
-  // Initial data load
+  // ── Data load ─────────────────────────────────────────────────────────────
   useEffect(() => {
     const load = async () => {
       const supabase = mkClient()
 
+      // Categorías y país en paralelo
       const [{ data: country }, { data: cats }] = await Promise.all([
         supabase.from('countries').select('id').eq('url_prefix', params.country).single(),
         supabase.from('categories').select('id, name, slug, parent_id').eq('active', true).order('order_index'),
@@ -268,59 +269,113 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
         setDepartments((depts ?? []) as Department[])
       }
 
+      // Paso 1: todos los profesionales (sin joins)
       const { data: pros } = await supabase
         .from('professionals')
-        .select(`
-          id,
-          short_description,
-          bio,
-          featured,
-          covers_entire_country,
-          account_type,
-          created_at,
-          profiles(
-            full_name,
-            photo_url,
-            verified,
-            active,
-            department_id,
-            municipality_id,
-            department:departments(id, name),
-            municipality:municipalities(id, name)
-          ),
-          categories:professional_categories(
-            category:categories(id, name, slug, parent_id)
-          ),
-          coverage:professional_coverage(
-            department:departments(id, name)
-          ),
-          reviews:reviews(rating)
-        `)
+        .select('id, featured, bio, short_description, account_type, covers_entire_country, created_at')
         .order('featured', { ascending: false })
         .order('created_at', { ascending: false })
 
-      const adapted = (pros ?? [])
-        .filter(p => {
-          const prof = Array.isArray((p as any).profiles)
-            ? (p as any).profiles[0]
-            : (p as any).profiles
-          return prof?.active !== false
-        })
-        .map(pro => ({
-          ...pro,
-          avg_rating: (pro.reviews as any[])?.length
-            ? (pro.reviews as any[]).reduce((s: number, r: any) => s + r.rating, 0) / (pro.reviews as any[]).length
-            : 0,
-          total_reviews: (pro.reviews as any[])?.length ?? 0,
-        }))
+      if (!pros?.length) { setLoading(false); return }
 
-      setProfesionales(adapted)
+      const proIds = pros.map(p => p.id)
+
+      // Paso 2–4: perfiles, categorías y reviews en paralelo
+      const [
+        { data: profiles },
+        { data: proCategories },
+        { data: reviews },
+      ] = await Promise.all([
+        supabase.from('profiles')
+          .select('id, full_name, photo_url, verified, active, department_id, municipality_id')
+          .in('id', proIds),
+        supabase.from('professional_categories')
+          .select('professional_id, category_id')
+          .in('professional_id', proIds),
+        supabase.from('reviews')
+          .select('professional_id, rating')
+          .in('professional_id', proIds),
+      ])
+
+      // Paso 5: nombres de categorías
+      const catIds = Array.from(
+        new Set((proCategories ?? []).map(pc => pc.category_id))
+      )
+      const { data: categoryRows } = catIds.length
+        ? await supabase.from('categories').select('id, name, slug, parent_id').in('id', catIds)
+        : { data: [] as any[] }
+
+      // Paso 6: departamentos y municipios
+      const deptIds = Array.from(
+        new Set((profiles ?? []).map(p => p.department_id).filter(Boolean))
+      )
+      const munIds = Array.from(
+        new Set((profiles ?? []).map(p => p.municipality_id).filter(Boolean))
+      )
+
+      const [{ data: deptNames }, { data: munNames }] = await Promise.all([
+        deptIds.length
+          ? supabase.from('departments').select('id, name').in('id', deptIds)
+          : Promise.resolve({ data: [] as any[] }),
+        munIds.length
+          ? supabase.from('municipalities').select('id, name').in('id', munIds)
+          : Promise.resolve({ data: [] as any[] }),
+      ])
+
+      // Paso 7: mapas de lookup
+      const profilesMap   = Object.fromEntries((profiles     ?? []).map(p => [p.id, p]))
+      const deptMap       = Object.fromEntries((deptNames    ?? []).map(d => [d.id, d]))
+      const munMap        = Object.fromEntries((munNames     ?? []).map(m => [m.id, m]))
+      const categoriesMap = Object.fromEntries((categoryRows ?? []).map(c => [c.id, c]))
+
+      // Categorías por profesional — en formato que espera ProfessionalCard: [{ category: {...} }]
+      const proCatsMap: Record<string, any[]> = {}
+      ;(proCategories ?? []).forEach(pc => {
+        if (!proCatsMap[pc.professional_id]) proCatsMap[pc.professional_id] = []
+        const cat = categoriesMap[pc.category_id]
+        if (cat) proCatsMap[pc.professional_id].push({ category: cat })
+      })
+
+      // Reviews por profesional
+      const reviewsMap: Record<string, number[]> = {}
+      ;(reviews ?? []).forEach(r => {
+        if (!reviewsMap[r.professional_id]) reviewsMap[r.professional_id] = []
+        reviewsMap[r.professional_id].push(r.rating)
+      })
+
+      // Ensamblado final
+      const assembled = pros
+        .map(pro => {
+          const profile = profilesMap[pro.id]
+          if (!profile) return null   // sin perfil no mostramos
+
+          const dept = profile.department_id ? deptMap[profile.department_id]   ?? null : null
+          const mun  = profile.municipality_id ? munMap[profile.municipality_id] ?? null : null
+          const cats = proCatsMap[pro.id] ?? []
+          const rats = reviewsMap[pro.id] ?? []
+
+          return {
+            ...pro,
+            // profile en singular — es lo que espera ProfessionalCard
+            profile: {
+              ...profile,
+              department:   dept,
+              municipality: mun,
+            },
+            categories:    cats,
+            avg_rating:    rats.length ? rats.reduce((a: number, b: number) => a + b, 0) / rats.length : 0,
+            total_reviews: rats.length,
+          }
+        })
+        .filter(Boolean)
+
+      setProfesionales(assembled)
       setLoading(false)
     }
     load()
   }, [params.country])
 
-  // Load municipalities when department changes
+  // Carga municipios cuando cambia el departamento seleccionado en filtros
   useEffect(() => {
     if (!filters.departamento) { setMunicipalities([]); return }
     mkClient()
@@ -328,74 +383,82 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
       .then(({ data }) => setMunicipalities((data ?? []) as Municipality[]))
   }, [filters.departamento])
 
-  // Subcategories of selected parent
+  // Nombre filtra en tiempo real sin necesitar clic en "Buscar"
+  useEffect(() => {
+    setAppliedFilters(prev => ({ ...prev, nombre: filters.nombre }))
+  }, [filters.nombre])
+
+  // Subcategorías de la categoría padre seleccionada
   const subcategories = useMemo(
     () => filters.categoria ? allCategories.filter(c => c.parent_id === filters.categoria) : [],
     [filters.categoria, allCategories],
   )
 
-  // Filtered + sorted results — usa appliedFilters (se aplican al hacer clic en "Buscar")
+  // ── Filtrado + ordenamiento ───────────────────────────────────────────────
   const filtrados = useMemo(() => {
-    if (!profesionales) return []
+    if (!profesionales.length) return []
 
-    let result = profesionales.filter(pro => {
-      const profile = Array.isArray((pro as any).profiles)
-        ? (pro as any).profiles[0]
-        : (pro as any).profiles
+    let result = profesionales.filter((pro: any) => {
+      const profile = pro.profile
       if (!profile) return false
 
-      // Filtro nombre
-      if (appliedFilters.nombre && appliedFilters.nombre.trim() !== '') {
+      // Nombre — parcial, case insensitive, tiempo real
+      if (appliedFilters.nombre?.trim()) {
         const nombre = (profile.full_name ?? '').toLowerCase()
-        if (!nombre.includes(appliedFilters.nombre.toLowerCase())) return false
+        if (!nombre.includes(appliedFilters.nombre.trim().toLowerCase())) return false
       }
 
-      // Filtro categoría / subcategoría
-      if (appliedFilters.subcategoria && appliedFilters.subcategoria !== '') {
-        const cats = (pro.categories as any[]) ?? []
-        const tiene = cats.some(pc => {
-          const cat = Array.isArray(pc.category) ? pc.category[0] : pc.category
-          return cat?.id === appliedFilters.subcategoria
-        })
-        if (!tiene) return false
-      } else if (appliedFilters.categoria && appliedFilters.categoria !== '') {
-        const cats = (pro.categories as any[]) ?? []
-        const tiene = cats.some(pc => {
-          const cat = Array.isArray(pc.category) ? pc.category[0] : pc.category
-          return cat?.id === appliedFilters.categoria || cat?.parent_id === appliedFilters.categoria
-        })
+      // Categoría — categories es [{ category: {...} }]
+      if (appliedFilters.categoria) {
+        const cats = (pro.categories ?? []) as any[]
+        const tiene = cats.some((c: any) =>
+          c.category?.id === appliedFilters.categoria ||
+          c.category?.parent_id === appliedFilters.categoria
+        )
         if (!tiene) return false
       }
 
-      // Filtro tipo
-      if (appliedFilters.tipo !== 'all' && pro.account_type !== appliedFilters.tipo) return false
-
-      // Filtro departamento
-      if (appliedFilters.departamento && appliedFilters.departamento !== '') {
-        const dept = Array.isArray(profile.department) ? profile.department[0] : profile.department
-        if (dept?.id !== appliedFilters.departamento) return false
+      // Subcategoría
+      if (appliedFilters.subcategoria) {
+        const cats = (pro.categories ?? []) as any[]
+        if (!cats.some((c: any) => c.category?.id === appliedFilters.subcategoria)) return false
       }
 
-      // Filtro municipio
-      if (appliedFilters.municipio && appliedFilters.municipio !== '') {
-        const mun = Array.isArray(profile.municipality) ? profile.municipality[0] : profile.municipality
-        if (mun?.id !== appliedFilters.municipio) return false
+      // Tipo
+      if (appliedFilters.tipo && appliedFilters.tipo !== 'all') {
+        if (pro.account_type !== appliedFilters.tipo) return false
+      }
+
+      // Departamento
+      if (appliedFilters.departamento) {
+        if (profile.department?.id !== appliedFilters.departamento) return false
+      }
+
+      // Municipio
+      if (appliedFilters.municipio) {
+        if (profile.municipality?.id !== appliedFilters.municipio) return false
       }
 
       return true
     })
 
     if (orderBy === 'rating') {
-      result = [...result].sort((a, b) => (b.avg_rating ?? 0) - (a.avg_rating ?? 0))
+      result = [...result].sort((a: any, b: any) => (b.avg_rating ?? 0) - (a.avg_rating ?? 0))
     } else if (orderBy === 'recent') {
       result = [...result].sort(
-        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+        (a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      )
+    } else {
+      // featured: destacados primero
+      result = [...result].sort(
+        (a: any, b: any) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0)
       )
     }
 
     return result
   }, [profesionales, appliedFilters, orderBy])
 
+  // ── Helpers de estado de filtros ─────────────────────────────────────────
   const setFilter = (key: keyof Filters, value: string) => {
     setFiltersState(prev => {
       const next = { ...prev, [key]: value }
@@ -433,9 +496,10 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
     ? 'Cargando profesionales...'
     : `${filtrados.length} profesional${filtrados.length !== 1 ? 'es' : ''} encontrado${filtrados.length !== 1 ? 's' : ''}`
 
+  // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div>
-      {/* ── Header ── */}
+      {/* Header con textura */}
       <section
         style={{
           position: 'relative',
@@ -471,10 +535,10 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
         </div>
       </section>
 
-      {/* ── Main content ── */}
+      {/* Contenido principal */}
       <div className="container mx-auto px-4 py-8">
 
-        {/* Mobile filter toggle */}
+        {/* Filtros mobile */}
         <div className="lg:hidden mb-5">
           <button
             onClick={() => setMobileOpen(v => !v)}
@@ -518,7 +582,7 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
 
         <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
 
-          {/* Sidebar — desktop only */}
+          {/* Sidebar desktop */}
           <aside
             className="hidden lg:block"
             style={{
@@ -542,10 +606,10 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
             </div>
           </aside>
 
-          {/* Results column */}
+          {/* Columna de resultados */}
           <div style={{ flex: 1, minWidth: 0 }}>
 
-            {/* Results header bar */}
+            {/* Barra de resultados */}
             <div
               style={{
                 display: 'flex', justifyContent: 'space-between',
@@ -574,20 +638,10 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
               </div>
             ) : filtrados.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '64px 16px' }}>
-                <p
-                  style={{
-                    fontFamily: FONT_SERIF, fontSize: '22px',
-                    color: '#1C1410', marginBottom: '8px',
-                  }}
-                >
+                <p style={{ fontFamily: FONT_SERIF, fontSize: '22px', color: '#1C1410', marginBottom: '8px' }}>
                   No encontramos profesionales con estos filtros
                 </p>
-                <p
-                  style={{
-                    fontFamily: FONT_SANS, fontSize: '16px',
-                    color: '#6B7B6E', marginBottom: '24px',
-                  }}
-                >
+                <p style={{ fontFamily: FONT_SANS, fontSize: '16px', color: '#6B7B6E', marginBottom: '24px' }}>
                   Intenta con otros criterios de búsqueda
                 </p>
                 <Button
@@ -602,10 +656,10 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
               </div>
             ) : (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
-                {filtrados.map(pro => (
+                {filtrados.map((pro: any) => (
                   <ProfessionalCard
                     key={pro.id}
-                    professional={pro as any}
+                    professional={pro}
                     countryPrefix={params.country}
                   />
                 ))}
