@@ -101,11 +101,15 @@ export default function ProSolicitudesPage() {
       }
 
       // IDs únicos para lookups
-      const clientIds  = [...new Set(data.map(s => s.client_id).filter(Boolean))]
-      const catIds     = [...new Set([
-        ...data.map(s => s.category_id),
-        ...data.map(s => s.subcategory_id),
-      ].filter(Boolean))]
+      const clientIds = Array.from(
+        new Set(data.map((s: any) => s.client_id).filter(Boolean))
+      )
+      const catIds = Array.from(
+        new Set([
+          ...data.map((s: any) => s.category_id),
+          ...data.map((s: any) => s.subcategory_id),
+        ].filter(Boolean))
+      )
 
       const [{ data: clientsData }, { data: catsData }] = await Promise.all([
         supabase.from('profiles').select('id, full_name, photo_url').in('id', clientIds),
