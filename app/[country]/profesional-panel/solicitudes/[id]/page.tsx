@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/server'
 import dynamicImport from 'next/dynamic'
 import { Calendar, Clock, MessageSquare } from 'lucide-react'
 import { PhotoGallery } from '@/components/quotes/PhotoGallery'
+import { ClientAvatar } from '@/components/ui/ClientAvatar'
 
 const MarkAsVisited = dynamicImport(
   () => import('@/components/messages/MarkAsVisited').then(mod => ({ default: mod.MarkAsVisited })),
@@ -186,34 +187,7 @@ export default async function ProSolicitudDetailPage({ params }: { params: { cou
           <Card>
             <SectionLabel>Propietario</SectionLabel>
             <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '16px' }}>
-              {clientPhoto ? (
-                <div style={{ width: 48, height: 48, borderRadius: '50%', overflow: 'hidden', flexShrink: 0 }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={clientPhoto}
-                    alt={clientName}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    onError={(e) => {
-                      const t = e.target as HTMLImageElement
-                      t.style.display = 'none'
-                      const p = t.parentElement
-                      if (p) {
-                        p.style.background = '#B85C1A15'
-                        p.style.display = 'flex'
-                        p.style.alignItems = 'center'
-                        p.style.justifyContent = 'center'
-                        p.innerHTML = `<span style="font-family:DM Sans,sans-serif;font-size:16px;font-weight:700;color:#B85C1A">${clientName.split(' ').slice(0, 2).map((w: string) => w[0]).join('').toUpperCase()}</span>`
-                      }
-                    }}
-                  />
-                </div>
-              ) : (
-                <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#B85C1A15', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <span style={{ fontFamily: FONT_SERIF, fontSize: '16px', fontWeight: 700, color: '#B85C1A' }}>
-                    {clientName.split(' ').slice(0, 2).map((w: string) => w[0]).join('').toUpperCase()}
-                  </span>
-                </div>
-              )}
+              <ClientAvatar name={clientName} photoUrl={clientPhoto} size={48} />
               <div>
                 <p style={{ fontFamily: FONT_SANS, fontSize: '16px', fontWeight: 600, color: '#1C1410', margin: 0 }}>
                   {clientName}

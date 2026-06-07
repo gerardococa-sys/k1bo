@@ -118,23 +118,31 @@ export function QuoteResponsePanel({
         console.log('[PDF upload] path:', path)
         console.log('[PDF upload] file:', pdfFile.name, pdfFile.size, pdfFile.type)
 
-        const { data: uploadData, error: uploadError } = await supabase.storage
+        const uploadResult = await supabase.storage
           .from('quote-pdfs')
           .upload(path, pdfFile, { upsert: true, contentType: 'application/pdf' })
 
-        console.log('[PDF upload] result:', uploadData, uploadError)
+        const uploadError = Array.isArray(uploadResult) ? uploadResult[1] : uploadResult.error
+        const uploadData  = Array.isArray(uploadResult) ? uploadResult[0] : uploadResult.data
+
+        console.log('[PDF] uploadData:', uploadData)
+        console.log('[PDF] uploadError:', uploadError)
 
         if (uploadError) {
           setError('Error al subir PDF: ' + uploadError.message)
           setSubmitting(false)
           return
         }
+
         pdfUrl = path
+        console.log('[PDF] pdfUrl guardado:', pdfUrl)
       }
 
       const materialsForDB = materials.length > 0
         ? materials.map(({ id: _id, ...rest }) => rest)
         : null
+
+      console.log('[update] pdfUrl que se va a guardar:', pdfUrl)
 
       const { error: updateError } = await supabase
         .from('quote_requests')
@@ -150,7 +158,13 @@ export function QuoteResponsePanel({
         })
         .eq('id', solicitudId)
 
-      if (updateError) throw updateError
+      console.log('[update] error:', updateError)
+
+      if (updateError) {
+        setError('Error al guardar: ' + updateError.message)
+        setSubmitting(false)
+        return
+      }
       router.push(`/${country}/profesional-panel/solicitudes`)
     } catch (e: any) {
       setError(e.message ?? 'Ocurrió un error al enviar la cotización')
