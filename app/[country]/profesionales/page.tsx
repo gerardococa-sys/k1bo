@@ -269,14 +269,20 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
         setDepartments((depts ?? []) as Department[])
       }
 
-      // Paso 1: todos los profesionales (sin joins)
-      const { data: pros } = await supabase
+      // Paso 1: todos los profesionales (sin account_type — puede no existir aún)
+      const { data: pros, error: prosError } = await supabase
         .from('professionals')
-        .select('id, featured, bio, short_description, account_type, covers_entire_country, created_at')
+        .select('id, featured, bio, short_description, covers_entire_country, created_at')
         .order('featured', { ascending: false })
         .order('created_at', { ascending: false })
 
-      if (!pros?.length) { setLoading(false); return }
+      console.log('[profesionales] pros:', pros?.length, prosError)
+
+      if (!pros?.length) {
+        console.log('[profesionales] Sin profesionales — abortando:', prosError)
+        setLoading(false)
+        return
+      }
 
       const proIds = pros.map(p => p.id)
 
@@ -296,6 +302,9 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
           .select('professional_id, rating')
           .in('professional_id', proIds),
       ])
+
+      console.log('[profesionales] profiles:', profiles?.length)
+      console.log('[profesionales] proCategories:', proCategories?.length)
 
       // Paso 5: nombres de categorías
       const catIds = Array.from(
@@ -356,6 +365,7 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
 
           return {
             ...pro,
+            account_type:  (pro as any).account_type ?? 'independent',
             // profile en singular — es lo que espera ProfessionalCard
             profile: {
               ...profile,
@@ -368,6 +378,13 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
           }
         })
         .filter(Boolean)
+
+      console.log('[profesionales] assembled:', assembled.length)
+      console.log('[profesionales] primer pro:', assembled[0])
+      console.log('[profesionales] FINAL assembled:', assembled.length, assembled.map((p: any) => ({
+        id: p?.id,
+        name: p?.profile?.full_name,
+      })))
 
       setProfesionales(assembled)
       setLoading(false)
@@ -638,21 +655,31 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
               </div>
             ) : filtrados.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '64px 16px' }}>
-                <p style={{ fontFamily: FONT_SERIF, fontSize: '22px', color: '#1C1410', marginBottom: '8px' }}>
-                  No encontramos profesionales con estos filtros
-                </p>
-                <p style={{ fontFamily: FONT_SANS, fontSize: '16px', color: '#6B7B6E', marginBottom: '24px' }}>
-                  Intenta con otros criterios de búsqueda
-                </p>
-                <Button
-                  onClick={clearFilters}
-                  style={{
-                    backgroundColor: '#1C1410', color: '#D4A96A',
-                    fontFamily: FONT_SANS, fontWeight: 700, borderRadius: '8px',
-                  }}
-                >
-                  Limpiar filtros
-                </Button>
+                {profesionales.length === 0 ? (
+                  // Sin datos en BD — no es problema de filtros
+                  <p style={{ fontFamily: FONT_SERIF, fontSize: '22px', color: '#1C1410', marginBottom: '8px' }}>
+                    Aún no hay profesionales registrados
+                  </p>
+                ) : (
+                  // Hay datos pero los filtros no devuelven resultados
+                  <>
+                    <p style={{ fontFamily: FONT_SERIF, fontSize: '22px', color: '#1C1410', marginBottom: '8px' }}>
+                      No encontramos profesionales con estos filtros
+                    </p>
+                    <p style={{ fontFamily: FONT_SANS, fontSize: '16px', color: '#6B7B6E', marginBottom: '24px' }}>
+                      Intenta con otros criterios de búsqueda
+                    </p>
+                    <Button
+                      onClick={clearFilters}
+                      style={{
+                        backgroundColor: '#1C1410', color: '#D4A96A',
+                        fontFamily: FONT_SANS, fontWeight: 700, borderRadius: '8px',
+                      }}
+                    >
+                      Limpiar filtros
+                    </Button>
+                  </>
+                )}
               </div>
             ) : (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
