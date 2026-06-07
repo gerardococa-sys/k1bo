@@ -85,6 +85,7 @@ export function Navbar({ countryPrefix: propPrefix }: NavbarProps) {
     : '/login'
 
   const navLinks = [
+    { label: 'Inicio',        href: base },
     { label: 'Nosotros',      href: '/nosotros' },
     { label: 'Categorías',    href: `${base}#categorias` },
     { label: 'Profesionales', href: `${base}/profesionales` },

@@ -4,6 +4,7 @@ import type { Metadata } from 'next'
 import { Star } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { HowItWorks } from '@/components/HowItWorks'
+import { CtaProfesional } from '@/components/sections/CtaProfesional'
 
 export const metadata: Metadata = {
   title: 'Nosotros — Artifex7',
@@ -88,6 +89,9 @@ export default async function NosotrosPage() {
 
       {/* Cómo funciona */}
       <HowItWorks />
+
+      {/* CTA */}
+      <CtaProfesional />
     </div>
   )
 }

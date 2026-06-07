@@ -8,6 +8,7 @@ import { ProfessionalCard } from '@/components/professionals/ProfessionalCard'
 import { HowItWorks } from '@/components/HowItWorks'
 import { Button } from '@/components/ui/button'
 import { Logo } from '@/components/ui/Logo'
+import { CtaProfesional } from '@/components/sections/CtaProfesional'
 
 export default async function CountryPage({ params }: { params: { country: string } }) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -110,14 +111,16 @@ export default async function CountryPage({ params }: { params: { country: strin
           <h1
             style={{
               fontFamily: 'var(--font-serif, "Playfair Display", Georgia, serif)',
-              fontSize: 'clamp(48px, 6vw, 68px)',
+              fontSize: 'clamp(28px, 4.5vw, 48px)',
               fontWeight: 700,
               color: '#F5F0E8',
               lineHeight: 1.15,
               marginBottom: '12px',
             }}
           >
-            Encuentra al profesional de la construcción para tu hogar, oficina o negocio
+            Encuentra al profesional<br />
+            de la construcción ideal<br />
+            para tu hogar, oficina o negocio
           </h1>
 
           {/* Italic slogan */}
@@ -248,47 +251,7 @@ export default async function CountryPage({ params }: { params: { country: strin
       <HowItWorks />
 
       {/* CTA */}
-      <section className="py-16" style={{ backgroundColor: '#F5F0E8' }}>
-        <div className="container mx-auto px-4 text-center">
-          <h2
-            style={{
-              fontFamily: 'var(--font-serif,"Playfair Display",Georgia,serif)',
-              fontSize: '46px',
-              fontWeight: 700,
-              color: '#1C1410',
-              marginBottom: '12px',
-            }}
-          >
-            ¿Eres profesional?
-          </h2>
-          <p
-            style={{
-              fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)',
-              fontSize: '20px',
-              color: '#6B7B6E',
-              marginBottom: '28px',
-            }}
-          >
-            Únete a <Logo size="inherit" /> y llega a más propietarios en {countryName}.
-          </p>
-          <Link
-            href="/registro"
-            style={{
-              display: 'inline-block',
-              backgroundColor: '#1C1410',
-              color: '#D4A96A',
-              fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)',
-              fontSize: '17px',
-              fontWeight: 700,
-              borderRadius: '8px',
-              padding: '16px 36px',
-              textDecoration: 'none',
-            }}
-          >
-            Registra tu negocio gratis
-          </Link>
-        </div>
-      </section>
+      <CtaProfesional countryName={countryName} />
     </div>
   )
 }
