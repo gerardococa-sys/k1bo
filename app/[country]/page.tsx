@@ -67,8 +67,29 @@ export default async function CountryPage({ params }: { params: { country: strin
   return (
     <div>
       {/* Hero */}
-      <section style={{ backgroundColor: '#1C1410' }} className="py-20 px-4">
-        <div className="container mx-auto text-center max-w-3xl">
+      <section
+        style={{
+          position: 'relative',
+          backgroundColor: '#1C1410',
+          backgroundImage: 'url(/images/concrete-texture.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }}
+        className="py-20 px-4"
+      >
+        {/* Overlay */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'linear-gradient(135deg, rgba(28,20,16,0.88) 0%, rgba(28,20,16,0.75) 100%)',
+            zIndex: 1,
+          }}
+        />
+
+        {/* Content */}
+        <div style={{ position: 'relative', zIndex: 2 }} className="container mx-auto text-center max-w-3xl">
 
           {/* Eyebrow */}
           <p

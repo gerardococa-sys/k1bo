@@ -5,8 +5,29 @@ const FONT_SANS  = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
 
 export function HowItWorks() {
   return (
-    <section id="como-funciona" style={{ backgroundColor: '#1C1410' }} className="py-16">
-      <div className="container mx-auto px-4">
+    <section
+      id="como-funciona"
+      style={{
+        position: 'relative',
+        backgroundColor: '#1C1410',
+        backgroundImage: 'url(/images/concrete-texture.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center top',
+        backgroundAttachment: 'fixed',
+      }}
+      className="py-16"
+    >
+      {/* Overlay */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'rgba(28,20,16,0.92)',
+          zIndex: 1,
+        }}
+      />
+
+      <div style={{ position: 'relative', zIndex: 2 }} className="container mx-auto px-4">
         <h2
           style={{
             fontFamily: FONT_SERIF,
