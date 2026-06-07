@@ -72,16 +72,15 @@ export function QuoteResponsePanel({
   }, [totalMateriales])
 
   useEffect(() => {
-    if (status !== 'revision') return
-    if (quoteDescription)   setDescription(quoteDescription)
-    if (initialLaborCost    != null) setLaborCost(initialLaborCost)
-    if (initialMaterialsCost != null) setMaterialsCost(initialMaterialsCost)
-    if (materialsList && materialsList.length > 0) {
-      setMaterials(materialsList.map((m) => ({
+    if (status === 'pending' && quoteDescription) setDescription(quoteDescription)
+    if (status === 'pending' && materialsList && materialsList.length > 0) {
+      setMaterials(materialsList.map((m, i) => ({
         ...m,
-        id: `mat-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        id: `mat-${i}-${Date.now()}`,
       })))
     }
+    if (status === 'pending' && initialLaborCost != null) setLaborCost(initialLaborCost)
+    if (status === 'pending' && initialMaterialsCost != null) setMaterialsCost(initialMaterialsCost)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -220,7 +219,7 @@ export function QuoteResponsePanel({
   }
 
   /* ── READ-ONLY VIEW ─────────────────────────────────────────── */
-  if (status !== 'pending' && status !== 'revision') {
+  if (status !== 'pending') {
     const isRejected = status === 'rejected'
     const badge = STATUS_BADGE[status]
 
@@ -383,10 +382,10 @@ export function QuoteResponsePanel({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       <h2 style={{ fontFamily: FONT_SERIF, fontSize: '24px', fontWeight: 700, color: '#1C1410', margin: 0 }}>
-        {status === 'revision' ? 'Editar Cotización' : 'Enviar Cotización'}
+        {quoteDescription ? 'Editar Cotización' : 'Enviar Cotización'}
       </h2>
 
-      {status === 'revision' && (
+      {quoteDescription && (
         <div style={{
           background: '#D4A96A15', border: '1px solid #D4A96A50',
           borderRadius: '10px', padding: '14px 16px',
@@ -395,10 +394,10 @@ export function QuoteResponsePanel({
           <RefreshCw style={{ width: 16, height: 16, color: '#B85C1A', flexShrink: 0, marginTop: '2px' }} />
           <div>
             <p style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#B85C1A', margin: '0 0 3px' }}>
-              Cotización en revisión
+              El propietario ha solicitado cambios
             </p>
             <p style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#6B7B6E', margin: 0, lineHeight: 1.5 }}>
-              El propietario ha solicitado cambios. Edita la cotización y vuelve a enviarla.
+              Edita la cotización con los ajustes necesarios y vuelve a enviarla.
             </p>
           </div>
         </div>

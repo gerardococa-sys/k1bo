@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { Calendar, Clock, Check, Download, X, MessageSquare, RefreshCw } from 'lucide-react'
+import { Calendar, Clock, Check, Download, X, MessageSquare, RefreshCw, CheckCircle, MessageCircle } from 'lucide-react'
 import { PhotoGallery } from '@/components/quotes/PhotoGallery'
 
 const FONT_SERIF = 'var(--font-serif, "Playfair Display", Georgia, serif)'
@@ -71,6 +71,8 @@ export default function SolicitudDetailPage() {
   const [loading,           setLoading]           = useState(true)
   const [actionLoading,     setActionLoading]     = useState(false)
   const [confirmRejectOpen, setConfirmRejectOpen] = useState(false)
+  const [displayStatus,     setDisplayStatus]     = useState<string | null>(null)
+  const [hireMode,          setHireMode]          = useState<'labor_only' | 'labor_and_materials' | null>(null)
 
   useEffect(() => {
     async function load() {
@@ -123,10 +125,14 @@ export default function SolicitudDetailPage() {
   }, [params.id])
 
   async function handleAccept() {
+    if (!hireMode) return
     setActionLoading(true)
     const supabase = createClient()
-    await supabase.from('quote_requests').update({ status: 'accepted' }).eq('id', params.id)
-    setSolicitud((prev: any) => ({ ...prev, status: 'accepted' }))
+    await supabase
+      .from('quote_requests')
+      .update({ status: 'accepted', hire_mode: hireMode })
+      .eq('id', params.id)
+    setSolicitud((prev: any) => ({ ...prev, status: 'accepted', hire_mode: hireMode }))
     setActionLoading(false)
   }
 
@@ -142,8 +148,16 @@ export default function SolicitudDetailPage() {
   async function handleRequestRevision() {
     setActionLoading(true)
     const supabase = createClient()
-    await supabase.from('quote_requests').update({ status: 'revision' }).eq('id', params.id)
-    setSolicitud((prev: any) => ({ ...prev, status: 'revision' }))
+    const { error } = await supabase
+      .from('quote_requests')
+      .update({ status: 'pending', responded_at: null })
+      .eq('id', params.id)
+    if (!error) {
+      setDisplayStatus('revision')
+      setSolicitud((prev: any) => ({ ...prev, status: 'pending' }))
+    } else {
+      console.error('Error al solicitar revisión:', error)
+    }
     setActionLoading(false)
   }
 
@@ -161,8 +175,9 @@ export default function SolicitudDetailPage() {
   const proPhoto    = profProfile?.photo_url as string | undefined
   const category    = solicitud.category    as any
   const subcategory = solicitud.subcategory as any
-  const badge       = STATUS_BADGE[solicitud.status] ?? STATUS_BADGE.pending
-  const showCotizacion = solicitud.status === 'responded' || solicitud.status === 'accepted' || solicitud.status === 'revision'
+  const currentStatus  = displayStatus ?? solicitud.status
+  const badge          = STATUS_BADGE[currentStatus] ?? STATUS_BADGE.pending
+  const showCotizacion = currentStatus === 'responded' || currentStatus === 'accepted' || currentStatus === 'revision'
 
   const materialsList = (solicitud.quote_materials_list as { cantidad: number; descripcion: string; valorUnit: number; precioTotal: number }[] | null) ?? null
   const materialLines = materialsList
@@ -346,6 +361,20 @@ export default function SolicitudDetailPage() {
               {/* Costos */}
               {showCotizacion && (
                 <div style={{ background: '#F5F0E8', borderRadius: '8px', padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {solicitud.status === 'accepted' && solicitud.hire_mode && (
+                    <div style={{
+                      display: 'inline-flex', alignItems: 'center', gap: '6px',
+                      background: '#6B7B6E15', padding: '4px 12px', borderRadius: '20px',
+                      marginBottom: '4px', alignSelf: 'flex-start',
+                    }}>
+                      <CheckCircle style={{ width: 14, height: 14, color: '#6B7B6E' }} />
+                      <span style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                        {solicitud.hire_mode === 'labor_only'
+                          ? 'Contratado: Solo mano de obra'
+                          : 'Contratado: Mano de obra + materiales'}
+                      </span>
+                    </div>
+                  )}
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E' }}>Mano de obra</span>
                     <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#1C1410' }}>${Number(solicitud.labor_cost ?? 0).toFixed(2)}</span>
@@ -381,7 +410,7 @@ export default function SolicitudDetailPage() {
               )}
 
               {/* Aviso de espera cuando se solicitaron cambios */}
-              {solicitud.status === 'revision' && (
+              {currentStatus === 'revision' && (
                 <div style={{
                   display: 'flex', alignItems: 'flex-start', gap: '10px',
                   background: '#D4A96A12', border: '1px solid #D4A96A40',
@@ -410,63 +439,206 @@ export default function SolicitudDetailPage() {
                 </div>
               )}
 
-              {/* Aceptar / Solicitar cambios / Rechazar */}
-              {solicitud.status === 'responded' && (
+              {/* Aceptar / Solicitar cambios / Rechazar — flujo 2 pasos */}
+              {currentStatus === 'responded' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '4px' }}>
-                  {/* A) Aceptar */}
-                  <button
-                    onClick={handleAccept}
-                    disabled={actionLoading}
-                    style={{
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      background: '#1C1410', color: '#D4A96A',
-                      fontFamily: FONT_SANS, fontSize: '16px', fontWeight: 700,
-                      padding: '13px', borderRadius: '8px', width: '100%',
-                      border: 'none', cursor: actionLoading ? 'not-allowed' : 'pointer',
-                      opacity: actionLoading ? 0.6 : 1,
-                    }}
-                  >
-                    {actionLoading ? 'Procesando...' : 'Aceptar cotización'}
-                  </button>
-                  {/* B) Solicitar cambios */}
-                  <button
-                    onClick={handleRequestRevision}
-                    disabled={actionLoading}
-                    style={{
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                      background: 'transparent', color: '#B85C1A',
-                      border: '1.5px solid #B85C1A', borderRadius: '8px',
-                      fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700,
-                      padding: '13px', width: '100%',
-                      cursor: actionLoading ? 'not-allowed' : 'pointer',
-                      opacity: actionLoading ? 0.6 : 1,
-                    }}
-                  >
-                    <RefreshCw style={{ width: 16, height: 16 }} />
-                    {actionLoading ? 'Procesando...' : 'Solicitar cambios'}
-                  </button>
-                  {/* C) Rechazar */}
-                  <button
-                    onClick={() => setConfirmRejectOpen(true)}
-                    disabled={actionLoading}
-                    style={{
-                      background: 'transparent', color: '#6B7B6E',
-                      border: '1px solid #1C141020', borderRadius: '8px',
-                      fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 600,
-                      padding: '13px', width: '100%',
-                      cursor: actionLoading ? 'not-allowed' : 'pointer',
-                      opacity: actionLoading ? 0.6 : 1,
-                    }}
-                  >
-                    Rechazar cotización
-                  </button>
-                  {/* D) Aviso */}
-                  <p style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#6B7B6E', margin: '4px 0 0', lineHeight: 1.6 }}>
-                    Si necesitas comunicarte con el profesional para explicar los cambios,{' '}
-                    <Link href={`/${params.country}/mensajes?solicitud=${params.id}`} style={{ color: '#B85C1A', textDecoration: 'underline' }}>
-                      usa el chat de mensajes
-                    </Link>.
-                  </p>
+
+                  {hireMode === null ? (
+                    /* ── PASO 1: selección de modalidad ── */
+                    <>
+                      <p style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#1C1410', margin: '0 0 4px' }}>
+                        ¿Cómo desea contratar al profesional?
+                      </p>
+
+                      <button
+                        onClick={() => setHireMode('labor_only')}
+                        style={{
+                          display: 'flex', flexDirection: 'column', alignItems: 'flex-start',
+                          background: '#fff', border: '1.5px solid #D4A96A50', borderRadius: '10px',
+                          padding: '14px 16px', cursor: 'pointer', width: '100%', textAlign: 'left',
+                          transition: 'border-color 150ms',
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#B85C1A')}
+                        onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#D4A96A50')}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginBottom: '4px' }}>
+                          <span style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700, color: '#1C1410' }}>
+                            Solo mano de obra
+                          </span>
+                          <span style={{ fontFamily: FONT_SANS, fontSize: '16px', fontWeight: 700, color: '#B85C1A' }}>
+                            ${Number(solicitud.labor_cost ?? 0).toFixed(2)}
+                          </span>
+                        </div>
+                        <span style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#6B7B6E' }}>
+                          El profesional realiza el trabajo. Los materiales corren por su cuenta.
+                        </span>
+                      </button>
+
+                      <button
+                        onClick={() => setHireMode('labor_and_materials')}
+                        style={{
+                          display: 'flex', flexDirection: 'column', alignItems: 'flex-start',
+                          background: '#fff', border: '1.5px solid #D4A96A50', borderRadius: '10px',
+                          padding: '14px 16px', cursor: 'pointer', width: '100%', textAlign: 'left',
+                          transition: 'border-color 150ms',
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#B85C1A')}
+                        onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#D4A96A50')}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginBottom: '4px' }}>
+                          <span style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700, color: '#1C1410' }}>
+                            Mano de obra + materiales
+                          </span>
+                          <span style={{ fontFamily: FONT_SANS, fontSize: '16px', fontWeight: 700, color: '#B85C1A' }}>
+                            ${(Number(solicitud.labor_cost ?? 0) + Number(solicitud.materials_cost ?? 0)).toFixed(2)}
+                          </span>
+                        </div>
+                        <span style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#6B7B6E' }}>
+                          El profesional incluye todos los materiales de la lista en la cotización.
+                        </span>
+                      </button>
+
+                      {/* Solicitar cambios y Rechazar ya visibles en paso 1 */}
+                      <button
+                        onClick={handleRequestRevision}
+                        disabled={actionLoading}
+                        style={{
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                          background: 'transparent', color: '#6B7B6E',
+                          border: '1.5px solid #6B7B6E40', borderRadius: '8px',
+                          fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 600,
+                          padding: '13px', width: '100%',
+                          cursor: actionLoading ? 'not-allowed' : 'pointer',
+                          opacity: actionLoading ? 0.6 : 1,
+                          marginTop: '4px',
+                        }}
+                      >
+                        <RefreshCw style={{ width: 16, height: 16 }} />
+                        {actionLoading ? 'Procesando...' : 'Solicitar cambios'}
+                      </button>
+
+                      <button
+                        onClick={() => setConfirmRejectOpen(true)}
+                        disabled={actionLoading}
+                        style={{
+                          background: 'transparent', color: '#B85C1A',
+                          border: '1.5px solid #B85C1A', borderRadius: '8px',
+                          fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700,
+                          padding: '13px', width: '100%',
+                          cursor: actionLoading ? 'not-allowed' : 'pointer',
+                          opacity: actionLoading ? 0.6 : 1,
+                        }}
+                      >
+                        Rechazar cotización
+                      </button>
+                    </>
+                  ) : (
+                    /* ── PASO 2: confirmación ── */
+                    <>
+                      <div style={{ background: '#F5F0E8', borderRadius: '10px', padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                          <span style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 700, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                            Modalidad seleccionada
+                          </span>
+                          <button
+                            onClick={() => setHireMode(null)}
+                            style={{ fontFamily: FONT_SANS, fontSize: '12px', color: '#B85C1A', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}
+                          >
+                            Cambiar
+                          </button>
+                        </div>
+
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E' }}>
+                            {hireMode === 'labor_only' ? 'Solo mano de obra' : 'Mano de obra + materiales'}
+                          </span>
+                        </div>
+
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E' }}>Mano de obra</span>
+                          <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#1C1410' }}>${Number(solicitud.labor_cost ?? 0).toFixed(2)}</span>
+                        </div>
+
+                        {hireMode === 'labor_and_materials' && (
+                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E' }}>Materiales</span>
+                            <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#1C1410' }}>${Number(solicitud.materials_cost ?? 0).toFixed(2)}</span>
+                          </div>
+                        )}
+
+                        <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #D4A96A40', paddingTop: '8px' }}>
+                          <span style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700, color: '#1C1410' }}>Total a pagar</span>
+                          <span style={{ fontFamily: FONT_SANS, fontSize: '18px', fontWeight: 700, color: '#B85C1A' }}>
+                            ${hireMode === 'labor_only'
+                              ? Number(solicitud.labor_cost ?? 0).toFixed(2)
+                              : (Number(solicitud.labor_cost ?? 0) + Number(solicitud.materials_cost ?? 0)).toFixed(2)
+                            }
+                          </span>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={handleAccept}
+                        disabled={actionLoading}
+                        style={{
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                          background: '#1C1410', color: '#D4A96A',
+                          fontFamily: FONT_SANS, fontSize: '16px', fontWeight: 700,
+                          padding: '14px', borderRadius: '8px', width: '100%',
+                          border: 'none', cursor: actionLoading ? 'not-allowed' : 'pointer',
+                          opacity: actionLoading ? 0.6 : 1,
+                        }}
+                      >
+                        {actionLoading ? 'Procesando...' : 'Confirmar y aceptar cotización'}
+                      </button>
+
+                      <button
+                        onClick={handleRequestRevision}
+                        disabled={actionLoading}
+                        style={{
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                          background: 'transparent', color: '#6B7B6E',
+                          border: '1.5px solid #6B7B6E40', borderRadius: '8px',
+                          fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 600,
+                          padding: '13px', width: '100%',
+                          cursor: actionLoading ? 'not-allowed' : 'pointer',
+                          opacity: actionLoading ? 0.6 : 1,
+                        }}
+                      >
+                        <RefreshCw style={{ width: 16, height: 16 }} />
+                        {actionLoading ? 'Procesando...' : 'Solicitar cambios'}
+                      </button>
+
+                      <button
+                        onClick={() => setConfirmRejectOpen(true)}
+                        disabled={actionLoading}
+                        style={{
+                          background: 'transparent', color: '#B85C1A',
+                          border: '1.5px solid #B85C1A', borderRadius: '8px',
+                          fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700,
+                          padding: '13px', width: '100%',
+                          cursor: actionLoading ? 'not-allowed' : 'pointer',
+                          opacity: actionLoading ? 0.6 : 1,
+                        }}
+                      >
+                        Rechazar cotización
+                      </button>
+
+                      <div style={{
+                        display: 'flex', alignItems: 'flex-start', gap: '10px',
+                        background: '#D4A96A12', border: '1px solid #D4A96A40',
+                        borderRadius: '8px', padding: '12px 14px',
+                      }}>
+                        <MessageCircle style={{ width: 16, height: 16, color: '#B85C1A', flexShrink: 0, marginTop: '2px' }} />
+                        <p style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#6B7B6E', lineHeight: 1.6, margin: 0 }}>
+                          Puede enviar mensajes al maestro antes de aceptar o rechazar la cotización.{' '}
+                          <Link href={`/${params.country}/mensajes?solicitud=${params.id}`} style={{ color: '#B85C1A', fontWeight: 600, textDecoration: 'none' }}>
+                            Ir a mensajes →
+                          </Link>
+                        </p>
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
             </div>
