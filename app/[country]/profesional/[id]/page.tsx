@@ -72,9 +72,14 @@ export default async function ProfessionalProfilePage({
     ? 'Todo El Salvador'
     : (pro.coverage as any[])?.map((c: any) => c.department?.name).filter(Boolean).join(', ')
 
-  const sortedPortfolio = ((pro.portfolio as any[]) ?? []).sort(
-    (a: any, b: any) => a.order_index - b.order_index,
-  )
+  const sortedPortfolio = ((pro.portfolio as any[]) ?? [])
+    .sort((a: any, b: any) => a.order_index - b.order_index)
+    .map((photo: any) => ({
+      ...photo,
+      publicUrl: photo.photo_url.startsWith('http')
+        ? photo.photo_url
+        : supabase.storage.from('portfolio').getPublicUrl(photo.photo_url).data.publicUrl,
+    }))
 
   return (
     <div className="container mx-auto px-4 py-8">

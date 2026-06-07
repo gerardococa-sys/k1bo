@@ -1,12 +1,12 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import Image from 'next/image'
 import { X, ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface Photo {
   id: string
   photo_url: string
+  publicUrl: string
   caption: string | null
   order_index: number
 }
@@ -49,11 +49,15 @@ export function PortfolioLightbox({ photos }: { photos: Photo[] }) {
             onClick={() => setActiveIndex(index)}
             className="relative aspect-square overflow-hidden rounded-lg bg-muted cursor-zoom-in group focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
-            <Image
-              src={photo.photo_url}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={photo.publicUrl}
               alt={photo.caption ?? 'Foto de portafolio'}
-              fill
-              className="object-cover transition-transform duration-200 group-hover:scale-105"
+              style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.2s' }}
+              className="group-hover:scale-105"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = 'none'
+              }}
             />
           </button>
         ))}
@@ -92,9 +96,12 @@ export function PortfolioLightbox({ photos }: { photos: Photo[] }) {
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={photos[activeIndex].photo_url}
+              src={photos[activeIndex].publicUrl}
               alt={photos[activeIndex].caption ?? 'Foto de portafolio'}
               className="max-h-[75vh] max-w-full object-contain rounded-lg"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = 'none'
+              }}
             />
             {photos[activeIndex].caption && (
               <p className="mt-3 text-sm text-white/80 text-center">

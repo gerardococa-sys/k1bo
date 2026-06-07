@@ -83,24 +83,47 @@ export default function ProSolicitudesPage() {
     async function load() {
       const supabase = createClient()
 
-      const { data: { user }, error: authError } = await supabase.auth.getUser()
-      if (authError || !user) { setLoading(false); return }
+      const { data: { user }, error: authError } =
+        await supabase.auth.getUser()
 
-      // Query plana — evita problemas con nombres de FK constraints
-      const { data, error } = await supabase
-        .from('quote_requests')
-        .select('id, created_at, required_date, responded_at, status, description, client_id, category_id, subcategory_id')
-        .eq('professional_id', user.id)
-        .order('created_at', { ascending: false })
-
-      if (error || !data?.length) {
-        if (error) console.error('[solicitudes]', error)
-        setSolicitudes(data ?? [])
+      if (authError || !user) {
         setLoading(false)
         return
       }
 
-      // IDs únicos para lookups
+      console.log('[solicitudes] user.id:', user.id)
+
+      const { data, error } = await supabase
+        .from('quote_requests')
+        .select(`
+          id,
+          created_at,
+          required_date,
+          responded_at,
+          status,
+          description,
+          client_id,
+          category_id,
+          subcategory_id
+        `)
+        .eq('professional_id', user.id)
+        .order('created_at', { ascending: false })
+
+      console.log('[solicitudes] data:', data?.length,
+        'error:', JSON.stringify(error))
+
+      if (error) {
+        console.error('[solicitudes] Error:', error)
+        setLoading(false)
+        return
+      }
+
+      if (!data?.length) {
+        setSolicitudes([])
+        setLoading(false)
+        return
+      }
+
       const clientIds = Array.from(
         new Set(data.map((s: any) => s.client_id).filter(Boolean))
       )
@@ -111,20 +134,45 @@ export default function ProSolicitudesPage() {
         ].filter(Boolean))
       )
 
-      const [{ data: clientsData }, { data: catsData }] = await Promise.all([
-        supabase.from('profiles').select('id, full_name, photo_url').in('id', clientIds),
-        supabase.from('categories').select('id, name').in('id', catIds),
+      console.log('[solicitudes] clientIds:', clientIds)
+      console.log('[solicitudes] catIds:', catIds)
+
+      const [
+        { data: clientsData, error: clientsError },
+        { data: catsData, error: catsError }
+      ] = await Promise.all([
+        clientIds.length
+          ? supabase.from('profiles')
+              .select('id, full_name, photo_url')
+              .in('id', clientIds)
+          : Promise.resolve({ data: [], error: null }),
+        catIds.length
+          ? supabase.from('categories')
+              .select('id, name')
+              .in('id', catIds)
+          : Promise.resolve({ data: [], error: null }),
       ])
 
-      const clientsMap = Object.fromEntries((clientsData ?? []).map(c => [c.id, c]))
-      const catsMap    = Object.fromEntries((catsData    ?? []).map(c => [c.id, c]))
+      console.log('[solicitudes] clients:', clientsData?.length, clientsError)
+      console.log('[solicitudes] cats:', catsData?.length, catsError)
 
-      setSolicitudes(data.map(s => ({
+      const clientsMap = Object.fromEntries(
+        (clientsData ?? []).map(c => [c.id, c])
+      )
+      const catsMap = Object.fromEntries(
+        (catsData ?? []).map(c => [c.id, c])
+      )
+
+      const enriched = data.map((s: any) => ({
         ...s,
         clientData:      clientsMap[s.client_id]      ?? null,
         categoryData:    catsMap[s.category_id]        ?? null,
         subcategoryData: catsMap[s.subcategory_id]     ?? null,
-      })))
+      }))
+
+      console.log('[solicitudes] enriched:', enriched.length, enriched[0])
+
+      setSolicitudes(enriched)
       setLoading(false)
     }
     load()

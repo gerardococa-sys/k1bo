@@ -17,6 +17,7 @@ const colTitleStyle: React.CSSProperties = {
   textTransform: 'uppercase',
   color: '#D4A96A',
   marginBottom: '14px',
+  whiteSpace: 'nowrap',
 }
 
 const linkStyle: React.CSSProperties = {
@@ -26,6 +27,7 @@ const linkStyle: React.CSSProperties = {
   display: 'block',
   lineHeight: 2,
   transition: 'color 0.15s',
+  whiteSpace: 'nowrap',        // evita quiebre de texto
 }
 
 const INACTIVE_COUNTRIES = [
@@ -41,40 +43,38 @@ export function Footer({ countryPrefix }: FooterProps) {
 
   return (
     <footer style={{ backgroundColor: '#1C1410' }}>
-      <div className="container mx-auto px-4 py-12">
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '56px 48px 32px' }}>
 
-        {/* Grid con anchos personalizados */}
+        {/* Grid 5 columnas */}
         <div className="ax7-footer-grid">
 
           {/* Col 1 — Brand */}
-          <div className="ax7-footer-brand" style={{ borderRight: COL_DIVIDER, paddingRight: '32px' }}>
-            <p className="mb-1" style={{ color: '#F5F0E8' }}>
+          <div className="ax7-footer-brand" style={{ borderRight: COL_DIVIDER }}>
+            <p style={{ color: '#F5F0E8', marginBottom: '8px' }}>
               <Logo size="lg" variant="light" />
             </p>
-            <p
-              className="mb-4"
-              style={{
-                fontFamily: FONT_SANS,
-                fontSize: '14px',
-                color: 'rgba(245,240,232,0.31)',
-                lineHeight: '1.5',
-              }}
-            >
+            <p style={{
+              fontFamily: FONT_SANS,
+              fontSize: '14px',
+              color: 'rgba(245,240,232,0.31)',
+              lineHeight: '1.5',
+              marginBottom: '16px',
+            }}>
               La red de los maestros de la construcción.
             </p>
             <Globe className="h-4 w-4" style={{ color: 'rgba(245,240,232,0.25)' }} />
           </div>
 
           {/* Col 2 — Plataforma */}
-          <div style={{ borderRight: COL_DIVIDER, padding: '0 28px' }}>
+          <div style={{ borderRight: COL_DIVIDER }}>
             <p style={colTitleStyle}>Plataforma</p>
             {[
-              { label: 'Nosotros',               href: '/nosotros' },
-              { label: 'Cómo funciona',           href: `${base}#como-funciona` },
-              { label: 'Categorías',              href: `${base}#categorias` },
-              { label: 'Términos y Condiciones',  href: '/terminos' },
-              { label: 'Política de Privacidad',  href: '/privacidad' },
-              { label: 'Cancelaciones',           href: '/cancelaciones' },
+              { label: 'Nosotros',              href: '/nosotros' },
+              { label: 'Cómo funciona',          href: `${base}#como-funciona` },
+              { label: 'Categorías',             href: `${base}#categorias` },
+              { label: 'Términos y Condiciones', href: '/terminos' },
+              { label: 'Política de Privacidad', href: '/privacidad' },
+              { label: 'Cancelaciones',          href: '/cancelaciones' },
             ].map(({ label, href }) => (
               <Link key={href} href={href} style={linkStyle} className="hover-footer-link">
                 {label}
@@ -83,7 +83,7 @@ export function Footer({ countryPrefix }: FooterProps) {
           </div>
 
           {/* Col 3 — Profesionales */}
-          <div style={{ borderRight: COL_DIVIDER, padding: '0 28px' }}>
+          <div style={{ borderRight: COL_DIVIDER }}>
             <p style={colTitleStyle}>Profesionales</p>
             {[
               { label: 'Directorio',     href: `${base}/profesionales` },
@@ -97,7 +97,7 @@ export function Footer({ countryPrefix }: FooterProps) {
           </div>
 
           {/* Col 4 — Propietarios */}
-          <div style={{ borderRight: COL_DIVIDER, padding: '0 28px' }}>
+          <div style={{ borderRight: COL_DIVIDER }}>
             <p style={colTitleStyle}>Propietarios</p>
             {[
               { label: 'Registrarme',    href: '/registro' },
@@ -111,20 +111,14 @@ export function Footer({ countryPrefix }: FooterProps) {
           </div>
 
           {/* Col 5 — Países */}
-          <div className="ax7-footer-countries" style={{ paddingLeft: '28px' }}>
+          <div className="ax7-footer-countries">
             <p style={colTitleStyle}>Países</p>
 
             {/* El Salvador — activo */}
             <Link href="/sv" className="hover-footer-link" style={{ textDecoration: 'none' }}>
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: '8px',
-                whiteSpace: 'nowrap', lineHeight: 2,
-              }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap', lineHeight: 2 }}>
                 <span style={{ fontSize: '18px' }}>🇸🇻</span>
-                <span style={{
-                  fontFamily: FONT_SANS, fontSize: '15px',
-                  color: '#D4A96A', fontWeight: 600,
-                }}>
+                <span style={{ fontFamily: FONT_SANS, fontSize: '15px', color: '#D4A96A', fontWeight: 600 }}>
                   El Salvador
                 </span>
               </div>
@@ -132,22 +126,12 @@ export function Footer({ countryPrefix }: FooterProps) {
 
             {/* Países inactivos */}
             {INACTIVE_COUNTRIES.map(({ flag, name }) => (
-              <div key={name} style={{
-                display: 'flex', alignItems: 'center', gap: '8px',
-                whiteSpace: 'nowrap', lineHeight: 2,
-              }}>
+              <div key={name} style={{ display: 'flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap', lineHeight: 2 }}>
                 <span style={{ fontSize: '18px' }}>{flag}</span>
-                <span style={{
-                  fontFamily: FONT_SANS, fontSize: '15px',
-                  color: 'rgba(245,240,232,0.30)',
-                }}>
+                <span style={{ fontFamily: FONT_SANS, fontSize: '15px', color: 'rgba(245,240,232,0.30)' }}>
                   {name}
                 </span>
-                <span style={{
-                  fontFamily: FONT_SANS, fontSize: '11px',
-                  color: 'rgba(245,240,232,0.18)',
-                  fontStyle: 'italic',
-                }}>
+                <span style={{ fontFamily: FONT_SANS, fontSize: '11px', color: 'rgba(245,240,232,0.18)', fontStyle: 'italic' }}>
                   Próximamente
                 </span>
               </div>
@@ -156,7 +140,7 @@ export function Footer({ countryPrefix }: FooterProps) {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-10 pt-6" style={{ borderTop: COL_DIVIDER }}>
+        <div style={{ borderTop: COL_DIVIDER, marginTop: '40px', paddingTop: '24px' }}>
           <p style={{ fontFamily: FONT_SANS, fontSize: '13px', color: 'rgba(245,240,232,0.25)' }}>
             © 2026 Artifex7. Todos los derechos reservados.
           </p>
@@ -166,46 +150,33 @@ export function Footer({ countryPrefix }: FooterProps) {
       <style>{`
         .hover-footer-link:hover { color: #F5F0E8 !important; }
 
-        /* Grid desktop: 5 columnas con Países más ancha */
+        /* ── Desktop (≥ 768px) ── */
         .ax7-footer-grid {
           display: grid;
-          gap: 0;
-          grid-template-columns: 1fr;
-          row-gap: 40px;
+          grid-template-columns: 180px 200px 180px 180px 200px;
+          gap: 32px;
         }
 
-        @media (min-width: 768px) {
-          .ax7-footer-grid {
-            grid-template-columns: 200px 160px 160px 160px 1fr;
-            row-gap: 0;
-          }
-          .ax7-footer-countries {
-            /* Permite que el texto largo no se corte */
-            min-width: 200px;
-          }
-        }
-
-        /* Mobile 2 columnas — Países ocupa todo el ancho */
-        @media (min-width: 480px) and (max-width: 767px) {
+        /* ── Mobile 2 columnas (< 768px) ── */
+        @media (max-width: 767px) {
           .ax7-footer-grid {
             grid-template-columns: 1fr 1fr;
-            row-gap: 32px;
+            gap: 24px;
           }
           .ax7-footer-brand,
           .ax7-footer-countries {
             grid-column: 1 / -1;
           }
-          /* Quitar dividers laterales en mobile */
+          /* Sin dividers verticales en mobile */
           .ax7-footer-grid > div {
             border-right: none !important;
-            padding: 0 !important;
           }
         }
 
-        @media (max-width: 479px) {
-          .ax7-footer-grid > div {
-            border-right: none !important;
-            padding: 0 !important;
+        /* ── Mobile ajuste de padding externo ── */
+        @media (max-width: 767px) {
+          footer > div {
+            padding: 40px 24px 24px !important;
           }
         }
       `}</style>
