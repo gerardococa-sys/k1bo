@@ -190,7 +190,7 @@ export default function ClientProfilePage() {
       <Link
         href={`/${params?.country ?? 'sv'}/cliente/dashboard`}
         style={{
-          fontFamily: FONT_SANS, fontSize: '15px', color: '#B85C1A', textDecoration: 'none',
+          fontFamily: FONT_SANS, fontSize: '15px', color: '#C4581A', textDecoration: 'none',
           display: 'inline-flex', alignItems: 'center', gap: '6px', marginBottom: '20px',
         }}
         className="perfil-back-link"
@@ -199,24 +199,24 @@ export default function ClientProfilePage() {
         Volver al Dashboard
       </Link>
       <style>{`.perfil-back-link:hover { text-decoration: underline; }`}</style>
-      <h1 style={{ fontFamily: FONT_SERIF, fontSize: '28px', fontWeight: 700, color: '#1C1410', marginBottom: '8px' }}>
+      <h1 style={{ fontFamily: FONT_SERIF, fontSize: '28px', fontWeight: 700, color: '#2C2C2C', marginBottom: '8px' }}>
         Mi Perfil
       </h1>
-      <p style={{ fontFamily: FONT_SANS, fontSize: '15px', color: '#6B7B6E', marginBottom: '32px' }}>
+      <p style={{ fontFamily: FONT_SANS, fontSize: '15px', color: '#7A7A78', marginBottom: '32px' }}>
         Administra tu información personal y de ubicación
       </p>
 
       <form onSubmit={handleSubmit(onSubmit)}>
         {/* Información personal */}
-        <section style={{ backgroundColor: '#fff', border: '1px solid #1C141015', borderRadius: '12px', padding: '24px', marginBottom: '20px' }}>
-          <h2 style={{ fontFamily: FONT_SERIF, fontSize: '18px', fontWeight: 600, color: '#1C1410', marginBottom: '20px' }}>
+        <section style={{ backgroundColor: '#fff', border: '1px solid #2C2C2C12', borderRadius: '12px', padding: '24px', marginBottom: '20px' }}>
+          <h2 style={{ fontFamily: FONT_SERIF, fontSize: '18px', fontWeight: 600, color: '#2C2C2C', marginBottom: '20px' }}>
             Información personal
           </h2>
 
           {/* Avatar */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '20px', gap: '12px' }}>
             {avatarPreview ? (
-              <div style={{ width: 88, height: 88, borderRadius: '50%', overflow: 'hidden', border: '3px solid #D4A96A' }}>
+              <div style={{ width: 88, height: 88, borderRadius: '50%', overflow: 'hidden', border: '3px solid #D4963A' }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={avatarPreview}
@@ -226,13 +226,13 @@ export default function ClientProfilePage() {
                 />
               </div>
             ) : (
-              <div style={{ width: 88, height: 88, borderRadius: '50%', backgroundColor: '#B85C1A12', border: '3px solid #D4A96A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span style={{ fontFamily: FONT_SERIF, fontSize: '32px', color: '#B85C1A', fontWeight: 700 }}>
+              <div style={{ width: 88, height: 88, borderRadius: '50%', backgroundColor: '#C4581A12', border: '3px solid #D4963A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ fontFamily: FONT_SERIF, fontSize: '32px', color: '#C4581A', fontWeight: 700 }}>
                   {/* initials placeholder */}
                 </span>
               </div>
             )}
-            <Label style={{ fontFamily: FONT_SANS, fontSize: '14px', cursor: 'pointer', color: '#B85C1A', fontWeight: 600 }}>
+            <Label style={{ fontFamily: FONT_SANS, fontSize: '14px', cursor: 'pointer', color: '#C4581A', fontWeight: 600 }}>
               Cambiar foto
               <Input
                 type="file"
@@ -257,7 +257,7 @@ export default function ClientProfilePage() {
             <div className="space-y-2">
               <Label>Correo electrónico</Label>
               <Input value={email} disabled className="bg-muted" />
-              <p style={{ fontFamily: FONT_SANS, fontSize: '12px', color: '#6B7B6E' }}>El correo no puede modificarse desde aquí.</p>
+              <p style={{ fontFamily: FONT_SANS, fontSize: '12px', color: '#7A7A78' }}>El correo no puede modificarse desde aquí.</p>
             </div>
 
             <div className="space-y-2">
@@ -270,10 +270,10 @@ export default function ClientProfilePage() {
                     padding: '10px 12px',
                     borderRadius: '8px',
                     border: '1px solid rgba(212,169,106,0.25)',
-                    background: '#F5F0E8',
+                    background: '#F2F0ED',
                     fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)',
                     fontSize: '15px',
-                    color: '#1C1410',
+                    color: '#2C2C2C',
                     width: '140px',
                     flexShrink: 0,
                   }}
@@ -297,14 +297,14 @@ export default function ClientProfilePage() {
             <div className="space-y-2">
               <Label htmlFor="date_of_birth">Fecha de nacimiento *</Label>
               <Input id="date_of_birth" type="date" max={new Date().toISOString().split('T')[0]} {...register('date_of_birth')} />
-              {errors.date_of_birth && <p style={{ fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)', fontSize: '13px', color: '#B85C1A' }}>{errors.date_of_birth.message}</p>}
+              {errors.date_of_birth && <p style={{ fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)', fontSize: '13px', color: '#C4581A' }}>{errors.date_of_birth.message}</p>}
             </div>
           </div>
         </section>
 
         {/* Ubicación */}
-        <section style={{ backgroundColor: '#fff', border: '1px solid #1C141015', borderRadius: '12px', padding: '24px', marginBottom: '20px' }}>
-          <h2 style={{ fontFamily: FONT_SERIF, fontSize: '18px', fontWeight: 600, color: '#1C1410', marginBottom: '20px' }}>
+        <section style={{ backgroundColor: '#fff', border: '1px solid #2C2C2C12', borderRadius: '12px', padding: '24px', marginBottom: '20px' }}>
+          <h2 style={{ fontFamily: FONT_SERIF, fontSize: '18px', fontWeight: 600, color: '#2C2C2C', marginBottom: '20px' }}>
             Ubicación
           </h2>
 
@@ -361,15 +361,15 @@ export default function ClientProfilePage() {
           className="w-full"
           size="lg"
           disabled={isSubmitting}
-          style={{ backgroundColor: '#1C1410', color: '#D4A96A', fontFamily: FONT_SANS, fontSize: '16px', fontWeight: 700, borderRadius: '8px' }}
+          style={{ backgroundColor: '#1E1E1E', color: '#D4963A', fontFamily: FONT_SANS, fontSize: '16px', fontWeight: 700, borderRadius: '8px' }}
         >
           {isSubmitting ? 'Guardando...' : 'Guardar cambios'}
         </Button>
       </form>
 
       {/* Cambiar contraseña */}
-      <section style={{ backgroundColor: '#fff', border: '1px solid #1C141015', borderRadius: '12px', padding: '24px', marginTop: '20px' }}>
-        <h2 style={{ fontFamily: FONT_SERIF, fontSize: '18px', fontWeight: 600, color: '#1C1410', marginBottom: '20px' }}>
+      <section style={{ backgroundColor: '#fff', border: '1px solid #2C2C2C12', borderRadius: '12px', padding: '24px', marginTop: '20px' }}>
+        <h2 style={{ fontFamily: FONT_SERIF, fontSize: '18px', fontWeight: 600, color: '#2C2C2C', marginBottom: '20px' }}>
           Cambiar contraseña
         </h2>
 
@@ -430,7 +430,7 @@ export default function ClientProfilePage() {
               </button>
             </div>
             {pwdMismatch && (
-              <p style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#B85C1A' }}>Las contraseñas no coinciden</p>
+              <p style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#C4581A' }}>Las contraseñas no coinciden</p>
             )}
             {pwdSuccess && (
               <p style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#16a34a', fontWeight: 600 }}>Contraseña actualizada</p>

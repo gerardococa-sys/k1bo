@@ -9,7 +9,7 @@ export function HowItWorks() {
       id="como-funciona"
       style={{
         position: 'relative',
-        backgroundColor: '#1C1410',
+        backgroundColor: '#1E1E1E',
         backgroundImage: 'url(/images/concrete-texture.jpg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center top',
@@ -22,7 +22,7 @@ export function HowItWorks() {
         style={{
           position: 'absolute',
           inset: 0,
-          background: 'rgba(28,20,16,0.92)',
+          background: 'rgba(30,30,30,0.92)',
           zIndex: 1,
         }}
       />
@@ -33,7 +33,7 @@ export function HowItWorks() {
             fontFamily: FONT_SERIF,
             fontSize: '46px',
             fontWeight: 700,
-            color: '#F5F0E8',
+            color: '#F2F0ED',
             textAlign: 'center',
             marginBottom: '8px',
           }}
@@ -44,7 +44,7 @@ export function HowItWorks() {
           style={{
             fontFamily: FONT_SANS,
             fontSize: '20px',
-            color: '#D4A96A',
+            color: '#D4963A',
             textAlign: 'center',
             marginBottom: '48px',
           }}
@@ -67,7 +67,7 @@ export function HowItWorks() {
                   width: 52,
                   height: 52,
                   borderRadius: '50%',
-                  backgroundColor: '#B85C1A',
+                  backgroundColor: '#C4581A',
                   color: '#ffffff',
                   display: 'flex',
                   alignItems: 'center',
@@ -87,7 +87,7 @@ export function HowItWorks() {
                   fontFamily: FONT_SERIF,
                   fontSize: '22px',
                   fontWeight: 700,
-                  color: '#F5F0E8',
+                  color: '#F2F0ED',
                   marginTop: '16px',
                   marginBottom: 0,
                 }}

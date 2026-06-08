@@ -15,7 +15,7 @@ const colTitleStyle: React.CSSProperties = {
   fontWeight: 700,
   letterSpacing: '0.1em',
   textTransform: 'uppercase',
-  color: '#D4A96A',
+  color: '#D4963A',
   marginBottom: '14px',
   whiteSpace: 'nowrap',
 }
@@ -35,14 +35,13 @@ const INACTIVE_COUNTRIES = [
   { flag: '🇭🇳', name: 'Honduras' },
   { flag: '🇨🇷', name: 'Costa Rica' },
   { flag: '🇵🇦', name: 'Panamá' },
-  { flag: '🇧🇿', name: 'Belice' },
 ]
 
 export function Footer({ countryPrefix }: FooterProps) {
   const base = countryPrefix ? `/${countryPrefix}` : '/sv'
 
   return (
-    <footer style={{ backgroundColor: '#1C1410' }}>
+    <footer style={{ backgroundColor: '#1E1E1E' }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '56px 48px 32px' }}>
 
         {/* Grid 5 columnas */}
@@ -50,7 +49,7 @@ export function Footer({ countryPrefix }: FooterProps) {
 
           {/* Col 1 — Brand */}
           <div className="ax7-footer-brand" style={{ borderRight: COL_DIVIDER }}>
-            <p style={{ color: '#F5F0E8', marginBottom: '8px' }}>
+            <p style={{ color: '#F2F0ED', marginBottom: '8px' }}>
               <Logo size="lg" variant="light" />
             </p>
             <p style={{
@@ -118,7 +117,7 @@ export function Footer({ countryPrefix }: FooterProps) {
             <Link href="/sv" className="hover-footer-link" style={{ textDecoration: 'none' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap', lineHeight: 2 }}>
                 <span style={{ fontSize: '18px' }}>🇸🇻</span>
-                <span style={{ fontFamily: FONT_SANS, fontSize: '15px', color: '#D4A96A', fontWeight: 600 }}>
+                <span style={{ fontFamily: FONT_SANS, fontSize: '15px', color: '#D4963A', fontWeight: 600 }}>
                   El Salvador
                 </span>
               </div>
@@ -148,7 +147,7 @@ export function Footer({ countryPrefix }: FooterProps) {
       </div>
 
       <style>{`
-        .hover-footer-link:hover { color: #F5F0E8 !important; }
+        .hover-footer-link:hover { color: #F2F0ED !important; }
 
         /* ── Desktop (≥ 768px) ── */
         .ax7-footer-grid {

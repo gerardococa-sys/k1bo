@@ -15,7 +15,7 @@ export default function RegistroEmpresaPage() {
     <div
       style={{
         minHeight: '60vh',
-        backgroundColor: '#F5F0E8',
+        backgroundColor: '#F2F0ED',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -30,14 +30,14 @@ export default function RegistroEmpresaPage() {
           width: 96,
           height: 96,
           borderRadius: '50%',
-          backgroundColor: '#B85C1A12',
+          backgroundColor: '#C4581A12',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           marginBottom: '24px',
         }}
       >
-        <Building2 style={{ width: 56, height: 56, color: '#B85C1A' }} />
+        <Building2 style={{ width: 56, height: 56, color: '#C4581A' }} />
       </div>
 
       {/* Title */}
@@ -46,7 +46,7 @@ export default function RegistroEmpresaPage() {
           fontFamily: FONT_SERIF,
           fontSize: '42px',
           fontWeight: 700,
-          color: '#1C1410',
+          color: '#2C2C2C',
           margin: '0 0 12px',
         }}
       >
@@ -59,7 +59,7 @@ export default function RegistroEmpresaPage() {
           fontFamily: FONT_SANS,
           fontSize: '20px',
           fontWeight: 600,
-          color: '#B85C1A',
+          color: '#C4581A',
           margin: '0 0 16px',
         }}
       >
@@ -71,7 +71,7 @@ export default function RegistroEmpresaPage() {
         style={{
           fontFamily: FONT_SANS,
           fontSize: '17px',
-          color: '#6B7B6E',
+          color: '#7A7A78',
           maxWidth: '480px',
           lineHeight: 1.7,
           margin: '0 0 32px',
@@ -88,8 +88,8 @@ export default function RegistroEmpresaPage() {
         className="ax7-empresa-btn"
         style={{
           display: 'inline-block',
-          backgroundColor: '#1C1410',
-          color: '#D4A96A',
+          backgroundColor: '#1E1E1E',
+          color: '#D4963A',
           fontFamily: FONT_SANS,
           fontSize: '16px',
           fontWeight: 700,
@@ -109,7 +109,7 @@ export default function RegistroEmpresaPage() {
         style={{
           fontFamily: FONT_SANS,
           fontSize: '15px',
-          color: '#B85C1A',
+          color: '#C4581A',
           textDecoration: 'none',
         }}
       >

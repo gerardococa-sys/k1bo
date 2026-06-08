@@ -107,7 +107,7 @@ export default function MensajesPage() {
       padding: '48px 24px',
       textAlign: 'center',
       fontFamily: FONT_SANS,
-      color: '#6B7B6E'
+      color: '#7A7A78'
     }}>
       Cargando mensajes...
     </div>
@@ -118,7 +118,7 @@ export default function MensajesPage() {
       padding: '48px 24px',
       textAlign: 'center',
       fontFamily: FONT_SANS,
-      color: '#6B7B6E'
+      color: '#7A7A78'
     }}>
       <p style={{ fontSize: '18px', marginBottom: '16px' }}>
         No se especificó ninguna conversación
@@ -126,7 +126,7 @@ export default function MensajesPage() {
       <Link
         href={`/${params.country}/cliente/dashboard`}
         style={{
-          color: '#B85C1A',
+          color: '#C4581A',
           fontSize: '15px',
           textDecoration: 'none',
           fontFamily: FONT_SANS,
@@ -142,7 +142,7 @@ export default function MensajesPage() {
       maxWidth: '800px',
       margin: '0 auto',
       padding: '32px 24px',
-      background: '#F5F0E8',
+      background: '#F2F0ED',
       minHeight: '100vh'
     }}>
 
@@ -152,7 +152,7 @@ export default function MensajesPage() {
         style={{
           fontFamily: FONT_SANS,
           fontSize: '15px',
-          color: '#B85C1A',
+          color: '#C4581A',
           textDecoration: 'none',
           display: 'inline-flex',
           alignItems: 'center',
@@ -170,7 +170,7 @@ export default function MensajesPage() {
           fontFamily: FONT_SERIF,
           fontSize: '32px',
           fontWeight: 700,
-          color: '#1C1410',
+          color: '#2C2C2C',
           margin: '0 0 6px',
         }}>
           Mensajes
@@ -187,17 +187,17 @@ export default function MensajesPage() {
             fontFamily: FONT_SANS,
             fontSize: '16px',
             fontWeight: 600,
-            color: '#1C1410',
+            color: '#2C2C2C',
           }}>
             {otherName}
           </span>
           {categoryName && (
             <>
-              <span style={{ color: '#D4A96A', fontSize: '14px' }}>·</span>
+              <span style={{ color: '#D4963A', fontSize: '14px' }}>·</span>
               <span style={{
                 fontFamily: FONT_SANS,
                 fontSize: '14px',
-                color: '#B85C1A',
+                color: '#C4581A',
                 fontWeight: 500,
               }}>
                 {categoryName}
@@ -206,12 +206,12 @@ export default function MensajesPage() {
           )}
           {solicitudId && (
             <>
-              <span style={{ color: '#D4A96A', fontSize: '14px' }}>·</span>
+              <span style={{ color: '#D4963A', fontSize: '14px' }}>·</span>
               <span style={{
                 fontFamily: 'monospace',
                 fontSize: '12px',
-                color: '#6B7B6E',
-                background: '#1C141010',
+                color: '#7A7A78',
+                background: '#2C2C2C10',
                 padding: '2px 8px',
                 borderRadius: '6px',
               }}>
@@ -239,7 +239,7 @@ export default function MensajesPage() {
             style={{
               fontFamily: FONT_SANS,
               fontSize: '14px',
-              color: '#6B7B6E',
+              color: '#7A7A78',
               textDecoration: 'none',
             }}
           >

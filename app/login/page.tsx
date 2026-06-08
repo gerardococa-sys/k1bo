@@ -87,7 +87,7 @@ function LoginContent() {
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <Link href="/" style={{ color: '#1C1410' }}>
+          <Link href="/" style={{ color: '#2C2C2C' }}>
             <Logo size="lg" />
           </Link>
           <p className="mt-2 text-muted-foreground">Inicia sesión en tu cuenta</p>

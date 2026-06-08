@@ -9,14 +9,14 @@ interface CtaProfesionalProps {
 
 export function CtaProfesional({ countryName = 'El Salvador' }: CtaProfesionalProps) {
   return (
-    <section className="py-16" style={{ backgroundColor: '#F5F0E8' }}>
+    <section className="py-16" style={{ backgroundColor: '#F2F0ED' }}>
       <div className="container mx-auto px-4 text-center">
         <h2
           style={{
             fontFamily: FONT_SERIF,
             fontSize: '38px',
             fontWeight: 700,
-            color: '#1C1410',
+            color: '#2C2C2C',
             marginBottom: '12px',
           }}
         >
@@ -26,7 +26,7 @@ export function CtaProfesional({ countryName = 'El Salvador' }: CtaProfesionalPr
           style={{
             fontFamily: FONT_SANS,
             fontSize: '18px',
-            color: '#6B7B6E',
+            color: '#7A7A78',
             marginBottom: '28px',
             maxWidth: '480px',
             margin: '0 auto 28px',
@@ -38,8 +38,8 @@ export function CtaProfesional({ countryName = 'El Salvador' }: CtaProfesionalPr
           href="/registro"
           style={{
             display: 'inline-block',
-            backgroundColor: '#1C1410',
-            color: '#D4A96A',
+            backgroundColor: '#1E1E1E',
+            color: '#D4963A',
             fontFamily: FONT_SANS,
             fontSize: '16px',
             fontWeight: 700,

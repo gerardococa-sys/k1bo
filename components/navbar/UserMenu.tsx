@@ -45,7 +45,7 @@ export function UserMenu({ profile, countryPrefix }: UserMenuProps) {
             <AvatarImage src={profile.photo_url ?? ''} alt={profile.full_name ?? ''} />
             <AvatarFallback
               className="text-xs font-semibold"
-              style={{ backgroundColor: '#B85C1A20', color: '#B85C1A' }}
+              style={{ backgroundColor: '#C4581A20', color: '#C4581A' }}
             >
               {getInitials(profile.full_name ?? 'U')}
             </AvatarFallback>

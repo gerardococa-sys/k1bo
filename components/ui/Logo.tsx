@@ -7,7 +7,7 @@ const SIZES: Record<string, string> = { sm: '18px', md: '22px', lg: '28px' }
 const FONT_SERIF = 'var(--font-serif, "Playfair Display", Georgia, serif)'
 
 export function Logo({ size = 'md', variant = 'dark' }: LogoProps) {
-  const sevenColor = variant === 'light' ? '#D4A96A' : '#B85C1A'
+  const sevenColor = variant === 'light' ? '#D4963A' : '#C4581A'
   const fontSize   = size === 'inherit' ? undefined : SIZES[size]
   return (
     <span

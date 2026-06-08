@@ -217,7 +217,7 @@ export default function ProProfilePage() {
       <Link
         href={`/${params.country}/profesional-panel/dashboard`}
         style={{
-          fontFamily: FONT_SANS, fontSize: '15px', color: '#B85C1A', textDecoration: 'none',
+          fontFamily: FONT_SANS, fontSize: '15px', color: '#C4581A', textDecoration: 'none',
           display: 'inline-flex', alignItems: 'center', gap: '6px', marginBottom: '20px',
         }}
         className="pro-perfil-back-link"
@@ -244,7 +244,7 @@ export default function ProProfilePage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                 <div style={{
                   width: 80, height: 80, borderRadius: '50%', overflow: 'hidden',
-                  flexShrink: 0, border: '3px solid #D4A96A', backgroundColor: '#B85C1A15',
+                  flexShrink: 0, border: '3px solid #D4963A', backgroundColor: '#C4581A15',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
                   {avatarPreview ? (
@@ -256,7 +256,7 @@ export default function ProProfilePage() {
                       onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
                     />
                   ) : (
-                    <span style={{ fontFamily: FONT_SERIF, fontSize: '28px', color: '#B85C1A', fontWeight: 700 }}>
+                    <span style={{ fontFamily: FONT_SERIF, fontSize: '28px', color: '#C4581A', fontWeight: 700 }}>
                       {getInitials(fullName || 'P')}
                     </span>
                   )}
@@ -264,9 +264,9 @@ export default function ProProfilePage() {
                 <div>
                   <label style={{
                     display: 'inline-block', padding: '8px 16px',
-                    backgroundColor: '#F5F0E8', border: '1px solid rgba(212,169,106,0.35)',
+                    backgroundColor: '#F2F0ED', border: '1px solid rgba(212,169,106,0.35)',
                     borderRadius: '8px', cursor: 'pointer',
-                    fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#B85C1A',
+                    fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#C4581A',
                   }}>
                     {newPhotoFile ? 'Cambiar selección' : 'Cambiar foto'}
                     <input
@@ -281,7 +281,7 @@ export default function ProProfilePage() {
                     />
                   </label>
                   {newPhotoFile && (
-                    <p style={{ fontFamily: FONT_SANS, fontSize: '12px', color: '#6B7B6E', marginTop: '6px' }}>
+                    <p style={{ fontFamily: FONT_SANS, fontSize: '12px', color: '#7A7A78', marginTop: '6px' }}>
                       {newPhotoFile.name} — se subirá al guardar
                     </p>
                   )}
@@ -302,8 +302,8 @@ export default function ProProfilePage() {
                   onChange={(e) => setPhoneCountryCode(e.target.value)}
                   style={{
                     padding: '10px 12px', borderRadius: '8px',
-                    border: '1px solid rgba(212,169,106,0.25)', background: '#F5F0E8',
-                    fontFamily: FONT_SANS, fontSize: '15px', color: '#1C1410',
+                    border: '1px solid rgba(212,169,106,0.25)', background: '#F2F0ED',
+                    fontFamily: FONT_SANS, fontSize: '15px', color: '#2C2C2C',
                     width: '140px', flexShrink: 0,
                   }}
                 >
@@ -382,8 +382,8 @@ export default function ProProfilePage() {
                 display: 'inline-flex', alignItems: 'center', gap: '8px',
                 padding: '10px 20px', borderRadius: '8px',
                 border: '1px solid rgba(212,169,106,0.35)',
-                backgroundColor: '#F5F0E8', cursor: portfolio.length >= 25 ? 'not-allowed' : 'pointer',
-                fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#B85C1A',
+                backgroundColor: '#F2F0ED', cursor: portfolio.length >= 25 ? 'not-allowed' : 'pointer',
+                fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#C4581A',
                 opacity: portfolio.length >= 25 || !!selectedFile ? 0.5 : 1,
                 transition: 'opacity 0.15s',
               }}
@@ -391,7 +391,7 @@ export default function ProProfilePage() {
               <Plus style={{ width: 16, height: 16 }} />
               Agregar foto
             </button>
-            <span style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#6B7B6E' }}>
+            <span style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#7A7A78' }}>
               {portfolio.length}/25 fotos
             </span>
           </div>
@@ -411,7 +411,7 @@ export default function ProProfilePage() {
                 />
                 <div style={{
                   position: 'absolute', inset: 0,
-                  background: 'rgba(28,20,16,0.62)',
+                  background: 'rgba(30,30,30,0.62)',
                   display: 'flex', flexDirection: 'column',
                   alignItems: 'center', justifyContent: 'center', gap: '8px',
                   padding: '12px',
@@ -422,7 +422,7 @@ export default function ProProfilePage() {
                     disabled={uploading}
                     style={{
                       width: '100%', padding: '10px 0',
-                      background: '#1C1410', color: '#D4A96A',
+                      background: '#1E1E1E', color: '#D4963A',
                       fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700,
                       border: 'none', borderRadius: '8px', cursor: 'pointer',
                       opacity: uploading ? 0.6 : 1,
@@ -436,7 +436,7 @@ export default function ProProfilePage() {
                     disabled={uploading}
                     style={{
                       width: '100%', padding: '8px 0',
-                      background: 'transparent', color: '#F5F0E8',
+                      background: 'transparent', color: '#F2F0ED',
                       fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 500,
                       border: '1px solid rgba(245,240,232,0.4)',
                       borderRadius: '8px', cursor: 'pointer',
@@ -446,7 +446,7 @@ export default function ProProfilePage() {
                   </button>
                 </div>
               </div>
-              <p style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#6B7B6E', paddingTop: '4px' }}>
+              <p style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#7A7A78', paddingTop: '4px' }}>
                 {selectedFile.name}
               </p>
             </div>
@@ -479,9 +479,9 @@ export default function ProProfilePage() {
             </div>
           ) : !selectedFile ? (
             <p style={{
-              fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E',
+              fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78',
               textAlign: 'center', padding: '32px 16px',
-              border: '1px dashed rgba(28,20,16,0.12)', borderRadius: '10px',
+              border: '1px dashed rgba(30,30,30,0.12)', borderRadius: '10px',
             }}>
               Aún no tienes fotos en tu portafolio
             </p>
@@ -531,8 +531,8 @@ export default function ProProfilePage() {
 
         .ax7-save-wrapper { margin-top: 8px; }
         .ax7-save-btn {
-          background: #1C1410;
-          color: #D4A96A;
+          background: #1E1E1E;
+          color: #D4963A;
           font-family: var(--font-sans, "DM Sans", system-ui, sans-serif);
           font-size: 16px;
           font-weight: 700;
@@ -555,7 +555,7 @@ export default function ProProfilePage() {
             background: rgba(255, 255, 255, 0.96);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
-            border-top: 1px solid rgba(28, 20, 16, 0.08);
+            border-top: 1px solid rgba(30, 30, 30, 0.08);
             margin-top: 0;
           }
           .ax7-save-btn { border-radius: 8px; }

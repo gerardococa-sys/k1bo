@@ -46,12 +46,16 @@ const config: Config = {
           foreground: 'hsl(var(--card-foreground))',
         },
 
-        /* Artifex7 brand palette */
-        tierra:   '#1C1410',
-        cobre:    '#B85C1A',
-        arena:    '#D4A96A',
-        caliza:   '#F5F0E8',
-        pizarra:  '#6B7B6E',
+        /* Artifex7 brand palette — Cemento + Cobre */
+        cemento:         '#F2F0ED',
+        'cemento-medio': '#E8E5E1',
+        tierra:          '#1E1E1E',
+        'tierra-alt':    '#2A2A28',
+        cobre:           '#C4581A',
+        'cobre-hover':   '#D4663A',
+        dorado:          '#D4963A',
+        pizarra:         '#7A7A78',
+        text:            '#2C2C2C',
       },
       fontFamily: {
         serif: ['var(--font-serif)', 'Georgia', 'serif'],

@@ -55,7 +55,7 @@ export default async function ClientDashboardPage({ params }: { params: { countr
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground">Solicitudes respondidas</CardTitle>
+            <CardTitle className="text-sm text-muted-foreground">Solicitudes de cotización respondidas</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{respondedCount ?? 0}</p>
@@ -63,7 +63,7 @@ export default async function ClientDashboardPage({ params }: { params: { countr
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground">Solicitudes Aceptadas</CardTitle>
+            <CardTitle className="text-sm text-muted-foreground">Solicitudes de cotización aceptadas</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{acceptedCount ?? 0}</p>

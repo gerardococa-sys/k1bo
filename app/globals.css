@@ -4,47 +4,52 @@
 
 @layer base {
   :root {
-    /* ── Artifex7 brand palette ───────────────────────────────── */
-    --color-tierra:       #1C1410;
-    --color-cobre:        #B85C1A;
-    --color-arena:        #D4A96A;
-    --color-caliza:       #F5F0E8;
-    --color-pizarra:      #6B7B6E;
-    --color-bg:           #F5F0E8;
-    --color-text:         #1C1410;
-    --color-text-muted:   #6B7B6E;
-    --color-accent:       #B85C1A;
-    --color-accent-light: #D4A96A20;
-    --color-border:       #D4A96A50;
+    /* ── Artifex7 brand palette — Cemento + Cobre ─────────────── */
+    --color-bg:           #F2F0ED;  /* cemento claro */
+    --color-bg-alt:       #E8E5E1;  /* cemento medio */
+    --color-bg-dark:      #1E1E1E;  /* hero / footer */
+    --color-bg-dark-alt:  #2A2A28;  /* secciones oscuras */
+
+    --color-text:         #2C2C2C;  /* texto principal */
+    --color-text-muted:   #7A7A78;  /* subtextos / labels */
+    --color-text-light:   #F2F0ED;  /* texto sobre oscuro */
+
+    --color-accent:       #C4581A;  /* cobre principal */
+    --color-accent-hover: #D4663A;  /* cobre hover */
+    --color-accent-gold:  #D4963A;  /* dorado / detalles */
+    --color-accent-light: #C4581A15;/* cobre suave bg */
+
+    --color-border:       #2C2C2C12;/* bordes sutiles */
+    --color-border-accent:#C4581A40;/* bordes con acento */
 
     /* ── shadcn/ui tokens mapped to new palette ───────────────── */
-    --background:             37 39% 94%;   /* caliza  #F5F0E8 */
-    --foreground:             20 27%  9%;   /* tierra  #1C1410 */
+    --background:             37 14% 93%;   /* cemento  #F2F0ED */
+    --foreground:             0  0% 17%;    /* text     #2C2C2C */
 
-    --card:                    0  0% 100%;  /* white — contrast on caliza */
-    --card-foreground:        20 27%  9%;
+    --card:                    0  0% 100%;
+    --card-foreground:         0  0% 17%;
 
     --popover:                 0  0% 100%;
-    --popover-foreground:     20 27%  9%;
+    --popover-foreground:      0  0% 17%;
 
-    --primary:                25 75% 41%;   /* cobre   #B85C1A */
-    --primary-foreground:     37 39% 94%;   /* caliza  #F5F0E8 */
+    --primary:                24 75% 43%;   /* cobre   #C4581A */
+    --primary-foreground:     37 14% 93%;   /* cemento #F2F0ED */
 
-    --secondary:              36 45% 85%;   /* arena light */
-    --secondary-foreground:   20 27%  9%;
+    --secondary:              36 40% 88%;
+    --secondary-foreground:    0  0% 17%;
 
-    --muted:                  37 20% 88%;   /* caliza darker */
-    --muted-foreground:      131  7% 45%;   /* pizarra #6B7B6E */
+    --muted:                  37 10% 88%;
+    --muted-foreground:        0  0% 48%;   /* pizarra #7A7A78 */
 
-    --accent:                 36 55% 62%;   /* arena   #D4A96A */
-    --accent-foreground:      20 27%  9%;
+    --accent:                 36 60% 53%;   /* dorado  #D4963A */
+    --accent-foreground:       0  0% 17%;
 
     --destructive:             0 84% 60%;
     --destructive-foreground:  0  0% 98%;
 
-    --border:                 36 40% 80%;   /* soft arena border */
-    --input:                  36 40% 80%;
-    --ring:                   25 75% 41%;   /* cobre */
+    --border:                 36 20% 84%;
+    --input:                  36 20% 84%;
+    --ring:                   24 75% 43%;   /* cobre */
 
     --radius: 0.5rem;
   }
@@ -61,11 +66,11 @@
 }
 
 @layer utilities {
-  .font-serif  { font-family: 'Playfair Display', Georgia, serif; }
-  .font-sans   { font-family: 'DM Sans', system-ui, sans-serif; }
-  .text-cobre  { color: #B85C1A; }
-  .text-arena  { color: #D4A96A; }
-  .text-pizarra { color: #6B7B6E; }
-  .bg-caliza   { background-color: #F5F0E8; }
-  .bg-tierra   { background-color: #1C1410; }
+  .font-serif   { font-family: 'Playfair Display', Georgia, serif; }
+  .font-sans    { font-family: 'DM Sans', system-ui, sans-serif; }
+  .text-cobre   { color: #C4581A; }
+  .text-dorado  { color: #D4963A; }
+  .text-pizarra { color: #7A7A78; }
+  .bg-cemento   { background-color: #F2F0ED; }
+  .bg-tierra    { background-color: #1E1E1E; }
 }

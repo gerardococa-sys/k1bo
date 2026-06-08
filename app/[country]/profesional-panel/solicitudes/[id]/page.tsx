@@ -22,10 +22,10 @@ const QuoteResponsePanel = dynamicImport(
         padding: '24px',
         textAlign: 'center',
         fontFamily: 'DM Sans, sans-serif',
-        color: '#6B7B6E',
+        color: '#7A7A78',
         background: '#fff',
         borderRadius: '12px',
-        border: '0.5px solid #1C141015',
+        border: '0.5px solid #2C2C2C12',
       }}>
         Cargando formulario...
       </div>
@@ -43,7 +43,7 @@ function formatDMY(dateStr: string | null | undefined) {
 
 function Card({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
   return (
-    <div style={{ backgroundColor: '#fff', border: '0.5px solid #1C141015', borderRadius: '12px', padding: '24px', ...style }}>
+    <div style={{ backgroundColor: '#fff', border: '0.5px solid #2C2C2C12', borderRadius: '12px', padding: '24px', ...style }}>
       {children}
     </div>
   )
@@ -51,7 +51,7 @@ function Card({ children, style }: { children: React.ReactNode; style?: React.CS
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 16px' }}>
+    <p style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#7A7A78', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 16px' }}>
       {children}
     </p>
   )
@@ -60,10 +60,10 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 function FieldRow({ label, value, icon }: { label: string; value: React.ReactNode; icon?: React.ReactNode }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-      <span style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+      <span style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 600, color: '#7A7A78', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
         {label}
       </span>
-      <span style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 500, color: '#B85C1A', display: 'flex', alignItems: 'center', gap: '6px' }}>
+      <span style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 500, color: '#C4581A', display: 'flex', alignItems: 'center', gap: '6px' }}>
         {icon}
         {value}
       </span>
@@ -126,13 +126,13 @@ export default async function ProSolicitudDetailPage({ params }: { params: { cou
       <Link
         href={`/${params.country}/profesional-panel/solicitudes`}
         className="pro-sol-back"
-        style={{ fontFamily: FONT_SANS, fontSize: '15px', color: '#B85C1A', textDecoration: 'none', display: 'inline-block', marginBottom: '20px' }}
+        style={{ fontFamily: FONT_SANS, fontSize: '15px', color: '#C4581A', textDecoration: 'none', display: 'inline-block', marginBottom: '20px' }}
       >
         ← Volver a solicitudes
       </Link>
 
       {/* Title */}
-      <h1 style={{ fontFamily: FONT_SERIF, fontSize: '38px', fontWeight: 700, color: '#1C1410', margin: '0 0 32px' }}>
+      <h1 style={{ fontFamily: FONT_SERIF, fontSize: '38px', fontWeight: 700, color: '#2C2C2C', margin: '0 0 32px' }}>
         Detalle de Solicitud
       </h1>
 
@@ -165,10 +165,10 @@ export default async function ProSolicitudDetailPage({ params }: { params: { cou
               )}
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <span style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                <span style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#7A7A78', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                   Descripción del trabajo
                 </span>
-                <p style={{ fontFamily: FONT_SANS, fontSize: '16px', color: '#1C1410', lineHeight: 1.7, margin: 0 }}>
+                <p style={{ fontFamily: FONT_SANS, fontSize: '16px', color: '#2C2C2C', lineHeight: 1.7, margin: 0 }}>
                   {(solicitud as any).description ?? '—'}
                 </p>
               </div>
@@ -189,11 +189,11 @@ export default async function ProSolicitudDetailPage({ params }: { params: { cou
             <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '16px' }}>
               <ClientAvatar name={clientName} photoUrl={clientPhoto} size={48} />
               <div>
-                <p style={{ fontFamily: FONT_SANS, fontSize: '16px', fontWeight: 600, color: '#1C1410', margin: 0 }}>
+                <p style={{ fontFamily: FONT_SANS, fontSize: '16px', fontWeight: 600, color: '#2C2C2C', margin: 0 }}>
                   {clientName}
                 </p>
                 {client?.phone && (
-                  <p style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E', margin: '3px 0 0' }}>
+                  <p style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78', margin: '3px 0 0' }}>
                     {client.phone}
                   </p>
                 )}
@@ -206,7 +206,7 @@ export default async function ProSolicitudDetailPage({ params }: { params: { cou
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
                 width: '100%', padding: '12px',
                 fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 600,
-                background: '#1C1410', color: '#D4A96A',
+                background: '#1E1E1E', color: '#D4963A',
                 borderRadius: '8px', textDecoration: 'none', boxSizing: 'border-box',
               }}
               className="pro-sol-msg-btn"

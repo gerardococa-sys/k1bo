@@ -110,8 +110,8 @@ export function QuoteRequestForm({
           <Link
             href={`/${country}/cliente/solicitudes`}
             style={{
-              backgroundColor: '#1C1410',
-              color: '#D4A96A',
+              backgroundColor: '#1E1E1E',
+              color: '#D4963A',
               fontFamily: 'var(--font-sans, "DM Sans", system-ui, sans-serif)',
               fontSize: '16px',
               fontWeight: 700,
@@ -128,7 +128,7 @@ export function QuoteRequestForm({
             style={{
               fontFamily: 'var(--font-sans, "DM Sans", system-ui, sans-serif)',
               fontSize: '15px',
-              color: '#B85C1A',
+              color: '#C4581A',
               textDecoration: 'none',
             }}
             className="quote-back-link"

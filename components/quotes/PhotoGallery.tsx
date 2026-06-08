@@ -45,7 +45,7 @@ export function PhotoGallery({ photos }: PhotoGalleryProps) {
           onClick={() => setLightbox(null)}
           style={{
             position: 'fixed', inset: 0, zIndex: 9999,
-            backgroundColor: 'rgba(28,20,16,0.94)',
+            backgroundColor: 'rgba(30,30,30,0.94)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             padding: '24px',
           }}
@@ -55,7 +55,7 @@ export function PhotoGallery({ photos }: PhotoGalleryProps) {
             style={{
               position: 'absolute', top: '20px', right: '20px',
               background: 'none', border: 'none', cursor: 'pointer',
-              color: '#F5F0E8', padding: '4px',
+              color: '#F2F0ED', padding: '4px',
             }}
           >
             <X style={{ width: 28, height: 28 }} />

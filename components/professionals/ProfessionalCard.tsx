@@ -65,8 +65,8 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
     <div
       style={{
         backgroundColor: 'transparent',
-        border: '0.5px solid #1C141015',
-        outline: isFeatured ? '1.5px solid #D4A96A70' : 'none',
+        border: '0.5px solid #2C2C2C12',
+        outline: isFeatured ? '1.5px solid #D4963A70' : 'none',
         borderRadius: '14px',
         overflow: 'hidden',
         position: 'relative',
@@ -79,7 +79,7 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
       <div
         style={{
           height: 120,
-          backgroundColor: '#F5F0E8',
+          backgroundColor: '#F2F0ED',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -94,12 +94,12 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
             height: 72,
             borderRadius: '50%',
             overflow: 'hidden',
-            border: '3px solid #F5F0E8',
-            backgroundColor: '#B85C1A15',
+            border: '3px solid #F2F0ED',
+            backgroundColor: '#C4581A15',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 2px 8px rgba(28,20,16,0.12)',
+            boxShadow: '0 2px 8px rgba(30,30,30,0.12)',
           }}
         >
           {profile?.photo_url ? (
@@ -116,7 +116,7 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
                 fontFamily: FONT_SERIF,
                 fontWeight: 600,
                 fontSize: '24px',
-                color: '#B85C1A',
+                color: '#C4581A',
                 lineHeight: 1,
               }}
             >
@@ -132,8 +132,8 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
               position: 'absolute',
               top: 10,
               right: 10,
-              backgroundColor: '#D4A96A',
-              color: '#1C1410',
+              backgroundColor: '#D4963A',
+              color: '#2C2C2C',
               fontSize: '10px',
               fontWeight: 700,
               fontFamily: FONT_SANS,
@@ -144,7 +144,7 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
               gap: 4,
             }}
           >
-            <Star style={{ width: 10, height: 10, fill: '#1C1410', color: '#1C1410' }} />
+            <Star style={{ width: 10, height: 10, fill: '#1E1E1E', color: '#2C2C2C' }} />
             Destacado
           </div>
         )}
@@ -167,7 +167,7 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
             fontFamily: FONT_SERIF,
             fontWeight: 600,
             fontSize: '22px',
-            color: '#1C1410',
+            color: '#2C2C2C',
             margin: 0,
             textAlign: 'center',
             lineHeight: 1.25,
@@ -186,13 +186,13 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
               gap: 5,
             }}
           >
-            <CategoryIcon style={{ width: 13, height: 13, color: '#B85C1A', flexShrink: 0 }} />
+            <CategoryIcon style={{ width: 13, height: 13, color: '#C4581A', flexShrink: 0 }} />
             <span
               style={{
                 fontFamily: FONT_SANS,
                 fontSize: '16px',
                 fontWeight: 500,
-                color: '#B85C1A',
+                color: '#C4581A',
               }}
             >
               {primaryCategory.name}
@@ -208,8 +208,8 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
               style={{
                 width: 15,
                 height: 15,
-                fill:  i < Math.round(avgRating) ? '#D4A96A' : '#D4A96A25',
-                color: i < Math.round(avgRating) ? '#D4A96A' : '#D4A96A25',
+                fill:  i < Math.round(avgRating) ? '#D4963A' : '#D4963A25',
+                color: i < Math.round(avgRating) ? '#D4963A' : '#D4963A25',
               }}
             />
           ))}
@@ -217,7 +217,7 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
             style={{
               fontFamily: FONT_SANS,
               fontSize: '12px',
-              color: '#1C141060',
+              color: '#2C2C2C60',
               marginLeft: 4,
             }}
           >
@@ -226,7 +226,7 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
         </div>
 
         {/* Separator */}
-        <div style={{ borderTop: '0.5px solid #1C141010', margin: '4px 0' }} />
+        <div style={{ borderTop: '0.5px solid #2C2C2C10', margin: '4px 0' }} />
 
         {/* Description — flex:1 keeps uniform height across cards */}
         <div style={{ flex: 1 }}>
@@ -237,7 +237,7 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
                 fontFamily: FONT_SANS,
                 fontSize: '16px',
                 fontWeight: 400,
-                color: 'rgba(28,20,16,0.65)',
+                color: 'rgba(30,30,30,0.65)',
                 lineHeight: 1.65,
                 margin: 0,
                 textAlign: 'center',
@@ -250,7 +250,7 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
               style={{
                 fontFamily: FONT_SANS,
                 fontSize: '15px',
-                color: 'rgba(28,20,16,0.28)',
+                color: 'rgba(30,30,30,0.28)',
                 lineHeight: 1.65,
                 margin: 0,
                 fontStyle: 'italic',
@@ -270,8 +270,8 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 3,
-                backgroundColor: '#6B7B6E15',
-                color: '#6B7B6E',
+                backgroundColor: '#7A7A7815',
+                color: '#7A7A78',
                 fontSize: '13px',
                 fontFamily: FONT_SANS,
                 fontWeight: 600,
@@ -289,8 +289,8 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 3,
-                backgroundColor: '#1C141010',
-                color: '#6B7B6E',
+                backgroundColor: '#2C2C2C10',
+                color: '#7A7A78',
                 fontSize: '13px',
                 fontFamily: FONT_SANS,
                 fontWeight: 600,
@@ -313,8 +313,8 @@ export function ProfessionalCard({ professional, countryPrefix }: ProfessionalCa
           style={{
             display: 'block',
             textAlign: 'center',
-            backgroundColor: '#1C1410',
-            color: '#D4A96A',
+            backgroundColor: '#1E1E1E',
+            color: '#D4963A',
             fontFamily: FONT_SANS,
             fontWeight: 700,
             fontSize: '17px',

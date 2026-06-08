@@ -20,13 +20,13 @@ export function ClientAvatar({ name, photoUrl, size = 48 }: ClientAvatarProps) {
     return (
       <div style={{
         width: size, height: size, borderRadius: '50%',
-        background: '#B85C1A15', display: 'flex',
+        background: '#C4581A15', display: 'flex',
         alignItems: 'center', justifyContent: 'center', flexShrink: 0,
       }}>
         <span style={{
           fontFamily: FONT_SERIF,
           fontSize: Math.round(size * 0.35) + 'px',
-          fontWeight: 700, color: '#B85C1A',
+          fontWeight: 700, color: '#C4581A',
         }}>
           {initials}
         </span>
@@ -49,11 +49,11 @@ export function ClientAvatar({ name, photoUrl, size = 48 }: ClientAvatarProps) {
           t.style.display = 'none'
           const p = t.parentElement
           if (p) {
-            p.style.background = '#B85C1A15'
+            p.style.background = '#C4581A15'
             p.style.display = 'flex'
             p.style.alignItems = 'center'
             p.style.justifyContent = 'center'
-            p.innerHTML = `<span style="font-family:DM Sans,sans-serif;font-size:${Math.round(size * 0.3)}px;font-weight:700;color:#B85C1A">${initials}</span>`
+            p.innerHTML = `<span style="font-family:DM Sans,sans-serif;font-size:${Math.round(size * 0.3)}px;font-weight:700;color:#C4581A">${initials}</span>`
           }
         }}
       />

@@ -11,11 +11,11 @@ const FONT_SERIF = 'var(--font-serif, "Playfair Display", Georgia, serif)'
 const FONT_SANS  = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
 
 const STATUS_BADGE: Record<string, { bg: string; color: string; label: string; description: string }> = {
-  pending:   { bg: '#D4A96A20', color: '#B85C1A', label: 'Pendiente',  description: 'Tu solicitud está siendo revisada por el profesional.' },
-  responded: { bg: '#1C141015', color: '#1C1410', label: 'Cotizada',     description: 'El profesional ha respondido con una cotización.' },
-  revision:  { bg: '#D4A96A15', color: '#B85C1A', label: 'En revisión', description: 'Has solicitado cambios. El profesional está revisando tu solicitud.' },
-  accepted:  { bg: '#6B7B6E20', color: '#3d4d40', label: 'Aceptada',    description: 'Has aceptado la cotización del profesional.' },
-  rejected:  { bg: '#1C141010', color: '#6B7B6E', label: 'Rechazada',  description: 'El profesional no pudo atender tu solicitud en este momento.' },
+  pending:   { bg: '#D4963A20', color: '#C4581A', label: 'Pendiente',  description: 'Tu solicitud está siendo revisada por el profesional.' },
+  responded: { bg: '#2C2C2C12', color: '#2C2C2C', label: 'Cotizada',     description: 'El profesional ha respondido con una cotización.' },
+  revision:  { bg: '#D4963A15', color: '#C4581A', label: 'En revisión', description: 'Has solicitado cambios. El profesional está revisando tu solicitud.' },
+  accepted:  { bg: '#7A7A7820', color: '#3d4d40', label: 'Aceptada',    description: 'Has aceptado la cotización del profesional.' },
+  rejected:  { bg: '#2C2C2C10', color: '#7A7A78', label: 'Rechazada',  description: 'El profesional no pudo atender tu solicitud en este momento.' },
 }
 
 function formatDMY(dateStr: string | null | undefined) {
@@ -25,7 +25,7 @@ function formatDMY(dateStr: string | null | undefined) {
 
 function Card({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
   return (
-    <div style={{ backgroundColor: '#fff', border: '0.5px solid #1C141015', borderRadius: '12px', padding: '24px', ...style }}>
+    <div style={{ backgroundColor: '#fff', border: '0.5px solid #2C2C2C12', borderRadius: '12px', padding: '24px', ...style }}>
       {children}
     </div>
   )
@@ -33,7 +33,7 @@ function Card({ children, style }: { children: React.ReactNode; style?: React.CS
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 16px' }}>
+    <p style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#7A7A78', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 16px' }}>
       {children}
     </p>
   )
@@ -42,10 +42,10 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 function FieldRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-      <span style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+      <span style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 600, color: '#7A7A78', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
         {label}
       </span>
-      <span style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 500, color: '#B85C1A' }}>
+      <span style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 500, color: '#C4581A' }}>
         {value}
       </span>
     </div>
@@ -55,8 +55,8 @@ function FieldRow({ label, value }: { label: string; value: React.ReactNode }) {
 function Initials({ name }: { name?: string }) {
   const letters = (name ?? '?').split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase()
   return (
-    <div style={{ width: 64, height: 64, borderRadius: '50%', backgroundColor: '#B85C1A15', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
-      <span style={{ fontFamily: FONT_SERIF, fontSize: '22px', fontWeight: 700, color: '#B85C1A' }}>{letters}</span>
+    <div style={{ width: 64, height: 64, borderRadius: '50%', backgroundColor: '#C4581A15', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+      <span style={{ fontFamily: FONT_SERIF, fontSize: '22px', fontWeight: 700, color: '#C4581A' }}>{letters}</span>
     </div>
   )
 }
@@ -163,7 +163,7 @@ export default function SolicitudDetailPage() {
 
   if (loading) {
     return (
-      <div style={{ fontFamily: FONT_SANS, padding: '64px 24px', textAlign: 'center', color: '#6B7B6E' }}>
+      <div style={{ fontFamily: FONT_SANS, padding: '64px 24px', textAlign: 'center', color: '#7A7A78' }}>
         Cargando...
       </div>
     )
@@ -194,26 +194,26 @@ export default function SolicitudDetailPage() {
       <Link
         href={`/${params.country}/cliente/solicitudes`}
         className="sol-back-link"
-        style={{ fontFamily: FONT_SANS, fontSize: '15px', color: '#B85C1A', textDecoration: 'none', display: 'inline-block', marginBottom: '20px' }}
+        style={{ fontFamily: FONT_SANS, fontSize: '15px', color: '#C4581A', textDecoration: 'none', display: 'inline-block', marginBottom: '20px' }}
       >
         ← Volver a mis solicitudes de cotización
       </Link>
 
       {/* Title */}
-      <h1 style={{ fontFamily: FONT_SERIF, fontSize: '38px', fontWeight: 700, color: '#1C1410', margin: '0 0 12px' }}>
+      <h1 style={{ fontFamily: FONT_SERIF, fontSize: '38px', fontWeight: 700, color: '#2C2C2C', margin: '0 0 12px' }}>
         Detalle de Solicitud de Cotización
       </h1>
 
       {/* Código */}
       <div style={{
         display: 'inline-flex', alignItems: 'center', gap: '8px',
-        background: '#1C141008', padding: '6px 14px',
+        background: '#2C2C2C08', padding: '6px 14px',
         borderRadius: '8px', marginBottom: '24px',
       }}>
-        <span style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+        <span style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 600, color: '#7A7A78', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
           Código
         </span>
-        <span style={{ fontFamily: 'monospace', fontSize: '14px', fontWeight: 700, color: '#1C1410' }}>
+        <span style={{ fontFamily: 'monospace', fontSize: '14px', fontWeight: 700, color: '#2C2C2C' }}>
           {params.id.substring(0, 8).toUpperCase()}
         </span>
       </div>
@@ -229,8 +229,8 @@ export default function SolicitudDetailPage() {
 
             {solicitud.required_date && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                <span style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Fecha requerida</span>
-                <span style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 500, color: '#B85C1A', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 600, color: '#7A7A78', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Fecha requerida</span>
+                <span style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 500, color: '#C4581A', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <Calendar style={{ width: 15, height: 15, flexShrink: 0 }} />
                   {formatDMY(solicitud.required_date)}
                 </span>
@@ -238,16 +238,16 @@ export default function SolicitudDetailPage() {
             )}
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-              <span style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Enviada el</span>
-              <span style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 500, color: '#B85C1A', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 600, color: '#7A7A78', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Enviada el</span>
+              <span style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 500, color: '#C4581A', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Clock style={{ width: 15, height: 15, flexShrink: 0 }} />
                 {formatDMY(solicitud.created_at)}
               </span>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <span style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Descripción del trabajo</span>
-              <p style={{ fontFamily: FONT_SANS, fontSize: '16px', color: '#1C1410', lineHeight: 1.7, margin: 0 }}>{solicitud.description}</p>
+              <span style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#7A7A78', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Descripción del trabajo</span>
+              <p style={{ fontFamily: FONT_SANS, fontSize: '16px', color: '#2C2C2C', lineHeight: 1.7, margin: 0 }}>{solicitud.description}</p>
             </div>
           </div>
         </Card>
@@ -263,7 +263,7 @@ export default function SolicitudDetailPage() {
             }}>
               {badge.label}
             </span>
-            <p style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E', textAlign: 'center', margin: 0 }}>
+            <p style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78', textAlign: 'center', margin: 0 }}>
               {badge.description}
             </p>
           </div>
@@ -271,12 +271,12 @@ export default function SolicitudDetailPage() {
 
         {/* Cotización recibida */}
         {showCotizacion && (
-          <div style={{ backgroundColor: '#fff', border: '1.5px solid #D4A96A50', borderRadius: '12px', padding: '24px' }}>
+          <div style={{ backgroundColor: '#fff', border: '1.5px solid #D4963A50', borderRadius: '12px', padding: '24px' }}>
             <div style={{ marginBottom: '20px' }}>
               <span style={{
                 fontFamily: FONT_SANS, fontSize: '11px', fontWeight: 700,
                 textTransform: 'uppercase', letterSpacing: '0.05em',
-                background: '#D4A96A20', color: '#B85C1A',
+                background: '#D4963A20', color: '#C4581A',
                 padding: '4px 12px', borderRadius: '20px',
               }}>
                 Cotización recibida
@@ -287,10 +287,10 @@ export default function SolicitudDetailPage() {
 
               {/* Descripción */}
               <div>
-                <p style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 10px' }}>
+                <p style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#7A7A78', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 10px' }}>
                   Descripción del trabajo a realizar
                 </p>
-                <p style={{ fontFamily: FONT_SANS, fontSize: '16px', color: '#1C1410', lineHeight: 1.7, margin: 0 }}>
+                <p style={{ fontFamily: FONT_SANS, fontSize: '16px', color: '#2C2C2C', lineHeight: 1.7, margin: 0 }}>
                   {solicitud.quote_description ?? '—'}
                 </p>
               </div>
@@ -298,16 +298,16 @@ export default function SolicitudDetailPage() {
               {/* Materiales — tabla estructurada (nuevo formato) */}
               {materialsList && materialsList.length > 0 && (
                 <div>
-                  <p style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 10px' }}>
+                  <p style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#7A7A78', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 10px' }}>
                     Lista de materiales
                   </p>
-                  <div style={{ border: '1px solid #D4A96A30', borderRadius: '8px', overflow: 'hidden' }}>
+                  <div style={{ border: '1px solid #D4963A30', borderRadius: '8px', overflow: 'hidden' }}>
                     <div style={{
                       display: 'grid', gridTemplateColumns: '70px 1fr 110px 110px',
-                      background: '#F5F0E8', padding: '8px 12px', gap: '8px',
+                      background: '#F2F0ED', padding: '8px 12px', gap: '8px',
                     }}>
                       {['Cant.', 'Descripción', 'Val. unit.', 'Total'].map((h) => (
-                        <div key={h} style={{ fontFamily: FONT_SANS, fontSize: '11px', fontWeight: 700, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                        <div key={h} style={{ fontFamily: FONT_SANS, fontSize: '11px', fontWeight: 700, color: '#7A7A78', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                           {h}
                         </div>
                       ))}
@@ -316,22 +316,22 @@ export default function SolicitudDetailPage() {
                       <div key={i} style={{
                         display: 'grid', gridTemplateColumns: '70px 1fr 110px 110px',
                         padding: '10px 12px', gap: '8px',
-                        borderTop: '1px solid #1C141008', alignItems: 'center',
+                        borderTop: '1px solid #2C2C2C08', alignItems: 'center',
                       }}>
-                        <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#1C1410' }}>{m.cantidad}</span>
-                        <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#1C1410' }}>{m.descripcion}</span>
-                        <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E' }}>${Number(m.valorUnit).toFixed(2)}</span>
-                        <span style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#1C1410' }}>${Number(m.precioTotal).toFixed(2)}</span>
+                        <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#2C2C2C' }}>{m.cantidad}</span>
+                        <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#2C2C2C' }}>{m.descripcion}</span>
+                        <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78' }}>${Number(m.valorUnit).toFixed(2)}</span>
+                        <span style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#2C2C2C' }}>${Number(m.precioTotal).toFixed(2)}</span>
                       </div>
                     ))}
                     <div style={{
                       display: 'flex', justifyContent: 'flex-end', gap: '16px',
-                      padding: '10px 12px', borderTop: '1px solid #D4A96A30', background: '#F5F0E840',
+                      padding: '10px 12px', borderTop: '1px solid #D4963A30', background: '#F2F0ED40',
                     }}>
-                      <span style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 700, color: '#6B7B6E', textTransform: 'uppercase' }}>
+                      <span style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 700, color: '#7A7A78', textTransform: 'uppercase' }}>
                         Subtotal materiales
                       </span>
-                      <span style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 700, color: '#1C1410', minWidth: '80px', textAlign: 'right' }}>
+                      <span style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 700, color: '#2C2C2C', minWidth: '80px', textAlign: 'right' }}>
                         ${materialsList.reduce((s, m) => s + Number(m.precioTotal), 0).toFixed(2)}
                       </span>
                     </div>
@@ -342,14 +342,14 @@ export default function SolicitudDetailPage() {
               {/* Materiales — formato antiguo (texto) */}
               {!materialsList && materialLines.length > 0 && (
                 <div>
-                  <p style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 10px' }}>
+                  <p style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#7A7A78', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 10px' }}>
                     Materiales incluidos
                   </p>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                     {materialLines.map((line: string, i: number) => (
                       <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                        <Check style={{ width: 16, height: 16, color: '#6B7B6E', flexShrink: 0, marginTop: '2px' }} />
-                        <span style={{ fontFamily: FONT_SANS, fontSize: '15px', color: '#1C1410', lineHeight: 1.5 }}>
+                        <Check style={{ width: 16, height: 16, color: '#7A7A78', flexShrink: 0, marginTop: '2px' }} />
+                        <span style={{ fontFamily: FONT_SANS, fontSize: '15px', color: '#2C2C2C', lineHeight: 1.5 }}>
                           {line}
                         </span>
                       </div>
@@ -360,15 +360,15 @@ export default function SolicitudDetailPage() {
 
               {/* Costos */}
               {showCotizacion && (
-                <div style={{ background: '#F5F0E8', borderRadius: '8px', padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <div style={{ background: '#F2F0ED', borderRadius: '8px', padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {solicitud.status === 'accepted' && solicitud.hire_mode && (
                     <div style={{
                       display: 'inline-flex', alignItems: 'center', gap: '6px',
-                      background: '#6B7B6E15', padding: '4px 12px', borderRadius: '20px',
+                      background: '#7A7A7815', padding: '4px 12px', borderRadius: '20px',
                       marginBottom: '4px', alignSelf: 'flex-start',
                     }}>
-                      <CheckCircle style={{ width: 14, height: 14, color: '#6B7B6E' }} />
-                      <span style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                      <CheckCircle style={{ width: 14, height: 14, color: '#7A7A78' }} />
+                      <span style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 600, color: '#7A7A78', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                         {solicitud.hire_mode === 'labor_only'
                           ? 'Contratado: Solo mano de obra'
                           : 'Contratado: Mano de obra + materiales'}
@@ -376,16 +376,16 @@ export default function SolicitudDetailPage() {
                     </div>
                   )}
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E' }}>Mano de obra</span>
-                    <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#1C1410' }}>${Number(solicitud.labor_cost ?? 0).toFixed(2)}</span>
+                    <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78' }}>Mano de obra</span>
+                    <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#2C2C2C' }}>${Number(solicitud.labor_cost ?? 0).toFixed(2)}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E' }}>Materiales</span>
-                    <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#1C1410' }}>${Number(solicitud.materials_cost ?? 0).toFixed(2)}</span>
+                    <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78' }}>Materiales</span>
+                    <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#2C2C2C' }}>${Number(solicitud.materials_cost ?? 0).toFixed(2)}</span>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #D4A96A40', paddingTop: '8px' }}>
-                    <span style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700, color: '#1C1410' }}>Total estimado</span>
-                    <span style={{ fontFamily: FONT_SANS, fontSize: '17px', fontWeight: 700, color: '#B85C1A' }}>${(Number(solicitud.labor_cost ?? 0) + Number(solicitud.materials_cost ?? 0)).toFixed(2)}</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #D4963A40', paddingTop: '8px' }}>
+                    <span style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700, color: '#2C2C2C' }}>Total estimado</span>
+                    <span style={{ fontFamily: FONT_SANS, fontSize: '17px', fontWeight: 700, color: '#C4581A' }}>${(Number(solicitud.labor_cost ?? 0) + Number(solicitud.materials_cost ?? 0)).toFixed(2)}</span>
                   </div>
                 </div>
               )}
@@ -398,7 +398,7 @@ export default function SolicitudDetailPage() {
                     download
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: '8px',
-                      background: '#1C1410', color: '#D4A96A',
+                      background: '#1E1E1E', color: '#D4963A',
                       fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700,
                       padding: '12px 20px', borderRadius: '8px', textDecoration: 'none',
                     }}
@@ -413,15 +413,15 @@ export default function SolicitudDetailPage() {
               {currentStatus === 'revision' && (
                 <div style={{
                   display: 'flex', alignItems: 'flex-start', gap: '10px',
-                  background: '#D4A96A12', border: '1px solid #D4A96A40',
+                  background: '#D4963A12', border: '1px solid #D4963A40',
                   borderRadius: '8px', padding: '14px 16px', marginTop: '8px',
                 }}>
                   <span style={{ fontSize: '20px', flexShrink: 0 }}>⏳</span>
                   <div>
-                    <p style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#1C1410', margin: '0 0 4px' }}>
+                    <p style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#2C2C2C', margin: '0 0 4px' }}>
                       Cambios solicitados
                     </p>
-                    <p style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#6B7B6E', lineHeight: 1.6, margin: 0 }}>
+                    <p style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#7A7A78', lineHeight: 1.6, margin: 0 }}>
                       Has solicitado cambios al profesional. Recibirás una notificación cuando envíe la cotización actualizada.
                     </p>
                     <Link
@@ -429,7 +429,7 @@ export default function SolicitudDetailPage() {
                       style={{
                         display: 'inline-flex', alignItems: 'center', gap: '6px',
                         marginTop: '10px', fontFamily: FONT_SANS, fontSize: '13px',
-                        fontWeight: 600, color: '#B85C1A', textDecoration: 'none',
+                        fontWeight: 600, color: '#C4581A', textDecoration: 'none',
                       }}
                     >
                       <MessageSquare style={{ width: 14, height: 14 }} />
@@ -446,7 +446,7 @@ export default function SolicitudDetailPage() {
                   {hireMode === null ? (
                     /* ── PASO 1: selección de modalidad ── */
                     <>
-                      <p style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#1C1410', margin: '0 0 4px' }}>
+                      <p style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#2C2C2C', margin: '0 0 4px' }}>
                         ¿Cómo desea contratar al profesional?
                       </p>
 
@@ -454,22 +454,22 @@ export default function SolicitudDetailPage() {
                         onClick={() => setHireMode('labor_only')}
                         style={{
                           display: 'flex', flexDirection: 'column', alignItems: 'flex-start',
-                          background: '#fff', border: '1.5px solid #D4A96A50', borderRadius: '10px',
+                          background: '#fff', border: '1.5px solid #D4963A50', borderRadius: '10px',
                           padding: '14px 16px', cursor: 'pointer', width: '100%', textAlign: 'left',
                           transition: 'border-color 150ms',
                         }}
-                        onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#B85C1A')}
-                        onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#D4A96A50')}
+                        onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#C4581A')}
+                        onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#D4963A50')}
                       >
                         <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginBottom: '4px' }}>
-                          <span style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700, color: '#1C1410' }}>
+                          <span style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700, color: '#2C2C2C' }}>
                             Solo mano de obra
                           </span>
-                          <span style={{ fontFamily: FONT_SANS, fontSize: '16px', fontWeight: 700, color: '#B85C1A' }}>
+                          <span style={{ fontFamily: FONT_SANS, fontSize: '16px', fontWeight: 700, color: '#C4581A' }}>
                             ${Number(solicitud.labor_cost ?? 0).toFixed(2)}
                           </span>
                         </div>
-                        <span style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#6B7B6E' }}>
+                        <span style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#7A7A78' }}>
                           El profesional realiza el trabajo. Los materiales corren por su cuenta.
                         </span>
                       </button>
@@ -478,22 +478,22 @@ export default function SolicitudDetailPage() {
                         onClick={() => setHireMode('labor_and_materials')}
                         style={{
                           display: 'flex', flexDirection: 'column', alignItems: 'flex-start',
-                          background: '#fff', border: '1.5px solid #D4A96A50', borderRadius: '10px',
+                          background: '#fff', border: '1.5px solid #D4963A50', borderRadius: '10px',
                           padding: '14px 16px', cursor: 'pointer', width: '100%', textAlign: 'left',
                           transition: 'border-color 150ms',
                         }}
-                        onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#B85C1A')}
-                        onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#D4A96A50')}
+                        onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#C4581A')}
+                        onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#D4963A50')}
                       >
                         <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginBottom: '4px' }}>
-                          <span style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700, color: '#1C1410' }}>
+                          <span style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700, color: '#2C2C2C' }}>
                             Mano de obra + materiales
                           </span>
-                          <span style={{ fontFamily: FONT_SANS, fontSize: '16px', fontWeight: 700, color: '#B85C1A' }}>
+                          <span style={{ fontFamily: FONT_SANS, fontSize: '16px', fontWeight: 700, color: '#C4581A' }}>
                             ${(Number(solicitud.labor_cost ?? 0) + Number(solicitud.materials_cost ?? 0)).toFixed(2)}
                           </span>
                         </div>
-                        <span style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#6B7B6E' }}>
+                        <span style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#7A7A78' }}>
                           El profesional incluye todos los materiales de la lista en la cotización.
                         </span>
                       </button>
@@ -504,8 +504,8 @@ export default function SolicitudDetailPage() {
                         disabled={actionLoading}
                         style={{
                           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                          background: 'transparent', color: '#6B7B6E',
-                          border: '1.5px solid #6B7B6E40', borderRadius: '8px',
+                          background: 'transparent', color: '#7A7A78',
+                          border: '1.5px solid #7A7A7840', borderRadius: '8px',
                           fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 600,
                           padding: '13px', width: '100%',
                           cursor: actionLoading ? 'not-allowed' : 'pointer',
@@ -521,8 +521,8 @@ export default function SolicitudDetailPage() {
                         onClick={() => setConfirmRejectOpen(true)}
                         disabled={actionLoading}
                         style={{
-                          background: 'transparent', color: '#B85C1A',
-                          border: '1.5px solid #B85C1A', borderRadius: '8px',
+                          background: 'transparent', color: '#C4581A',
+                          border: '1.5px solid #C4581A', borderRadius: '8px',
                           fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700,
                           padding: '13px', width: '100%',
                           cursor: actionLoading ? 'not-allowed' : 'pointer',
@@ -535,40 +535,40 @@ export default function SolicitudDetailPage() {
                   ) : (
                     /* ── PASO 2: confirmación ── */
                     <>
-                      <div style={{ background: '#F5F0E8', borderRadius: '10px', padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ background: '#F2F0ED', borderRadius: '10px', padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                          <span style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 700, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                          <span style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 700, color: '#7A7A78', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                             Modalidad seleccionada
                           </span>
                           <button
                             onClick={() => setHireMode(null)}
-                            style={{ fontFamily: FONT_SANS, fontSize: '12px', color: '#B85C1A', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}
+                            style={{ fontFamily: FONT_SANS, fontSize: '12px', color: '#C4581A', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}
                           >
                             Cambiar
                           </button>
                         </div>
 
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                          <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E' }}>
+                          <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78' }}>
                             {hireMode === 'labor_only' ? 'Solo mano de obra' : 'Mano de obra + materiales'}
                           </span>
                         </div>
 
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                          <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E' }}>Mano de obra</span>
-                          <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#1C1410' }}>${Number(solicitud.labor_cost ?? 0).toFixed(2)}</span>
+                          <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78' }}>Mano de obra</span>
+                          <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#2C2C2C' }}>${Number(solicitud.labor_cost ?? 0).toFixed(2)}</span>
                         </div>
 
                         {hireMode === 'labor_and_materials' && (
                           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E' }}>Materiales</span>
-                            <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#1C1410' }}>${Number(solicitud.materials_cost ?? 0).toFixed(2)}</span>
+                            <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78' }}>Materiales</span>
+                            <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#2C2C2C' }}>${Number(solicitud.materials_cost ?? 0).toFixed(2)}</span>
                           </div>
                         )}
 
-                        <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #D4A96A40', paddingTop: '8px' }}>
-                          <span style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700, color: '#1C1410' }}>Total a pagar</span>
-                          <span style={{ fontFamily: FONT_SANS, fontSize: '18px', fontWeight: 700, color: '#B85C1A' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #D4963A40', paddingTop: '8px' }}>
+                          <span style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700, color: '#2C2C2C' }}>Total a pagar</span>
+                          <span style={{ fontFamily: FONT_SANS, fontSize: '18px', fontWeight: 700, color: '#C4581A' }}>
                             ${hireMode === 'labor_only'
                               ? Number(solicitud.labor_cost ?? 0).toFixed(2)
                               : (Number(solicitud.labor_cost ?? 0) + Number(solicitud.materials_cost ?? 0)).toFixed(2)
@@ -582,7 +582,7 @@ export default function SolicitudDetailPage() {
                         disabled={actionLoading}
                         style={{
                           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                          background: '#1C1410', color: '#D4A96A',
+                          background: '#1E1E1E', color: '#D4963A',
                           fontFamily: FONT_SANS, fontSize: '16px', fontWeight: 700,
                           padding: '14px', borderRadius: '8px', width: '100%',
                           border: 'none', cursor: actionLoading ? 'not-allowed' : 'pointer',
@@ -597,8 +597,8 @@ export default function SolicitudDetailPage() {
                         disabled={actionLoading}
                         style={{
                           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                          background: 'transparent', color: '#6B7B6E',
-                          border: '1.5px solid #6B7B6E40', borderRadius: '8px',
+                          background: 'transparent', color: '#7A7A78',
+                          border: '1.5px solid #7A7A7840', borderRadius: '8px',
                           fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 600,
                           padding: '13px', width: '100%',
                           cursor: actionLoading ? 'not-allowed' : 'pointer',
@@ -613,8 +613,8 @@ export default function SolicitudDetailPage() {
                         onClick={() => setConfirmRejectOpen(true)}
                         disabled={actionLoading}
                         style={{
-                          background: 'transparent', color: '#B85C1A',
-                          border: '1.5px solid #B85C1A', borderRadius: '8px',
+                          background: 'transparent', color: '#C4581A',
+                          border: '1.5px solid #C4581A', borderRadius: '8px',
                           fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700,
                           padding: '13px', width: '100%',
                           cursor: actionLoading ? 'not-allowed' : 'pointer',
@@ -626,13 +626,13 @@ export default function SolicitudDetailPage() {
 
                       <div style={{
                         display: 'flex', alignItems: 'flex-start', gap: '10px',
-                        background: '#D4A96A12', border: '1px solid #D4A96A40',
+                        background: '#D4963A12', border: '1px solid #D4963A40',
                         borderRadius: '8px', padding: '12px 14px',
                       }}>
-                        <MessageCircle style={{ width: 16, height: 16, color: '#B85C1A', flexShrink: 0, marginTop: '2px' }} />
-                        <p style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#6B7B6E', lineHeight: 1.6, margin: 0 }}>
+                        <MessageCircle style={{ width: 16, height: 16, color: '#C4581A', flexShrink: 0, marginTop: '2px' }} />
+                        <p style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#7A7A78', lineHeight: 1.6, margin: 0 }}>
                           Puede enviar mensajes al maestro antes de aceptar o rechazar la cotización.{' '}
-                          <Link href={`/${params.country}/mensajes?solicitud=${params.id}`} style={{ color: '#B85C1A', fontWeight: 600, textDecoration: 'none' }}>
+                          <Link href={`/${params.country}/mensajes?solicitud=${params.id}`} style={{ color: '#C4581A', fontWeight: 600, textDecoration: 'none' }}>
                             Ir a mensajes →
                           </Link>
                         </p>
@@ -667,11 +667,11 @@ export default function SolicitudDetailPage() {
                   t.style.display = 'none'
                   const p = t.parentElement
                   if (p) {
-                    p.style.background = '#B85C1A15'
+                    p.style.background = '#C4581A15'
                     p.style.display = 'flex'
                     p.style.alignItems = 'center'
                     p.style.justifyContent = 'center'
-                    p.innerHTML = `<span style="font-family:DM Sans,sans-serif;font-size:22px;font-weight:700;color:#B85C1A">${proName.split(' ').slice(0, 2).map((w: string) => w[0]).join('').toUpperCase()}</span>`
+                    p.innerHTML = `<span style="font-family:DM Sans,sans-serif;font-size:22px;font-weight:700;color:#C4581A">${proName.split(' ').slice(0, 2).map((w: string) => w[0]).join('').toUpperCase()}</span>`
                   }
                 }}
               />
@@ -680,17 +680,17 @@ export default function SolicitudDetailPage() {
             <Initials name={proName} />
           )}
 
-          <p style={{ fontFamily: FONT_SERIF, fontSize: '20px', fontWeight: 600, color: '#1C1410', textAlign: 'center', margin: '0 0 6px' }}>
+          <p style={{ fontFamily: FONT_SERIF, fontSize: '20px', fontWeight: 600, color: '#2C2C2C', textAlign: 'center', margin: '0 0 6px' }}>
             {proName}
           </p>
           {category && (
-            <p style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#B85C1A', textAlign: 'center', margin: '0 0 8px' }}>
+            <p style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#C4581A', textAlign: 'center', margin: '0 0 8px' }}>
               {category.name}
             </p>
           )}
           {pro?.short_description && (
             <p style={{
-              fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E',
+              fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78',
               textAlign: 'center', margin: '8px 0 0',
               display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden',
             }}>
@@ -705,7 +705,7 @@ export default function SolicitudDetailPage() {
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
                 width: '100%', padding: '12px',
                 fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700,
-                background: '#1C1410', color: '#D4A96A',
+                background: '#1E1E1E', color: '#D4963A',
                 borderRadius: '8px', textDecoration: 'none', boxSizing: 'border-box',
               }}
               className="sol-msg-btn"
@@ -718,7 +718,7 @@ export default function SolicitudDetailPage() {
               href={`/${params.country}/profesional/${pro?.id}`}
               style={{
                 display: 'block', width: '100%', textAlign: 'center',
-                border: '1px solid #1C141020', color: '#1C1410',
+                border: '1px solid #2C2C2C20', color: '#2C2C2C',
                 fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 600,
                 padding: '12px', borderRadius: '8px',
                 textDecoration: 'none', boxSizing: 'border-box',
@@ -738,7 +738,7 @@ export default function SolicitudDetailPage() {
           onClick={() => setConfirmRejectOpen(false)}
           style={{
             position: 'fixed', inset: 0, zIndex: 9999,
-            backgroundColor: 'rgba(28,20,16,0.6)',
+            backgroundColor: 'rgba(30,30,30,0.6)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             padding: '24px',
           }}
@@ -748,21 +748,21 @@ export default function SolicitudDetailPage() {
             style={{
               backgroundColor: '#fff', borderRadius: '16px',
               padding: '32px', maxWidth: '420px', width: '100%',
-              boxShadow: '0 20px 60px rgba(28,20,16,0.2)',
+              boxShadow: '0 20px 60px rgba(30,30,30,0.2)',
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-              <h3 style={{ fontFamily: FONT_SERIF, fontSize: '22px', fontWeight: 700, color: '#1C1410', margin: 0 }}>
+              <h3 style={{ fontFamily: FONT_SERIF, fontSize: '22px', fontWeight: 700, color: '#2C2C2C', margin: 0 }}>
                 ¿Rechazar cotización?
               </h3>
               <button
                 onClick={() => setConfirmRejectOpen(false)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6B7B6E', padding: '2px', display: 'flex' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#7A7A78', padding: '2px', display: 'flex' }}
               >
                 <X style={{ width: 20, height: 20 }} />
               </button>
             </div>
-            <p style={{ fontFamily: FONT_SANS, fontSize: '15px', color: '#6B7B6E', lineHeight: 1.6, margin: '0 0 24px' }}>
+            <p style={{ fontFamily: FONT_SANS, fontSize: '15px', color: '#7A7A78', lineHeight: 1.6, margin: '0 0 24px' }}>
               Si rechazas esta cotización, el profesional será notificado y la solicitud quedará marcada como rechazada.
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -770,7 +770,7 @@ export default function SolicitudDetailPage() {
                 onClick={handleReject}
                 disabled={actionLoading}
                 style={{
-                  background: '#B85C1A', color: '#fff',
+                  background: '#C4581A', color: '#fff',
                   fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700,
                   padding: '13px', borderRadius: '8px', width: '100%',
                   border: 'none', cursor: actionLoading ? 'not-allowed' : 'pointer',
@@ -782,10 +782,10 @@ export default function SolicitudDetailPage() {
               <button
                 onClick={() => setConfirmRejectOpen(false)}
                 style={{
-                  background: 'transparent', color: '#6B7B6E',
+                  background: 'transparent', color: '#7A7A78',
                   fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 600,
                   padding: '13px', borderRadius: '8px', width: '100%',
-                  border: '1px solid #1C141020', cursor: 'pointer',
+                  border: '1px solid #2C2C2C20', cursor: 'pointer',
                 }}
               >
                 Cancelar
@@ -798,7 +798,7 @@ export default function SolicitudDetailPage() {
       <style>{`
         .sol-back-link:hover { text-decoration: underline; }
         .sol-msg-btn:hover   { opacity: 0.88; }
-        .sol-pro-btn:hover   { background: #F5F0E8; }
+        .sol-pro-btn:hover   { background: #F2F0ED; }
       `}</style>
     </div>
   )

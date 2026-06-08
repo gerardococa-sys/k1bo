@@ -13,7 +13,7 @@ const sectionTitle: React.CSSProperties = {
   fontFamily: FONT_SERIF,
   fontSize: '20px',
   fontWeight: 600,
-  color: '#1C1410',
+  color: '#2C2C2C',
   marginTop: '32px',
   marginBottom: '12px',
 }
@@ -21,7 +21,7 @@ const sectionTitle: React.CSSProperties = {
 const body: React.CSSProperties = {
   fontFamily: FONT_SANS,
   fontSize: '16px',
-  color: '#1C1410',
+  color: '#2C2C2C',
   lineHeight: 1.75,
   marginBottom: '12px',
 }
@@ -33,26 +33,26 @@ const divider: React.CSSProperties = {
 }
 
 const mailLink: React.CSSProperties = {
-  color: '#B85C1A',
+  color: '#C4581A',
   textDecoration: 'underline',
 }
 
 export default function TerminosPage() {
   return (
-    <div style={{ backgroundColor: '#F5F0E8', minHeight: '100vh' }}>
+    <div style={{ backgroundColor: '#F2F0ED', minHeight: '100vh' }}>
 
       {/* Header */}
-      <section style={{ backgroundColor: '#1C1410', padding: '48px 24px', textAlign: 'center' }}>
+      <section style={{ backgroundColor: '#1E1E1E', padding: '48px 24px', textAlign: 'center' }}>
         <p style={{
           fontFamily: FONT_SANS, fontSize: '11px', fontWeight: 700,
-          letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4A96A',
+          letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4963A',
           marginBottom: '12px',
         }}>
           Legal
         </p>
         <h1 style={{
           fontFamily: FONT_SERIF, fontSize: '42px', fontWeight: 700,
-          color: '#F5F0E8', marginBottom: '12px',
+          color: '#F2F0ED', marginBottom: '12px',
         }}>
           Términos y Condiciones
         </h1>
@@ -100,7 +100,7 @@ export default function TerminosPage() {
             'Nos reservamos el derecho de suspender cuentas que infrinjan estos términos.',
           ].map(item => (
             <li key={item} style={{ marginBottom: '6px', listStyleType: 'none', paddingLeft: '16px', position: 'relative' }}>
-              <span style={{ color: '#B85C1A', position: 'absolute', left: 0 }}>•</span>
+              <span style={{ color: '#C4581A', position: 'absolute', left: 0 }}>•</span>
               {item}
             </li>
           ))}
@@ -119,7 +119,7 @@ export default function TerminosPage() {
             'Cumplir con la legislación laboral y fiscal aplicable en su país.',
           ].map(item => (
             <li key={item} style={{ marginBottom: '6px', listStyleType: 'none', paddingLeft: '16px', position: 'relative' }}>
-              <span style={{ color: '#B85C1A', position: 'absolute', left: 0 }}>•</span>
+              <span style={{ color: '#C4581A', position: 'absolute', left: 0 }}>•</span>
               {item}
             </li>
           ))}
@@ -137,7 +137,7 @@ export default function TerminosPage() {
             'No publicar reseñas falsas o malintencionadas.',
           ].map(item => (
             <li key={item} style={{ marginBottom: '6px', listStyleType: 'none', paddingLeft: '16px', position: 'relative' }}>
-              <span style={{ color: '#B85C1A', position: 'absolute', left: 0 }}>•</span>
+              <span style={{ color: '#C4581A', position: 'absolute', left: 0 }}>•</span>
               {item}
             </li>
           ))}
@@ -156,7 +156,7 @@ export default function TerminosPage() {
             'Interrupciones del servicio por causas fuera de nuestro control.',
           ].map(item => (
             <li key={item} style={{ marginBottom: '6px', listStyleType: 'none', paddingLeft: '16px', position: 'relative' }}>
-              <span style={{ color: '#B85C1A', position: 'absolute', left: 0 }}>•</span>
+              <span style={{ color: '#C4581A', position: 'absolute', left: 0 }}>•</span>
               {item}
             </li>
           ))}
@@ -190,8 +190,8 @@ export default function TerminosPage() {
             href="/sv"
             style={{
               display: 'inline-block',
-              backgroundColor: '#1C1410',
-              color: '#D4A96A',
+              backgroundColor: '#1E1E1E',
+              color: '#D4963A',
               fontFamily: FONT_SANS,
               fontSize: '15px',
               fontWeight: 700,

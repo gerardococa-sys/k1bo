@@ -9,11 +9,11 @@ const FONT_SERIF = 'var(--font-serif, "Playfair Display", Georgia, serif)'
 const FONT_SANS  = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
 
 const STATUS_BADGE: Record<string, { bg: string; color: string; label: string }> = {
-  responded: { bg: '#1C141015', color: '#1C1410',  label: 'Cotizada'    },
-  revision:  { bg: '#D4A96A15', color: '#B85C1A',  label: 'En revisión' },
-  accepted:  { bg: '#6B7B6E20', color: '#3d4d40',  label: 'Aceptada'    },
-  rejected:  { bg: '#B85C1A08', color: '#B85C1A',  label: 'Rechazada'  },
-  completed: { bg: '#1C141015', color: '#1C1410',  label: 'Finalizada' },
+  responded: { bg: '#2C2C2C12', color: '#2C2C2C',  label: 'Cotizada'    },
+  revision:  { bg: '#D4963A15', color: '#C4581A',  label: 'En revisión' },
+  accepted:  { bg: '#7A7A7820', color: '#3d4d40',  label: 'Aceptada'    },
+  rejected:  { bg: '#C4581A08', color: '#C4581A',  label: 'Rechazada'  },
+  completed: { bg: '#2C2C2C12', color: '#2C2C2C',  label: 'Finalizada' },
 }
 
 function formatDMY(dateStr: string | null | undefined) {
@@ -212,9 +212,9 @@ export function QuoteResponsePanel({
   }
 
   const cellInput: React.CSSProperties = {
-    border: '1px solid #D4A96A30', borderRadius: '6px',
+    border: '1px solid #D4963A30', borderRadius: '6px',
     padding: '7px 8px', fontSize: '13px', fontFamily: FONT_SANS,
-    background: '#FDFAF5', color: '#1C1410',
+    background: '#FDFAF5', color: '#2C2C2C',
     width: '100%', boxSizing: 'border-box', outline: 'none',
   }
 
@@ -226,8 +226,8 @@ export function QuoteResponsePanel({
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
         <div style={{
-          backgroundColor: isRejected ? '#B85C1A08' : '#fff',
-          border:          `1.5px solid ${isRejected ? '#B85C1A20' : '#6B7B6E30'}`,
+          backgroundColor: isRejected ? '#C4581A08' : '#fff',
+          border:          `1.5px solid ${isRejected ? '#C4581A20' : '#7A7A7830'}`,
           borderRadius:    '12px',
           padding:         '24px',
         }}>
@@ -242,7 +242,7 @@ export function QuoteResponsePanel({
                 {badge.label}
               </span>
               {respondedAt && (
-                <span style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#6B7B6E' }}>
+                <span style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#7A7A78' }}>
                   {formatDMY(respondedAt)}
                 </span>
               )}
@@ -251,20 +251,20 @@ export function QuoteResponsePanel({
 
           {isRejected ? (
             <div>
-              <p style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 10px' }}>
+              <p style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#7A7A78', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 10px' }}>
                 Motivo del rechazo
               </p>
-              <p style={{ fontFamily: FONT_SANS, fontSize: '15px', color: '#1C1410', lineHeight: 1.7, margin: 0 }}>
+              <p style={{ fontFamily: FONT_SANS, fontSize: '15px', color: '#2C2C2C', lineHeight: 1.7, margin: 0 }}>
                 {rejectionReason ?? '—'}
               </p>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               <div>
-                <p style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>
+                <p style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#7A7A78', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>
                   Tu cotización
                 </p>
-                <p style={{ fontFamily: FONT_SANS, fontSize: '15px', color: '#1C1410', lineHeight: 1.7, margin: 0 }}>
+                <p style={{ fontFamily: FONT_SANS, fontSize: '15px', color: '#2C2C2C', lineHeight: 1.7, margin: 0 }}>
                   {quoteDescription ?? '—'}
                 </p>
               </div>
@@ -272,16 +272,16 @@ export function QuoteResponsePanel({
               {/* Materials table — new structured format */}
               {materialsList && materialsList.length > 0 && (
                 <div>
-                  <p style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 10px' }}>
+                  <p style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#7A7A78', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 10px' }}>
                     Lista de materiales
                   </p>
-                  <div style={{ border: '1px solid #D4A96A30', borderRadius: '8px', overflow: 'hidden' }}>
+                  <div style={{ border: '1px solid #D4963A30', borderRadius: '8px', overflow: 'hidden' }}>
                     <div style={{
                       display: 'grid', gridTemplateColumns: '70px 1fr 110px 110px',
-                      background: '#F5F0E8', padding: '8px 12px', gap: '8px',
+                      background: '#F2F0ED', padding: '8px 12px', gap: '8px',
                     }}>
                       {['Cant.', 'Descripción', 'Val. unit.', 'Total'].map((h) => (
-                        <div key={h} style={{ fontFamily: FONT_SANS, fontSize: '11px', fontWeight: 700, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                        <div key={h} style={{ fontFamily: FONT_SANS, fontSize: '11px', fontWeight: 700, color: '#7A7A78', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                           {h}
                         </div>
                       ))}
@@ -290,22 +290,22 @@ export function QuoteResponsePanel({
                       <div key={i} style={{
                         display: 'grid', gridTemplateColumns: '70px 1fr 110px 110px',
                         padding: '10px 12px', gap: '8px',
-                        borderTop: '1px solid #1C141008', alignItems: 'center',
+                        borderTop: '1px solid #2C2C2C08', alignItems: 'center',
                       }}>
-                        <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#1C1410' }}>{m.cantidad}</span>
-                        <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#1C1410' }}>{m.descripcion}</span>
-                        <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E' }}>${Number(m.valorUnit).toFixed(2)}</span>
-                        <span style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#1C1410' }}>${Number(m.precioTotal).toFixed(2)}</span>
+                        <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#2C2C2C' }}>{m.cantidad}</span>
+                        <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#2C2C2C' }}>{m.descripcion}</span>
+                        <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78' }}>${Number(m.valorUnit).toFixed(2)}</span>
+                        <span style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#2C2C2C' }}>${Number(m.precioTotal).toFixed(2)}</span>
                       </div>
                     ))}
                     <div style={{
                       display: 'flex', justifyContent: 'flex-end', gap: '16px',
-                      padding: '10px 12px', borderTop: '1px solid #D4A96A30', background: '#F5F0E840',
+                      padding: '10px 12px', borderTop: '1px solid #D4963A30', background: '#F2F0ED40',
                     }}>
-                      <span style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 700, color: '#6B7B6E', textTransform: 'uppercase' }}>
+                      <span style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 700, color: '#7A7A78', textTransform: 'uppercase' }}>
                         Subtotal materiales
                       </span>
-                      <span style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 700, color: '#1C1410', minWidth: '80px', textAlign: 'right' }}>
+                      <span style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 700, color: '#2C2C2C', minWidth: '80px', textAlign: 'right' }}>
                         ${materialsList.reduce((s, m) => s + Number(m.precioTotal), 0).toFixed(2)}
                       </span>
                     </div>
@@ -316,33 +316,33 @@ export function QuoteResponsePanel({
               {/* Fallback: old text format */}
               {!materialsList && quoteMaterials && (
                 <div>
-                  <p style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>
+                  <p style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#7A7A78', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>
                     Materiales
                   </p>
-                  <div style={{ fontFamily: FONT_SANS, fontSize: '15px', color: '#1C1410', lineHeight: 1.8, whiteSpace: 'pre-line' }}>
+                  <div style={{ fontFamily: FONT_SANS, fontSize: '15px', color: '#2C2C2C', lineHeight: 1.8, whiteSpace: 'pre-line' }}>
                     {quoteMaterials}
                   </div>
                 </div>
               )}
 
               {(initialLaborCost != null || initialMaterialsCost != null) && (
-                <div style={{ background: '#F5F0E8', borderRadius: '8px', padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <div style={{ background: '#F2F0ED', borderRadius: '8px', padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {initialLaborCost != null && (
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E' }}>Mano de obra</span>
-                      <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#1C1410' }}>${initialLaborCost.toFixed(2)}</span>
+                      <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78' }}>Mano de obra</span>
+                      <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#2C2C2C' }}>${initialLaborCost.toFixed(2)}</span>
                     </div>
                   )}
                   {initialMaterialsCost != null && (
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E' }}>Materiales estimados</span>
-                      <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#1C1410' }}>${initialMaterialsCost.toFixed(2)}</span>
+                      <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78' }}>Materiales estimados</span>
+                      <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#2C2C2C' }}>${initialMaterialsCost.toFixed(2)}</span>
                     </div>
                   )}
                   {initialLaborCost != null && initialMaterialsCost != null && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #D4A96A40', paddingTop: '8px' }}>
-                      <span style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700, color: '#1C1410' }}>Total estimado</span>
-                      <span style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700, color: '#1C1410' }}>${(initialLaborCost + initialMaterialsCost).toFixed(2)}</span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #D4963A40', paddingTop: '8px' }}>
+                      <span style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700, color: '#2C2C2C' }}>Total estimado</span>
+                      <span style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700, color: '#2C2C2C' }}>${(initialLaborCost + initialMaterialsCost).toFixed(2)}</span>
                     </div>
                   )}
                 </div>
@@ -361,7 +361,7 @@ export function QuoteResponsePanel({
                     }}
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: '8px',
-                      color: '#B85C1A', border: '1px solid #B85C1A40', borderRadius: '6px',
+                      color: '#C4581A', border: '1px solid #C4581A40', borderRadius: '6px',
                       padding: '8px 14px', fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600,
                       background: 'transparent', cursor: 'pointer',
                     }}
@@ -381,22 +381,22 @@ export function QuoteResponsePanel({
   /* ── FORM VIEW (status === 'pending' | 'revision') ─────────── */
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      <h2 style={{ fontFamily: FONT_SERIF, fontSize: '24px', fontWeight: 700, color: '#1C1410', margin: 0 }}>
+      <h2 style={{ fontFamily: FONT_SERIF, fontSize: '24px', fontWeight: 700, color: '#2C2C2C', margin: 0 }}>
         {quoteDescription ? 'Editar Cotización' : 'Enviar Cotización'}
       </h2>
 
       {quoteDescription && (
         <div style={{
-          background: '#D4A96A15', border: '1px solid #D4A96A50',
+          background: '#D4963A15', border: '1px solid #D4963A50',
           borderRadius: '10px', padding: '14px 16px',
           display: 'flex', alignItems: 'flex-start', gap: '10px',
         }}>
-          <RefreshCw style={{ width: 16, height: 16, color: '#B85C1A', flexShrink: 0, marginTop: '2px' }} />
+          <RefreshCw style={{ width: 16, height: 16, color: '#C4581A', flexShrink: 0, marginTop: '2px' }} />
           <div>
-            <p style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#B85C1A', margin: '0 0 3px' }}>
+            <p style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#C4581A', margin: '0 0 3px' }}>
               El propietario ha solicitado cambios
             </p>
-            <p style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#6B7B6E', margin: 0, lineHeight: 1.5 }}>
+            <p style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#7A7A78', margin: 0, lineHeight: 1.5 }}>
               Edita la cotización con los ajustes necesarios y vuelve a enviarla.
             </p>
           </div>
@@ -405,7 +405,7 @@ export function QuoteResponsePanel({
 
       <div style={{
         backgroundColor: '#fff',
-        border:          '0.5px solid #1C141015',
+        border:          '0.5px solid #2C2C2C12',
         borderRadius:    '12px',
         padding:         '24px',
         display:         'flex',
@@ -415,9 +415,9 @@ export function QuoteResponsePanel({
 
         {/* Campo 1: Descripción */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <label style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#1C1410' }}>
+          <label style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#2C2C2C' }}>
             Descripción del trabajo a realizar{' '}
-            <span style={{ color: '#B85C1A' }}>*</span>
+            <span style={{ color: '#C4581A' }}>*</span>
           </label>
           <textarea
             rows={5}
@@ -426,31 +426,31 @@ export function QuoteResponsePanel({
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Describe detalladamente el trabajo que realizarás, incluyendo proceso, tiempo estimado y cualquier condición importante..."
             style={{
-              border: '1px solid #D4A96A40', borderRadius: '8px',
+              border: '1px solid #D4963A40', borderRadius: '8px',
               padding: '12px 14px', fontSize: '15px', fontFamily: FONT_SANS,
-              background: '#F5F0E8', resize: 'vertical', outline: 'none',
-              color: '#1C1410', lineHeight: 1.6,
+              background: '#F2F0ED', resize: 'vertical', outline: 'none',
+              color: '#2C2C2C', lineHeight: 1.6,
             }}
           />
         </div>
 
         {/* Campo 2: Lista de materiales */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <label style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#1C1410' }}>
+          <label style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#2C2C2C' }}>
             Lista de materiales{' '}
-            <span style={{ fontWeight: 400, color: '#6B7B6E' }}>(opcional)</span>
+            <span style={{ fontWeight: 400, color: '#7A7A78' }}>(opcional)</span>
           </label>
 
           {materials.length > 0 && (
-            <div style={{ border: '1px solid #D4A96A30', borderRadius: '8px', overflow: 'hidden' }}>
+            <div style={{ border: '1px solid #D4963A30', borderRadius: '8px', overflow: 'hidden' }}>
               {/* Headers */}
               <div style={{
                 display: 'grid',
                 gridTemplateColumns: '80px 1fr 120px 120px 36px',
-                background: '#F5F0E8', padding: '8px 12px', gap: '6px',
+                background: '#F2F0ED', padding: '8px 12px', gap: '6px',
               }}>
                 {['Cant.', 'Descripción', 'Val. unit.', 'Total', ''].map((h, i) => (
-                  <div key={i} style={{ fontFamily: FONT_SANS, fontSize: '11px', fontWeight: 700, color: '#6B7B6E', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                  <div key={i} style={{ fontFamily: FONT_SANS, fontSize: '11px', fontWeight: 700, color: '#7A7A78', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                     {h}
                   </div>
                 ))}
@@ -462,7 +462,7 @@ export function QuoteResponsePanel({
                   display: 'grid',
                   gridTemplateColumns: '80px 1fr 120px 120px 36px',
                   padding: '8px 12px', gap: '6px',
-                  borderTop: '1px solid #1C141008', alignItems: 'center',
+                  borderTop: '1px solid #2C2C2C08', alignItems: 'center',
                 }}>
                   <input
                     type="number"
@@ -487,7 +487,7 @@ export function QuoteResponsePanel({
                     onChange={(e) => updateMaterial(m.id, 'valorUnit', e.target.value)}
                     style={cellInput}
                   />
-                  <div style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#1C1410', paddingLeft: '4px' }}>
+                  <div style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#2C2C2C', paddingLeft: '4px' }}>
                     ${m.precioTotal.toFixed(2)}
                   </div>
                   <button
@@ -495,10 +495,10 @@ export function QuoteResponsePanel({
                     onClick={() => removeMaterial(m.id)}
                     style={{
                       background: 'none', border: 'none', cursor: 'pointer',
-                      color: '#B85C1A60', padding: '4px', display: 'flex',
+                      color: '#C4581A60', padding: '4px', display: 'flex',
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.color = '#B85C1A')}
-                    onMouseLeave={(e) => (e.currentTarget.style.color = '#B85C1A60')}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = '#C4581A')}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = '#C4581A60')}
                   >
                     <Trash2 style={{ width: 15, height: 15 }} />
                   </button>
@@ -509,12 +509,12 @@ export function QuoteResponsePanel({
               <div style={{
                 display: 'flex', justifyContent: 'flex-end', gap: '16px',
                 padding: '8px 48px 8px 12px',
-                borderTop: '1px solid #D4A96A30', background: '#F5F0E840',
+                borderTop: '1px solid #D4963A30', background: '#F2F0ED40',
               }}>
-                <span style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 700, color: '#6B7B6E', textTransform: 'uppercase' }}>
+                <span style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 700, color: '#7A7A78', textTransform: 'uppercase' }}>
                   Subtotal
                 </span>
-                <span style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 700, color: '#1C1410', minWidth: '70px', textAlign: 'right' }}>
+                <span style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 700, color: '#2C2C2C', minWidth: '70px', textAlign: 'right' }}>
                   ${totalMateriales.toFixed(2)}
                 </span>
               </div>
@@ -528,8 +528,8 @@ export function QuoteResponsePanel({
               display: 'inline-flex', alignItems: 'center', gap: '6px',
               alignSelf: 'flex-start',
               fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600,
-              color: '#B85C1A', background: 'transparent',
-              border: '1px dashed #B85C1A50', borderRadius: '6px',
+              color: '#C4581A', background: 'transparent',
+              border: '1px dashed #C4581A50', borderRadius: '6px',
               padding: '7px 14px', cursor: 'pointer',
             }}
           >
@@ -540,9 +540,9 @@ export function QuoteResponsePanel({
 
         {/* Campo 3: Mano de obra */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <label style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#1C1410' }}>
+          <label style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#2C2C2C' }}>
             Valor de mano de obra (USD){' '}
-            <span style={{ color: '#B85C1A' }}>*</span>
+            <span style={{ color: '#C4581A' }}>*</span>
           </label>
           <input
             type="number"
@@ -552,10 +552,10 @@ export function QuoteResponsePanel({
             onChange={(e) => setLaborCost(e.target.value === '' ? '' : Number(e.target.value))}
             placeholder="0.00"
             style={{
-              border: '1px solid #D4A96A40', borderRadius: '8px',
+              border: '1px solid #D4963A40', borderRadius: '8px',
               padding: '10px 14px', fontSize: '15px', fontFamily: FONT_SANS,
-              background: '#F5F0E8', outline: 'none',
-              color: '#1C1410', width: '100%', boxSizing: 'border-box',
+              background: '#F2F0ED', outline: 'none',
+              color: '#2C2C2C', width: '100%', boxSizing: 'border-box',
             }}
           />
         </div>
@@ -563,52 +563,52 @@ export function QuoteResponsePanel({
         {/* Resumen total */}
         {totalEstimado > 0 && (
           <div style={{
-            background: '#F5F0E8', borderRadius: '10px',
+            background: '#F2F0ED', borderRadius: '10px',
             padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '10px',
           }}>
             {laborCost !== '' && Number(laborCost) > 0 && (
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E' }}>Mano de obra</span>
-                <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#1C1410' }}>${Number(laborCost).toFixed(2)}</span>
+                <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78' }}>Mano de obra</span>
+                <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#2C2C2C' }}>${Number(laborCost).toFixed(2)}</span>
               </div>
             )}
             {materialsCost !== '' && Number(materialsCost) > 0 && (
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E' }}>Materiales</span>
-                <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#1C1410' }}>${Number(materialsCost).toFixed(2)}</span>
+                <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78' }}>Materiales</span>
+                <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#2C2C2C' }}>${Number(materialsCost).toFixed(2)}</span>
               </div>
             )}
             <div style={{
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              borderTop: '1px solid #D4A96A40', paddingTop: '10px',
+              borderTop: '1px solid #D4963A40', paddingTop: '10px',
             }}>
-              <span style={{ fontFamily: FONT_SANS, fontSize: '16px', fontWeight: 700, color: '#1C1410' }}>Total estimado</span>
-              <span style={{ fontFamily: FONT_SERIF, fontSize: '20px', fontWeight: 700, color: '#B85C1A' }}>${totalEstimado.toFixed(2)}</span>
+              <span style={{ fontFamily: FONT_SANS, fontSize: '16px', fontWeight: 700, color: '#2C2C2C' }}>Total estimado</span>
+              <span style={{ fontFamily: FONT_SERIF, fontSize: '20px', fontWeight: 700, color: '#C4581A' }}>${totalEstimado.toFixed(2)}</span>
             </div>
           </div>
         )}
 
         {/* Campo: PDF */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <label style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#1C1410' }}>
+          <label style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#2C2C2C' }}>
             Cotización en PDF{' '}
-            <span style={{ fontWeight: 400, color: '#6B7B6E' }}>(opcional)</span>
+            <span style={{ fontWeight: 400, color: '#7A7A78' }}>(opcional)</span>
           </label>
 
           {pdfFile ? (
             <div style={{
               display: 'flex', alignItems: 'center', gap: '10px',
-              border: '1px solid #D4A96A40', borderRadius: '8px',
-              padding: '12px 14px', background: '#F5F0E8',
+              border: '1px solid #D4963A40', borderRadius: '8px',
+              padding: '12px 14px', background: '#F2F0ED',
             }}>
-              <FileText style={{ width: 20, height: 20, color: '#B85C1A', flexShrink: 0 }} />
-              <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#1C1410', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <FileText style={{ width: 20, height: 20, color: '#C4581A', flexShrink: 0 }} />
+              <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#2C2C2C', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {pdfFile.name}
               </span>
               <button
                 type="button"
                 onClick={() => setPdfFile(null)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: '#6B7B6E', display: 'flex' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: '#7A7A78', display: 'flex' }}
               >
                 <X style={{ width: 16, height: 16 }} />
               </button>
@@ -619,17 +619,17 @@ export function QuoteResponsePanel({
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
               style={{
-                border: '2px dashed #D4A96A60', borderRadius: '10px',
-                padding: '24px', textAlign: 'center', background: '#F5F0E808',
+                border: '2px dashed #D4963A60', borderRadius: '10px',
+                padding: '24px', textAlign: 'center', background: '#F2F0ED08',
                 cursor: 'pointer', display: 'flex', flexDirection: 'column',
                 alignItems: 'center', gap: '8px',
               }}
             >
-              <FileUp style={{ width: 32, height: 32, color: '#B85C1A' }} />
-              <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#6B7B6E' }}>
+              <FileUp style={{ width: 32, height: 32, color: '#C4581A' }} />
+              <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78' }}>
                 Arrastra tu PDF aquí o haz clic para subir
               </span>
-              <span style={{ fontFamily: FONT_SANS, fontSize: '12px', color: '#6B7B6E', opacity: 0.6 }}>
+              <span style={{ fontFamily: FONT_SANS, fontSize: '12px', color: '#7A7A78', opacity: 0.6 }}>
                 Solo PDF · Máx. 5MB
               </span>
             </div>
@@ -650,9 +650,9 @@ export function QuoteResponsePanel({
 
         {/* Separador */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '4px 0' }}>
-          <div style={{ flex: 1, height: '1px', background: '#1C141012' }} />
-          <span style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#6B7B6E' }}>— o —</span>
-          <div style={{ flex: 1, height: '1px', background: '#1C141012' }} />
+          <div style={{ flex: 1, height: '1px', background: '#2C2C2C12' }} />
+          <span style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#7A7A78' }}>— o —</span>
+          <div style={{ flex: 1, height: '1px', background: '#2C2C2C12' }} />
         </div>
 
         {/* Rechazo accordion */}
@@ -664,7 +664,7 @@ export function QuoteResponsePanel({
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               width: '100%', background: 'none', border: 'none', cursor: 'pointer',
               fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600,
-              color: rejectionOpen ? '#1C1410' : '#6B7B6E',
+              color: rejectionOpen ? '#1E1E1E' : '#7A7A78',
               padding: '4px 0', transition: 'color 0.15s',
             }}
           >
@@ -678,8 +678,8 @@ export function QuoteResponsePanel({
 
           {rejectionOpen && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '14px' }}>
-              <label style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#1C1410' }}>
-                Motivo del rechazo <span style={{ color: '#B85C1A' }}>*</span>
+              <label style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#2C2C2C' }}>
+                Motivo del rechazo <span style={{ color: '#C4581A' }}>*</span>
               </label>
               <textarea
                 rows={3}
@@ -687,10 +687,10 @@ export function QuoteResponsePanel({
                 onChange={(e) => setRejectionText(e.target.value)}
                 placeholder="Explica al propietario por qué no puedes atender esta solicitud..."
                 style={{
-                  border: '1px solid #B85C1A40', borderRadius: '8px',
+                  border: '1px solid #C4581A40', borderRadius: '8px',
                   padding: '12px 14px', fontSize: '15px', fontFamily: FONT_SANS,
-                  background: '#B85C1A05', resize: 'vertical', outline: 'none',
-                  color: '#1C1410', lineHeight: 1.6,
+                  background: '#C4581A05', resize: 'vertical', outline: 'none',
+                  color: '#2C2C2C', lineHeight: 1.6,
                 }}
               />
               <button
@@ -698,8 +698,8 @@ export function QuoteResponsePanel({
                 onClick={rechazarSolicitud}
                 disabled={submitting}
                 style={{
-                  background: 'transparent', color: '#B85C1A',
-                  border: '1.5px solid #B85C1A', borderRadius: '8px',
+                  background: 'transparent', color: '#C4581A',
+                  border: '1.5px solid #C4581A', borderRadius: '8px',
                   fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700,
                   padding: '12px 24px', width: '100%', marginTop: '8px',
                   cursor: submitting ? 'not-allowed' : 'pointer',
@@ -714,7 +714,7 @@ export function QuoteResponsePanel({
 
         {/* Error */}
         {error && (
-          <p style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#B85C1A', margin: 0 }}>
+          <p style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#C4581A', margin: 0 }}>
             {error}
           </p>
         )}
@@ -726,7 +726,7 @@ export function QuoteResponsePanel({
           disabled={!description.trim() || laborCost === '' || submitting}
           style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-            background: '#1C1410', color: '#D4A96A',
+            background: '#1E1E1E', color: '#D4963A',
             fontFamily: FONT_SANS, fontSize: '16px', fontWeight: 700,
             padding: '14px', borderRadius: '8px', width: '100%',
             border: 'none',

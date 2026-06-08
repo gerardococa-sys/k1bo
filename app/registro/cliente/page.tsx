@@ -165,7 +165,7 @@ export default function RegistroClientePage() {
     <div className="min-h-screen bg-background py-12 px-4">
       <div className="max-w-lg mx-auto">
         <div className="text-center mb-8">
-          <Link href="/" style={{ color: '#1C1410' }}>
+          <Link href="/" style={{ color: '#2C2C2C' }}>
             <Logo size="lg" />
           </Link>
           <h1 className="mt-2 text-xl font-semibold">Registro de Propietario</h1>
@@ -227,7 +227,7 @@ export default function RegistroClientePage() {
               </button>
             </div>
             {errors.confirm_password && (
-              <p className="text-sm" style={{ color: '#B85C1A' }}>{errors.confirm_password.message}</p>
+              <p className="text-sm" style={{ color: '#C4581A' }}>{errors.confirm_password.message}</p>
             )}
           </div>
 
@@ -241,10 +241,10 @@ export default function RegistroClientePage() {
                   padding: '10px 12px',
                   borderRadius: '8px',
                   border: '1px solid rgba(212,169,106,0.25)',
-                  background: '#F5F0E8',
+                  background: '#F2F0ED',
                   fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)',
                   fontSize: '15px',
-                  color: '#1C1410',
+                  color: '#2C2C2C',
                   width: '140px',
                   flexShrink: 0,
                 }}
@@ -268,14 +268,14 @@ export default function RegistroClientePage() {
           <div className="space-y-2">
             <Label htmlFor="date_of_birth">Fecha de nacimiento *</Label>
             <Input id="date_of_birth" type="date" max={new Date().toISOString().split('T')[0]} {...register('date_of_birth')} />
-            {errors.date_of_birth && <p style={{ fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)', fontSize: '13px', color: '#B85C1A' }}>{errors.date_of_birth.message}</p>}
+            {errors.date_of_birth && <p style={{ fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)', fontSize: '13px', color: '#C4581A' }}>{errors.date_of_birth.message}</p>}
           </div>
 
           <div className="space-y-2">
             <Label>Foto de perfil <span className="text-muted-foreground">(opcional)</span></Label>
             {avatarPreview && (
               <div className="flex justify-center">
-                <div style={{ width: 72, height: 72, borderRadius: '50%', overflow: 'hidden', border: '3px solid #D4A96A' }}>
+                <div style={{ width: 72, height: 72, borderRadius: '50%', overflow: 'hidden', border: '3px solid #D4963A' }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={avatarPreview}

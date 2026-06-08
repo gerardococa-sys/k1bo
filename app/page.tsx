@@ -45,7 +45,7 @@ export default function RootPage() {
       {/* Navbar */}
       <header className="sticky top-0 z-40 border-b bg-white/95 backdrop-blur">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <span style={{ color: '#1C1410' }}><Logo size="md" /></span>
+          <span style={{ color: '#2C2C2C' }}><Logo size="md" /></span>
           <CountrySelector />
         </div>
       </header>
@@ -79,7 +79,7 @@ export default function RootPage() {
       {/* Main content */}
       <main className="container mx-auto px-4 py-16">
         <div className="text-center mb-12">
-          <h1 className="mb-4" style={{ color: '#1C1410' }}><Logo size="lg" /></h1>
+          <h1 className="mb-4" style={{ color: '#2C2C2C' }}><Logo size="lg" /></h1>
           <p className="text-xl text-muted-foreground">
             El directorio de profesionales para el hogar en Centroamérica
           </p>
@@ -106,10 +106,8 @@ export default function RootPage() {
             {[
               { flag: '🇬🇹', name: 'Guatemala' },
               { flag: '🇭🇳', name: 'Honduras' },
-              { flag: '🇳🇮', name: 'Nicaragua' },
               { flag: '🇨🇷', name: 'Costa Rica' },
               { flag: '🇵🇦', name: 'Panamá' },
-              { flag: '🇧🇿', name: 'Belice' },
             ].map((c) => (
               <div
                 key={c.name}

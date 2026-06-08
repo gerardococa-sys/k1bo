@@ -71,7 +71,7 @@ export default async function CountryPage({ params }: { params: { country: strin
       <section
         style={{
           position: 'relative',
-          backgroundColor: '#1C1410',
+          backgroundColor: '#1E1E1E',
           backgroundImage: 'url(/images/concrete-texture.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
@@ -84,7 +84,7 @@ export default async function CountryPage({ params }: { params: { country: strin
           style={{
             position: 'absolute',
             inset: 0,
-            background: 'linear-gradient(135deg, rgba(28,20,16,0.88) 0%, rgba(28,20,16,0.75) 100%)',
+            background: 'linear-gradient(135deg, rgba(30,30,30,0.88) 0%, rgba(30,30,30,0.75) 100%)',
             zIndex: 1,
           }}
         />
@@ -100,7 +100,7 @@ export default async function CountryPage({ params }: { params: { country: strin
               fontWeight: 700,
               letterSpacing: '0.16em',
               textTransform: 'uppercase',
-              color: '#D4A96A',
+              color: '#D4963A',
               marginBottom: '20px',
             }}
           >
@@ -113,7 +113,7 @@ export default async function CountryPage({ params }: { params: { country: strin
               fontFamily: 'var(--font-serif, "Playfair Display", Georgia, serif)',
               fontSize: 'clamp(28px, 4.5vw, 48px)',
               fontWeight: 700,
-              color: '#F5F0E8',
+              color: '#F2F0ED',
               lineHeight: 1.15,
               marginBottom: '12px',
             }}
@@ -130,7 +130,7 @@ export default async function CountryPage({ params }: { params: { country: strin
               fontSize: '26px',
               fontWeight: 400,
               fontStyle: 'italic',
-              color: '#D4A96A',
+              color: '#D4963A',
               marginBottom: '20px',
             }}
           >
@@ -154,7 +154,7 @@ export default async function CountryPage({ params }: { params: { country: strin
       </section>
 
       {/* Categories */}
-      <section id="categorias" className="py-16" style={{ backgroundColor: '#F5F0E8' }}>
+      <section id="categorias" className="py-16" style={{ backgroundColor: '#F2F0ED' }}>
         <div className="container mx-auto px-4">
           <CategoryGrid
             categories={categories ?? []}
@@ -174,7 +174,7 @@ export default async function CountryPage({ params }: { params: { country: strin
                 fontFamily: 'var(--font-serif,"Playfair Display",Georgia,serif)',
                 fontSize: '46px',
                 fontWeight: 700,
-                color: '#1C1410',
+                color: '#2C2C2C',
                 marginBottom: '8px',
               }}
             >
@@ -184,7 +184,7 @@ export default async function CountryPage({ params }: { params: { country: strin
               style={{
                 fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)',
                 fontSize: '20px',
-                color: '#6B7B6E',
+                color: '#7A7A78',
                 marginBottom: '32px',
               }}
             >
@@ -208,7 +208,7 @@ export default async function CountryPage({ params }: { params: { country: strin
                 fontFamily: 'var(--font-serif,"Playfair Display",Georgia,serif)',
                 fontSize: '46px',
                 fontWeight: 700,
-                color: '#1C1410',
+                color: '#2C2C2C',
                 marginBottom: '8px',
               }}
             >
@@ -218,7 +218,7 @@ export default async function CountryPage({ params }: { params: { country: strin
               style={{
                 fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)',
                 fontSize: '20px',
-                color: '#6B7B6E',
+                color: '#7A7A78',
                 marginBottom: '32px',
               }}
             >

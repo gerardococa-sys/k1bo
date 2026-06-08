@@ -65,22 +65,22 @@ export default async function CategoryPage({
       <nav aria-label="breadcrumb" style={{ marginBottom: '24px' }}>
         <ol style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', listStyle: 'none', margin: 0, padding: 0 }}>
           <li>
-            <Link href={`/${params.country}`} className="ax7-bc-link" style={{ color: '#B85C1A', fontWeight: 500, fontSize: '15px', textDecoration: 'none' }}>
+            <Link href={`/${params.country}`} className="ax7-bc-link" style={{ color: '#C4581A', fontWeight: 500, fontSize: '15px', textDecoration: 'none' }}>
               Inicio
             </Link>
           </li>
           {parentCategory && (
             <>
-              <li style={{ color: '#1C141040', margin: '0 8px', fontSize: '15px' }}>/</li>
+              <li style={{ color: '#2C2C2C40', margin: '0 8px', fontSize: '15px' }}>/</li>
               <li>
-                <Link href={`/${params.country}/categoria/${parentCategory.slug}`} className="ax7-bc-link" style={{ color: '#B85C1A', fontWeight: 500, fontSize: '15px', textDecoration: 'none' }}>
+                <Link href={`/${params.country}/categoria/${parentCategory.slug}`} className="ax7-bc-link" style={{ color: '#C4581A', fontWeight: 500, fontSize: '15px', textDecoration: 'none' }}>
                   {parentCategory.name}
                 </Link>
               </li>
             </>
           )}
-          <li style={{ color: '#1C141040', margin: '0 8px', fontSize: '15px' }}>/</li>
-          <li style={{ color: '#1C1410', fontWeight: 600, fontSize: '15px' }}>{category.name}</li>
+          <li style={{ color: '#2C2C2C40', margin: '0 8px', fontSize: '15px' }}>/</li>
+          <li style={{ color: '#2C2C2C', fontWeight: 600, fontSize: '15px' }}>{category.name}</li>
         </ol>
         <style>{`.ax7-bc-link:hover { text-decoration: underline !important; }`}</style>
       </nav>

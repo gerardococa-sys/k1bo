@@ -44,11 +44,11 @@ const TIPO_OPTIONS = [
 const selectStyle: React.CSSProperties = {
   padding: '10px 12px',
   borderRadius: '8px',
-  border: '1px solid rgba(28,20,16,0.15)',
+  border: '1px solid rgba(30,30,30,0.15)',
   background: '#FFFFFF',
   fontFamily: FONT_SANS,
   fontSize: '14px',
-  color: '#1C1410',
+  color: '#2C2C2C',
   width: '100%',
   outline: 'none',
 }
@@ -59,7 +59,7 @@ const filterLabelStyle: React.CSSProperties = {
   fontWeight: 700,
   letterSpacing: '0.08em',
   textTransform: 'uppercase',
-  color: '#6B7B6E',
+  color: '#7A7A78',
   display: 'block',
   marginBottom: '6px',
 }
@@ -99,14 +99,14 @@ function FiltersPanel({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <p style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700, color: '#1C1410', margin: 0 }}>
+        <p style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700, color: '#2C2C2C', margin: 0 }}>
           Filtros
         </p>
         {hasActiveFilters && (
           <button
             onClick={clearFilters}
             style={{
-              fontFamily: FONT_SANS, fontSize: '13px', color: '#B85C1A',
+              fontFamily: FONT_SANS, fontSize: '13px', color: '#C4581A',
               background: 'none', border: 'none', cursor: 'pointer',
               textDecoration: 'underline', padding: 0,
             }}
@@ -159,9 +159,9 @@ function FiltersPanel({
                 value={opt.value}
                 checked={filters.tipo === opt.value}
                 onChange={e => setFilter('tipo', e.target.value)}
-                style={{ accentColor: '#B85C1A', width: 15, height: 15 }}
+                style={{ accentColor: '#C4581A', width: 15, height: 15 }}
               />
-              <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#1C1410' }}>{opt.label}</span>
+              <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#2C2C2C' }}>{opt.label}</span>
             </label>
           ))}
         </div>
@@ -192,7 +192,7 @@ function FiltersPanel({
         onClick={onSearch}
         style={{
           width: '100%',
-          background: '#1C1410', color: '#D4A96A',
+          background: '#1E1E1E', color: '#D4963A',
           fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700,
           padding: '12px', borderRadius: '8px',
           border: 'none', cursor: 'pointer',
@@ -208,7 +208,7 @@ function FiltersPanel({
           onClick={clearFilters}
           style={{
             fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600,
-            color: '#B85C1A', borderColor: 'rgba(184,92,26,0.35)',
+            color: '#C4581A', borderColor: 'rgba(184,92,26,0.35)',
           }}
         >
           Limpiar filtros
@@ -226,7 +226,7 @@ function SkeletonCard() {
       style={{
         height: 380,
         borderRadius: 14,
-        background: 'linear-gradient(90deg, #F5F0E8 25%, #EAE5DC 50%, #F5F0E8 75%)',
+        background: 'linear-gradient(90deg, #F2F0ED 25%, #EAE5DC 50%, #F2F0ED 75%)',
         backgroundSize: '200% 100%',
         animation: 'ax7-shimmer 1.4s ease-in-out infinite',
       }}
@@ -508,7 +508,7 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
       <section
         style={{
           position: 'relative',
-          backgroundColor: '#1C1410',
+          backgroundColor: '#1E1E1E',
           backgroundImage: 'url(/images/concrete-texture.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
@@ -519,7 +519,7 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
         <div
           style={{
             position: 'absolute', inset: 0, zIndex: 1,
-            background: 'linear-gradient(135deg, rgba(28,20,16,0.88) 0%, rgba(28,20,16,0.75) 100%)',
+            background: 'linear-gradient(135deg, rgba(30,30,30,0.88) 0%, rgba(30,30,30,0.75) 100%)',
           }}
         />
         <div style={{ position: 'relative', zIndex: 2 }} className="container mx-auto text-center">
@@ -528,13 +528,13 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
               fontFamily: FONT_SERIF,
               fontSize: 'clamp(36px, 5vw, 42px)',
               fontWeight: 700,
-              color: '#F5F0E8',
+              color: '#F2F0ED',
               marginBottom: '8px',
             }}
           >
             Profesionales
           </h1>
-          <p style={{ fontFamily: FONT_SANS, fontSize: '18px', color: '#6B7B6E' }}>
+          <p style={{ fontFamily: FONT_SANS, fontSize: '18px', color: '#7A7A78' }}>
             Encuentra al maestro ideal para tu proyecto
           </p>
         </div>
@@ -550,9 +550,9 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
             style={{
               display: 'inline-flex', alignItems: 'center', gap: '8px',
               padding: '10px 16px', borderRadius: '8px',
-              border: '1px solid rgba(28,20,16,0.15)', backgroundColor: '#FFFFFF',
+              border: '1px solid rgba(30,30,30,0.15)', backgroundColor: '#FFFFFF',
               fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600,
-              color: '#1C1410', cursor: 'pointer',
+              color: '#2C2C2C', cursor: 'pointer',
             }}
           >
             <SlidersHorizontal style={{ width: 16, height: 16 }} />
@@ -560,7 +560,7 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
             {activeCount > 0 && (
               <span
                 style={{
-                  backgroundColor: '#B85C1A', color: '#FFF', borderRadius: '50%',
+                  backgroundColor: '#C4581A', color: '#FFF', borderRadius: '50%',
                   width: 18, height: 18, fontSize: '11px', fontWeight: 700,
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 }}
@@ -574,7 +574,7 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
             <div
               style={{
                 backgroundColor: '#FFFFFF',
-                border: '1px solid rgba(28,20,16,0.08)',
+                border: '1px solid rgba(30,30,30,0.08)',
                 borderRadius: '12px',
                 padding: '20px',
                 marginTop: '12px',
@@ -602,7 +602,7 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
             <div
               style={{
                 backgroundColor: '#FFFFFF',
-                border: '1px solid rgba(28,20,16,0.08)',
+                border: '1px solid rgba(30,30,30,0.08)',
                 borderRadius: '12px',
                 padding: '20px',
               }}
@@ -622,7 +622,7 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
                 flexWrap: 'wrap', gap: '12px',
               }}
             >
-              <p style={{ fontFamily: FONT_SANS, fontSize: '16px', fontWeight: 600, color: '#1C1410', margin: 0 }}>
+              <p style={{ fontFamily: FONT_SANS, fontSize: '16px', fontWeight: 600, color: '#2C2C2C', margin: 0 }}>
                 {countLabel}
               </p>
               <select
@@ -645,22 +645,22 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
               <div style={{ textAlign: 'center', padding: '64px 16px' }}>
                 {profesionales.length === 0 ? (
                   // Sin datos en BD — no es problema de filtros
-                  <p style={{ fontFamily: FONT_SERIF, fontSize: '22px', color: '#1C1410', marginBottom: '8px' }}>
+                  <p style={{ fontFamily: FONT_SERIF, fontSize: '22px', color: '#2C2C2C', marginBottom: '8px' }}>
                     Aún no hay profesionales registrados
                   </p>
                 ) : (
                   // Hay datos pero los filtros no devuelven resultados
                   <>
-                    <p style={{ fontFamily: FONT_SERIF, fontSize: '22px', color: '#1C1410', marginBottom: '8px' }}>
+                    <p style={{ fontFamily: FONT_SERIF, fontSize: '22px', color: '#2C2C2C', marginBottom: '8px' }}>
                       No encontramos profesionales con estos filtros
                     </p>
-                    <p style={{ fontFamily: FONT_SANS, fontSize: '16px', color: '#6B7B6E', marginBottom: '24px' }}>
+                    <p style={{ fontFamily: FONT_SANS, fontSize: '16px', color: '#7A7A78', marginBottom: '24px' }}>
                       Intenta con otros criterios de búsqueda
                     </p>
                     <Button
                       onClick={clearFilters}
                       style={{
-                        backgroundColor: '#1C1410', color: '#D4A96A',
+                        backgroundColor: '#1E1E1E', color: '#D4963A',
                         fontFamily: FONT_SANS, fontWeight: 700, borderRadius: '8px',
                       }}
                     >

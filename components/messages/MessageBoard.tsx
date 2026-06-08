@@ -112,7 +112,7 @@ function MessageBoard({ quoteRequestId, currentUserId, otherPartyName }: Props) 
   return (
     <div style={{
       background: '#fff',
-      border: '0.5px solid rgba(28,20,16,0.08)',
+      border: '0.5px solid rgba(30,30,30,0.08)',
       borderRadius: '12px',
       overflow: 'hidden',
       display: 'flex',
@@ -122,16 +122,16 @@ function MessageBoard({ quoteRequestId, currentUserId, otherPartyName }: Props) 
 
       {/* Header */}
       <div style={{
-        background: '#1C1410',
+        background: '#1E1E1E',
         padding: '14px 18px',
         display: 'flex',
         alignItems: 'center',
         gap: '8px',
         flexShrink: 0,
       }}>
-        <MessageSquare style={{ width: 18, height: 18, color: '#D4A96A', flexShrink: 0 }} />
+        <MessageSquare style={{ width: 18, height: 18, color: '#D4963A', flexShrink: 0 }} />
         <div>
-          <div style={{ color: '#F5F0E8', fontSize: '15px', fontWeight: 600, fontFamily: FONT_SANS }}>
+          <div style={{ color: '#F2F0ED', fontSize: '15px', fontWeight: 600, fontFamily: FONT_SANS }}>
             Mensajes
           </div>
           <div style={{ color: 'rgba(245,240,232,0.5)', fontSize: '12px', fontFamily: FONT_SANS }}>
@@ -145,7 +145,7 @@ function MessageBoard({ quoteRequestId, currentUserId, otherPartyName }: Props) 
         flex: 1,
         overflowY: 'auto',
         padding: '16px',
-        background: '#F5F0E8',
+        background: '#F2F0ED',
         display: 'flex',
         flexDirection: 'column',
         gap: '10px',
@@ -159,8 +159,8 @@ function MessageBoard({ quoteRequestId, currentUserId, otherPartyName }: Props) 
             alignItems: 'center',
             gap: '10px',
           }}>
-            <MessageCircle style={{ width: 32, height: 32, color: '#D4A96A', opacity: 0.4 }} />
-            <p style={{ color: '#6B7B6E', fontSize: '14px', fontFamily: FONT_SANS, margin: 0 }}>
+            <MessageCircle style={{ width: 32, height: 32, color: '#D4963A', opacity: 0.4 }} />
+            <p style={{ color: '#7A7A78', fontSize: '14px', fontFamily: FONT_SANS, margin: 0 }}>
               Aún no hay mensajes.<br />Inicia la conversación.
             </p>
           </div>
@@ -178,16 +178,16 @@ function MessageBoard({ quoteRequestId, currentUserId, otherPartyName }: Props) 
             }}>
               {!isOwn && (
                 <span style={{
-                  fontSize: '11px', fontWeight: 600, color: '#B85C1A',
+                  fontSize: '11px', fontWeight: 600, color: '#C4581A',
                   paddingLeft: '4px', fontFamily: FONT_SANS,
                 }}>
                   {otherPartyName}
                 </span>
               )}
               <div style={{
-                background:   isOwn ? '#1C1410' : '#fff',
-                color:        isOwn ? '#F5F0E8' : '#1C1410',
-                border:       isOwn ? 'none' : '0.5px solid rgba(28,20,16,0.1)',
+                background:   isOwn ? '#1E1E1E' : '#fff',
+                color:        isOwn ? '#F2F0ED' : '#1E1E1E',
+                border:       isOwn ? 'none' : '0.5px solid rgba(30,30,30,0.1)',
                 borderRadius: isOwn ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
                 padding: '10px 14px',
                 fontSize: '15px',
@@ -200,7 +200,7 @@ function MessageBoard({ quoteRequestId, currentUserId, otherPartyName }: Props) 
               </div>
               <span style={{
                 fontSize: '11px',
-                color: '#6B7B6E',
+                color: '#7A7A78',
                 alignSelf:    isOwn ? 'flex-end' : 'flex-start',
                 paddingLeft:  isOwn ? 0 : '4px',
                 paddingRight: isOwn ? '4px' : 0,
@@ -219,8 +219,8 @@ function MessageBoard({ quoteRequestId, currentUserId, otherPartyName }: Props) 
       {error && (
         <div style={{
           padding: '6px 16px',
-          background: '#B85C1A15',
-          color: '#B85C1A',
+          background: '#C4581A15',
+          color: '#C4581A',
           fontSize: '13px',
           fontFamily: FONT_SANS,
           flexShrink: 0,
@@ -231,7 +231,7 @@ function MessageBoard({ quoteRequestId, currentUserId, otherPartyName }: Props) 
 
       {/* Input */}
       <div style={{
-        borderTop: '0.5px solid rgba(28,20,16,0.08)',
+        borderTop: '0.5px solid rgba(30,30,30,0.08)',
         padding: '12px 14px',
         background: '#fff',
         display: 'flex',
@@ -252,9 +252,9 @@ function MessageBoard({ quoteRequestId, currentUserId, otherPartyName }: Props) 
             padding: '10px 14px',
             borderRadius: '8px',
             border: '1px solid rgba(212,169,106,0.4)',
-            background: '#F5F0E8',
+            background: '#F2F0ED',
             fontSize: '15px',
-            color: '#1C1410',
+            color: '#2C2C2C',
             resize: 'none',
             outline: 'none',
             fontFamily: FONT_SANS,
@@ -265,8 +265,8 @@ function MessageBoard({ quoteRequestId, currentUserId, otherPartyName }: Props) 
           onClick={sendMessage}
           disabled={!newMessage.trim() || sending}
           style={{
-            background: !newMessage.trim() || sending ? 'rgba(184,92,26,0.4)' : '#B85C1A',
-            color: '#F5F0E8',
+            background: !newMessage.trim() || sending ? 'rgba(184,92,26,0.4)' : '#C4581A',
+            color: '#F2F0ED',
             border: 'none',
             borderRadius: '8px',
             padding: '10px 16px',

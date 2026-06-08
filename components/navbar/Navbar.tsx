@@ -96,12 +96,12 @@ export function Navbar({ countryPrefix: propPrefix }: NavbarProps) {
   return (
     <header
       className="sticky top-0 z-50 w-full"
-      style={{ backgroundColor: '#F5F0E8', borderBottom: '0.5px solid rgba(212,169,106,0.25)' }}
+      style={{ backgroundColor: '#F2F0ED', borderBottom: '0.5px solid rgba(212,169,106,0.25)' }}
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
 
         {/* Logo */}
-        <Link href={base} style={{ color: '#1C1410' }}>
+        <Link href={base} style={{ color: '#2C2C2C' }}>
           <Logo size="md" />
         </Link>
 
@@ -112,9 +112,9 @@ export function Navbar({ countryPrefix: propPrefix }: NavbarProps) {
               key={link.href}
               href={link.href}
               className="font-sans text-[16px] font-medium transition-colors hover:opacity-100"
-              style={{ color: 'rgba(28,20,16,0.7)' }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#1C1410')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(28,20,16,0.7)')}
+              style={{ color: 'rgba(30,30,30,0.7)' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#1E1E1E')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(30,30,30,0.7)')}
             >
               {link.label}
             </Link>
@@ -136,12 +136,12 @@ export function Navbar({ countryPrefix: propPrefix }: NavbarProps) {
                     <AvatarImage src={profile.photo_url ?? ''} alt={profile.full_name ?? ''} />
                     <AvatarFallback
                       className="text-xs font-semibold"
-                      style={{ backgroundColor: '#B85C1A20', color: '#B85C1A' }}
+                      style={{ backgroundColor: '#C4581A20', color: '#C4581A' }}
                     >
                       {getInitials(profile.full_name ?? 'U')}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="hidden text-sm font-medium md:block" style={{ color: '#1C1410' }}>
+                  <span className="hidden text-sm font-medium md:block" style={{ color: '#2C2C2C' }}>
                     {profile.full_name?.split(' ')[0] ?? 'Usuario'}
                   </span>
                 </div>
@@ -171,8 +171,8 @@ export function Navbar({ countryPrefix: propPrefix }: NavbarProps) {
                 href="/login"
                 className="font-sans font-medium px-4 py-1.5 transition-opacity hover:opacity-80"
                 style={{
-                  border: '1.5px solid #B85C1A',
-                  color: '#B85C1A',
+                  border: '1.5px solid #C4581A',
+                  color: '#C4581A',
                   backgroundColor: 'transparent',
                   borderRadius: '6px',
                   fontSize: '14px',
@@ -184,8 +184,8 @@ export function Navbar({ countryPrefix: propPrefix }: NavbarProps) {
                 href="/registro"
                 className="font-sans font-semibold px-4 py-1.5 transition-opacity hover:opacity-90"
                 style={{
-                  backgroundColor: '#B85C1A',
-                  color: '#F5F0E8',
+                  backgroundColor: '#C4581A',
+                  color: '#F2F0ED',
                   borderRadius: '6px',
                   fontSize: '14px',
                 }}
@@ -202,8 +202,8 @@ export function Navbar({ countryPrefix: propPrefix }: NavbarProps) {
             aria-label="Abrir menú"
           >
             {mobileOpen
-              ? <X    className="h-5 w-5" style={{ color: '#1C1410' }} />
-              : <Menu className="h-5 w-5" style={{ color: '#1C1410' }} />
+              ? <X    className="h-5 w-5" style={{ color: '#2C2C2C' }} />
+              : <Menu className="h-5 w-5" style={{ color: '#2C2C2C' }} />
             }
           </button>
         </div>
@@ -213,14 +213,14 @@ export function Navbar({ countryPrefix: propPrefix }: NavbarProps) {
       {mobileOpen && (
         <div
           className="flex flex-col gap-3 px-4 pb-4 pt-2 md:hidden"
-          style={{ backgroundColor: '#F5F0E8', borderTop: '0.5px solid rgba(212,169,106,0.25)' }}
+          style={{ backgroundColor: '#F2F0ED', borderTop: '0.5px solid rgba(212,169,106,0.25)' }}
         >
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               className="font-sans text-[16px] font-medium py-1"
-              style={{ color: 'rgba(28,20,16,0.7)' }}
+              style={{ color: 'rgba(30,30,30,0.7)' }}
               onClick={() => setMobileOpen(false)}
             >
               {link.label}
@@ -236,8 +236,8 @@ export function Navbar({ countryPrefix: propPrefix }: NavbarProps) {
                 href="/login"
                 className="font-sans font-medium text-center py-2 transition-opacity hover:opacity-80"
                 style={{
-                  border: '1.5px solid #B85C1A',
-                  color: '#B85C1A',
+                  border: '1.5px solid #C4581A',
+                  color: '#C4581A',
                   backgroundColor: 'transparent',
                   borderRadius: '6px',
                   fontSize: '14px',
@@ -250,8 +250,8 @@ export function Navbar({ countryPrefix: propPrefix }: NavbarProps) {
                 href="/registro"
                 className="font-sans font-semibold text-center py-2 transition-opacity hover:opacity-90"
                 style={{
-                  backgroundColor: '#B85C1A',
-                  color: '#F5F0E8',
+                  backgroundColor: '#C4581A',
+                  color: '#F2F0ED',
                   borderRadius: '6px',
                   fontSize: '14px',
                 }}

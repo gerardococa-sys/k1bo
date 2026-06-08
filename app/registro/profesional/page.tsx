@@ -223,7 +223,7 @@ export default function RegistroProfesionalPage() {
     <div className="min-h-screen bg-background py-12 px-4">
       <div className="max-w-lg mx-auto">
         <div className="text-center mb-8">
-          <Link href="/" style={{ color: '#1C1410' }}><Logo size="lg" /></Link>
+          <Link href="/" style={{ color: '#2C2C2C' }}><Logo size="lg" /></Link>
           <h1 className="mt-2 text-xl font-semibold">Registro de Profesional</h1>
         </div>
 
@@ -271,10 +271,10 @@ export default function RegistroProfesionalPage() {
                     padding: '10px 12px',
                     borderRadius: '8px',
                     border: '1px solid rgba(212,169,106,0.25)',
-                    background: '#F5F0E8',
+                    background: '#F2F0ED',
                     fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)',
                     fontSize: '15px',
-                    color: '#1C1410',
+                    color: '#2C2C2C',
                     width: '140px',
                     flexShrink: 0,
                   }}
@@ -297,7 +297,7 @@ export default function RegistroProfesionalPage() {
             <div className="space-y-2">
               <Label>Fecha de nacimiento *</Label>
               <Input type="date" max={new Date().toISOString().split('T')[0]} {...step1Form.register('date_of_birth')} />
-              {step1Form.formState.errors.date_of_birth && <p style={{ fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)', fontSize: '13px', color: '#B85C1A' }}>{step1Form.formState.errors.date_of_birth.message}</p>}
+              {step1Form.formState.errors.date_of_birth && <p style={{ fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)', fontSize: '13px', color: '#C4581A' }}>{step1Form.formState.errors.date_of_birth.message}</p>}
             </div>
 
             {/* Account type — fixed as independent */}
@@ -308,9 +308,9 @@ export default function RegistroProfesionalPage() {
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '8px',
-                  backgroundColor: '#B85C1A12',
-                  color: '#B85C1A',
-                  border: '1.5px solid #B85C1A40',
+                  backgroundColor: '#C4581A12',
+                  color: '#C4581A',
+                  border: '1.5px solid #C4581A40',
                   borderRadius: '8px',
                   padding: '10px 16px',
                   fontSize: '15px',
@@ -321,9 +321,9 @@ export default function RegistroProfesionalPage() {
                 <HardHat style={{ width: 18, height: 18 }} />
                 Profesional Independiente
               </div>
-              <p style={{ fontSize: '13px', color: '#6B7B6E', marginTop: '6px', fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)' }}>
+              <p style={{ fontSize: '13px', color: '#7A7A78', marginTop: '6px', fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)' }}>
                 ¿Eres una empresa?{' '}
-                <Link href="/registro/empresa" style={{ color: '#6B7B6E', textDecoration: 'underline' }}>
+                <Link href="/registro/empresa" style={{ color: '#7A7A78', textDecoration: 'underline' }}>
                   Regístrate aquí →
                 </Link>
               </p>

@@ -57,14 +57,14 @@ export function CategoryGrid({ categories, countryPrefix, title, subtitle }: Cat
               fontFamily: FONT_SERIF,
               fontWeight: 700,
               fontSize: '46px',
-              color: '#1C1410',
+              color: '#2C2C2C',
               margin: '0 0 10px',
             }}
           >
             {title}
           </h2>
           {subtitle && (
-            <p style={{ fontFamily: FONT_SANS, fontSize: '20px', fontWeight: 400, color: '#6B7B6E', margin: 0 }}>
+            <p style={{ fontFamily: FONT_SANS, fontSize: '20px', fontWeight: 400, color: '#7A7A78', margin: 0 }}>
               {subtitle}
             </p>
           )}
@@ -88,14 +88,14 @@ export function CategoryGrid({ categories, countryPrefix, title, subtitle }: Cat
                   width: 64,
                   height: 64,
                   borderRadius: '50%',
-                  backgroundColor: '#B85C1A12',
+                  backgroundColor: '#C4581A12',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   flexShrink: 0,
                 }}
               >
-                <Icon style={{ width: 26, height: 26, color: '#B85C1A' }} />
+                <Icon style={{ width: 26, height: 26, color: '#C4581A' }} />
               </div>
 
               {/* Name */}
@@ -104,7 +104,7 @@ export function CategoryGrid({ categories, countryPrefix, title, subtitle }: Cat
                   fontFamily: FONT_SANS,
                   fontSize: '16px',
                   fontWeight: 500,
-                  color: '#1C1410',
+                  color: '#2C2C2C',
                   margin: 0,
                   lineHeight: 1.4,
                   textAlign: 'center',
@@ -136,7 +136,7 @@ export function CategoryGrid({ categories, countryPrefix, title, subtitle }: Cat
         /* ── Card base ────────────────────────────────────────────── */
         .ax7-catcard {
           background-color: #ffffff;
-          border: 0.5px solid #1C141012;
+          border: 0.5px solid #2C2C2C12;
           border-radius: 14px;
           padding: 28px 16px 24px;
           min-height: 160px;
@@ -150,8 +150,8 @@ export function CategoryGrid({ categories, countryPrefix, title, subtitle }: Cat
 
         /* ── Hover ────────────────────────────────────────────────── */
         .ax7-catcard:hover {
-          border-color: #B85C1A60;
-          background-color: #B85C1A04;
+          border-color: #C4581A60;
+          background-color: #C4581A04;
           transform: translateY(-2px);
         }
       `}</style>
