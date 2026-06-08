@@ -26,7 +26,8 @@
       "Bash(xargs -0 sed -i '' 's/#D4A96A/#D4963A/g')",
       "Bash(xargs -0 sed -i '' 's/#6B7B6E/#7A7A78/g')",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
     ]
   }
 }
