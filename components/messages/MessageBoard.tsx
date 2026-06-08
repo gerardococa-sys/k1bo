@@ -251,7 +251,7 @@ function MessageBoard({ quoteRequestId, currentUserId, otherPartyName }: Props) 
             flex: 1,
             padding: '10px 14px',
             borderRadius: '8px',
-            border: '1px solid rgba(212,169,106,0.4)',
+            border: '1px solid rgba(212,150,58,0.4)',
             background: '#F2F0ED',
             fontSize: '15px',
             color: '#2C2C2C',
@@ -265,7 +265,7 @@ function MessageBoard({ quoteRequestId, currentUserId, otherPartyName }: Props) 
           onClick={sendMessage}
           disabled={!newMessage.trim() || sending}
           style={{
-            background: !newMessage.trim() || sending ? 'rgba(184,92,26,0.4)' : '#C4581A',
+            background: !newMessage.trim() || sending ? 'rgba(196,88,26,0.4)' : '#C4581A',
             color: '#F2F0ED',
             border: 'none',
             borderRadius: '8px',

@@ -96,7 +96,7 @@ export function Navbar({ countryPrefix: propPrefix }: NavbarProps) {
   return (
     <header
       className="sticky top-0 z-50 w-full"
-      style={{ backgroundColor: '#F2F0ED', borderBottom: '0.5px solid rgba(212,169,106,0.25)' }}
+      style={{ backgroundColor: '#F2F0ED', borderBottom: '0.5px solid rgba(212,150,58,0.25)' }}
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
 
@@ -213,7 +213,7 @@ export function Navbar({ countryPrefix: propPrefix }: NavbarProps) {
       {mobileOpen && (
         <div
           className="flex flex-col gap-3 px-4 pb-4 pt-2 md:hidden"
-          style={{ backgroundColor: '#F2F0ED', borderTop: '0.5px solid rgba(212,169,106,0.25)' }}
+          style={{ backgroundColor: '#F2F0ED', borderTop: '0.5px solid rgba(212,150,58,0.25)' }}
         >
           {navLinks.map((link) => (
             <Link
@@ -230,7 +230,7 @@ export function Navbar({ countryPrefix: propPrefix }: NavbarProps) {
           {!profile && (
             <div
               className="flex flex-col gap-2 pt-2 border-t"
-              style={{ borderColor: 'rgba(212,169,106,0.25)' }}
+              style={{ borderColor: 'rgba(212,150,58,0.25)' }}
             >
               <Link
                 href="/login"

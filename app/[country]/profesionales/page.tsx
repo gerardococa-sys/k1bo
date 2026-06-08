@@ -208,7 +208,7 @@ function FiltersPanel({
           onClick={clearFilters}
           style={{
             fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600,
-            color: '#C4581A', borderColor: 'rgba(184,92,26,0.35)',
+            color: '#C4581A', borderColor: 'rgba(196,88,26,0.35)',
           }}
         >
           Limpiar filtros

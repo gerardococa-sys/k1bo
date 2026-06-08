@@ -27,7 +27,7 @@ const body: React.CSSProperties = {
 }
 
 const divider: React.CSSProperties = {
-  borderTop: '0.5px solid rgba(212,169,106,0.30)',
+  borderTop: '0.5px solid rgba(212,150,58,0.30)',
   marginTop: '32px',
 }
 

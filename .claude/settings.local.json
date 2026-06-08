@@ -27,7 +27,13 @@
       "Bash(xargs -0 sed -i '' 's/#6B7B6E/#7A7A78/g')",
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(xargs -0 sed -i '' 's/rgba\\(212,169,106/rgba\\(212,150,58/g')",
+      "Bash(xargs -0 sed -i '' 's/rgba\\(212, 169, 106/rgba\\(212, 150, 58/g')",
+      "Bash(xargs -0 sed -i '' 's/rgba\\(28,20,16/rgba\\(30,30,30/g')",
+      "Bash(xargs -0 sed -i '' 's/rgba\\(28, 20, 16/rgba\\(30, 30, 30/g')",
+      "Bash(xargs -0 sed -i '' 's/rgba\\(184,92,26/rgba\\(196,88,26/g')",
+      "Bash(xargs -0 sed -i '' 's/rgba\\(184, 92, 26/rgba\\(196, 88, 26/g')"
     ]
   }
 }

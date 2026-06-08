@@ -240,7 +240,7 @@ export default function RegistroClientePage() {
                 style={{
                   padding: '10px 12px',
                   borderRadius: '8px',
-                  border: '1px solid rgba(212,169,106,0.25)',
+                  border: '1px solid rgba(212,150,58,0.25)',
                   background: '#F2F0ED',
                   fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)',
                   fontSize: '15px',

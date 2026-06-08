@@ -264,7 +264,7 @@ export default function ProProfilePage() {
                 <div>
                   <label style={{
                     display: 'inline-block', padding: '8px 16px',
-                    backgroundColor: '#F2F0ED', border: '1px solid rgba(212,169,106,0.35)',
+                    backgroundColor: '#F2F0ED', border: '1px solid rgba(212,150,58,0.35)',
                     borderRadius: '8px', cursor: 'pointer',
                     fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#C4581A',
                   }}>
@@ -302,7 +302,7 @@ export default function ProProfilePage() {
                   onChange={(e) => setPhoneCountryCode(e.target.value)}
                   style={{
                     padding: '10px 12px', borderRadius: '8px',
-                    border: '1px solid rgba(212,169,106,0.25)', background: '#F2F0ED',
+                    border: '1px solid rgba(212,150,58,0.25)', background: '#F2F0ED',
                     fontFamily: FONT_SANS, fontSize: '15px', color: '#2C2C2C',
                     width: '140px', flexShrink: 0,
                   }}
@@ -381,7 +381,7 @@ export default function ProProfilePage() {
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: '8px',
                 padding: '10px 20px', borderRadius: '8px',
-                border: '1px solid rgba(212,169,106,0.35)',
+                border: '1px solid rgba(212,150,58,0.35)',
                 backgroundColor: '#F2F0ED', cursor: portfolio.length >= 25 ? 'not-allowed' : 'pointer',
                 fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#C4581A',
                 opacity: portfolio.length >= 25 || !!selectedFile ? 0.5 : 1,
