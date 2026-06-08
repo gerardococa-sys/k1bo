@@ -57,19 +57,39 @@ function LoginContent() {
     // Fetch role from profiles using the authenticated user
     const { data: profile } = await supabase
       .from('profiles')
-      .select('role, account_status')
+      .select('role')
       .eq('id', authData.user.id)
       .single()
 
     console.log('[login] profile:', profile)
 
-    if (!profile) {
-      toast.error('No se encontró el perfil. Contacta soporte.')
+    if (!profile?.role) {
+      // Fallback con maybeSingle por si hay problema de RLS
+      const { data: profile2, error: profileError } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', authData.user.id)
+        .maybeSingle()
+
+      console.log('[login] profile2:', profile2, profileError)
+
+      if (!profile2?.role) {
+        toast.error('No se encontró el perfil. ' + (profileError?.message ?? ''))
+        return
+      }
+
+      const country = 'sv'
+      if (profile2.role === 'professional') {
+        window.location.href = `/${country}/profesional-panel/dashboard`
+      } else if (profile2.role === 'client') {
+        window.location.href = `/${country}/cliente/dashboard`
+      } else {
+        window.location.href = `/${country}`
+      }
       return
     }
 
     const country = 'sv'
-
     if (profile.role === 'professional') {
       window.location.href = `/${country}/profesional-panel/dashboard`
     } else if (profile.role === 'client') {
