@@ -18,7 +18,15 @@
       "Bash(sed -n '178,198p' /Users/Gerardo/Library/CloudStorage/OneDrive-Personal/Proyectos/Ai/K1bo/components/navbar/Navbar.tsx)",
       "Bash(sed -n '245,265p' /Users/Gerardo/Library/CloudStorage/OneDrive-Personal/Proyectos/Ai/K1bo/components/navbar/Navbar.tsx)",
       "Bash(xargs cat -n)",
-      "Bash(grep -oE '#[0-9A-Fa-f]{6,8}')"
+      "Bash(grep -oE '#[0-9A-Fa-f]{6,8}')",
+      "Bash(git checkout *)",
+      "Bash(xargs -0 sed -i '' 's/#F5F0E8/#F2F0ED/g')",
+      "Bash(xargs -0 sed -i '' 's/#1C1410/#1E1E1E/g')",
+      "Bash(xargs -0 sed -i '' 's/#B85C1A/#C4581A/g')",
+      "Bash(xargs -0 sed -i '' 's/#D4A96A/#D4963A/g')",
+      "Bash(xargs -0 sed -i '' 's/#6B7B6E/#7A7A78/g')",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }

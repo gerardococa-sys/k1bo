@@ -98,7 +98,7 @@ export function Footer({ countryPrefix }: FooterProps) {
                 </svg>
               </a>
 
-              <a href="https://www.tiktok.com/artifex7net" target="_blank" rel="noopener noreferrer" title="TikTok"
+              <a href="https://www.tiktok.com/@artifex7net" target="_blank" rel="noopener noreferrer" title="TikTok"
                 style={{ color: '#F2F0ED60', display: 'flex', alignItems: 'center', transition: 'color 150ms' }}
                 className="footer-social-link">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
