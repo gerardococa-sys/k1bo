@@ -37,49 +37,48 @@ function LoginContent() {
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     )
-    const { data: authData, error } = await supabase.auth.signInWithPassword({
+
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
       email: data.email,
       password: data.password,
     })
 
-    console.log('[login] error:', error)
-    console.log('[login] user:', authData?.user?.id)
-
-    if (error) {
-      toast.error('Credenciales incorrectas. Intenta de nuevo.')
+    if (authError || !authData.user) {
+      toast.error('Email o contraseña incorrectos.')
       return
     }
 
     // If a specific redirect was requested (e.g. from cotizar flow), honor it
     if (searchParams.get('redirect')) {
-      console.log('[login] redirect param → ', redirect)
       window.location.href = redirect
       return
     }
 
-    // Otherwise redirect based on role
-    const { data: { user } } = await supabase.auth.getUser()
-    console.log('[login] getUser:', user?.id)
+    // Fetch role from profiles using the authenticated user
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role, account_status')
+      .eq('id', authData.user.id)
+      .single()
 
-    if (user) {
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single()
+    console.log('[login] profile:', profile)
 
-      console.log('[login] profile:', profile, 'profileError:', profileError)
-      console.log('[login] role:', profile?.role)
+    if (!profile) {
+      toast.error('No se encontró el perfil. Contacta soporte.')
+      return
+    }
 
-      if (profile?.role === 'professional') {
-        window.location.href = '/sv/profesional-panel/dashboard'
-      } else if (profile?.role === 'admin') {
-        window.location.href = '/admin/dashboard'
-      } else {
-        window.location.href = '/sv/cliente/dashboard'
-      }
+    const country = 'sv'
+
+    if (profile.role === 'professional') {
+      window.location.href = `/${country}/profesional-panel/dashboard`
+    } else if (profile.role === 'client') {
+      window.location.href = `/${country}/cliente/dashboard`
+    } else if (profile.role === 'admin') {
+      window.location.href = '/admin/dashboard'
     } else {
-      window.location.href = '/sv'
+      console.error('[login] role desconocido:', profile.role)
+      window.location.href = `/${country}`
     }
   }
 
