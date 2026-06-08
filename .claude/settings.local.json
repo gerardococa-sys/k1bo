@@ -17,7 +17,8 @@
       "Bash(sed -n '250,265p' /Users/Gerardo/Library/CloudStorage/OneDrive-Personal/Proyectos/Ai/K1bo/components/navbar/Navbar.tsx)",
       "Bash(sed -n '178,198p' /Users/Gerardo/Library/CloudStorage/OneDrive-Personal/Proyectos/Ai/K1bo/components/navbar/Navbar.tsx)",
       "Bash(sed -n '245,265p' /Users/Gerardo/Library/CloudStorage/OneDrive-Personal/Proyectos/Ai/K1bo/components/navbar/Navbar.tsx)",
-      "Bash(xargs cat -n)"
+      "Bash(xargs cat -n)",
+      "Bash(grep -oE '#[0-9A-Fa-f]{6,8}')"
     ]
   }
 }
