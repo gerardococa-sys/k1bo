@@ -251,7 +251,7 @@ export default async function CountryPage({ params }: { params: { country: strin
       <HowItWorks />
 
       {/* CTA */}
-      <CtaProfesional countryName={countryName} />
+      <CtaProfesional />
     </div>
   )
 }
