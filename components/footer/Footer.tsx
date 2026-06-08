@@ -119,6 +119,7 @@ export function Footer({ countryPrefix }: FooterProps) {
               { label: 'Términos y Condiciones', href: '/terminos' },
               { label: 'Política de Privacidad', href: '/privacidad' },
               { label: 'Cancelaciones',          href: '/cancelaciones' },
+              { label: 'Contáctenos',            href: '/contacto' },
             ].map(({ label, href }) => (
               <Link key={href} href={href} style={linkStyle} className="hover-footer-link">
                 {label}

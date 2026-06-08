@@ -91,6 +91,7 @@ export function Navbar({ countryPrefix: propPrefix }: NavbarProps) {
     { label: 'Profesionales', href: `${base}/profesionales` },
     { label: 'Propietarios',  href: propietariosHref },
     { label: 'Cómo funciona', href: `${base}#como-funciona` },
+    { label: 'Contáctenos',   href: '/contacto' },
   ]
 
   return (
