@@ -11,7 +11,7 @@ import { STATUS_LABELS, STATUS_COLORS } from '@/lib/utils'
 import { AccountStatusBanner } from '@/components/ui/AccountStatusBanner'
 
 export default async function ProDashboardPage({ params }: { params: { country: string } }) {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
