@@ -290,7 +290,7 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
         { data: reviews },
       ] = await Promise.all([
         supabase.from('profiles')
-          .select('id, full_name, photo_url, verified, active, department_id, municipality_id, created_at')
+          .select('id, full_name, photo_url, verified, active, account_status, department_id, municipality_id, created_at')
           .in('id', proIds),
         supabase.from('professional_categories')
           .select('professional_id, category_id')
@@ -372,7 +372,10 @@ export default function ProfesionalesPage({ params }: { params: { country: strin
             total_reviews: rats.length,
           }
         })
-        .filter(Boolean)
+        .filter((p): p is NonNullable<typeof p> => {
+          if (!p) return false
+          return p.profile?.active !== false && p.profile?.account_status === 'active'
+        })
 
       setProfesionales(assembled)
       setLoading(false)

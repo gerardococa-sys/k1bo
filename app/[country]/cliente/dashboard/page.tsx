@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { STATUS_LABELS, STATUS_COLORS } from '@/lib/utils'
 import { FileText, User } from 'lucide-react'
+import { AccountStatusBanner } from '@/components/ui/AccountStatusBanner'
 
 export default async function ClientDashboardPage({ params }: { params: { country: string } }) {
   const supabase = await createClient()
@@ -16,7 +17,7 @@ export default async function ClientDashboardPage({ params }: { params: { countr
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, role')
+    .select('full_name, role, account_status')
     .eq('id', user.id)
     .single()
 
@@ -41,6 +42,7 @@ export default async function ClientDashboardPage({ params }: { params: { countr
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <AccountStatusBanner status={(profile.account_status as any) ?? 'review'} />
       <h1 className="text-2xl font-bold mb-2">Dashboard del Propietario</h1>
       <p className="text-muted-foreground mb-8">Bienvenido, {profile.full_name}</p>
 

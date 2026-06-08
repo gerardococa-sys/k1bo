@@ -1,8 +1,10 @@
 export const dynamic = 'force-dynamic'
 
 import { notFound, redirect } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { QuoteRequestForm } from '@/components/quotes/QuoteRequestForm'
+import { AccountStatusBanner } from '@/components/ui/AccountStatusBanner'
 
 export default async function CotizarPage({
   params,
@@ -18,12 +20,26 @@ export default async function CotizarPage({
 
   const { data: clientProfile } = await supabase
     .from('profiles')
-    .select('id, role, country_id')
+    .select('id, role, country_id, account_status')
     .eq('id', user.id)
     .single()
 
   if (!clientProfile || clientProfile.role !== 'client') {
     redirect(`/${params.country}/profesional/${params.id}`)
+  }
+
+  if (clientProfile.account_status !== 'active') {
+    return (
+      <div style={{ maxWidth: '600px', margin: '64px auto', padding: '24px' }}>
+        <AccountStatusBanner status={(clientProfile.account_status as any) ?? 'review'} />
+        <Link
+          href={`/${params.country}`}
+          style={{ display: 'inline-block', marginTop: '8px', color: '#C4581A', textDecoration: 'none', fontSize: '15px' }}
+        >
+          ← Volver al inicio
+        </Link>
+      </div>
+    )
   }
 
   const { data: pro } = await supabase

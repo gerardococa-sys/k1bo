@@ -44,7 +44,7 @@ export default async function CategoryPage({
   const categoryIds = [category.id]
   if (category.parent_id) categoryIds.push(category.parent_id)
 
-  const { data: professionals } = await supabase
+  const { data: professionalsRaw } = await supabase
     .from('professionals')
     .select(`
       *,
@@ -56,6 +56,10 @@ export default async function CategoryPage({
     .eq('profiles.country_id', country?.id ?? '')
     .in('professional_categories.category_id', categoryIds)
     .eq('profile.active', true)
+
+  const professionals = (professionalsRaw ?? []).filter(
+    (p: any) => p.profile?.account_status === 'active',
+  )
 
   const hasSubcategories = category.subcategories && category.subcategories.length > 0
 
