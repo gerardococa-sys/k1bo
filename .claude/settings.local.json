@@ -33,7 +33,8 @@
       "Bash(xargs -0 sed -i '' 's/rgba\\(28,20,16/rgba\\(30,30,30/g')",
       "Bash(xargs -0 sed -i '' 's/rgba\\(28, 20, 16/rgba\\(30, 30, 30/g')",
       "Bash(xargs -0 sed -i '' 's/rgba\\(184,92,26/rgba\\(196,88,26/g')",
-      "Bash(xargs -0 sed -i '' 's/rgba\\(184, 92, 26/rgba\\(196, 88, 26/g')"
+      "Bash(xargs -0 sed -i '' 's/rgba\\(184, 92, 26/rgba\\(196, 88, 26/g')",
+      "Bash(npm install *)"
     ]
   }
 }
