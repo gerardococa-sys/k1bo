@@ -74,6 +74,7 @@ export default function RegistroEmpresaPage() {
   const [logo, setLogo] = useState<File | null>(null)
   const [logoPreview, setLogoPreview] = useState<string | null>(null)
   const [phoneCode, setPhoneCode] = useState('+503')
+  const [step1Error, setStep1Error] = useState<string | null>(null)
   const step1 = useForm<Step1Data>({ resolver: zodResolver(step1Schema) })
 
   // Step 2 — location
@@ -145,10 +146,27 @@ export default function RegistroEmpresaPage() {
   // ── Step handlers ──────────────────────────────────────────────────────────
 
   const handleStep1 = async (data: Step1Data) => {
+    setStep1Error(null)
     const supabase = mkClient()
     const { data: auth, error } = await supabase.auth.signUp({ email: data.email, password: data.password })
-    if (error || !auth.user) { toast.error(error?.message ?? 'Error al crear cuenta'); return }
+
+    if (error || !auth.user) {
+      if (
+        (error as any)?.status === 429 ||
+        error?.message?.includes('rate') ||
+        error?.message?.includes('429')
+      ) {
+        setStep1Error('Demasiados intentos de registro. Por favor espera unos minutos e intenta de nuevo.')
+      } else {
+        setStep1Error(error?.message ?? 'Error al crear cuenta')
+      }
+      return
+    }
+
     setUserId(auth.user.id)
+
+    // Esperar 1 segundo para evitar rate limit en queries siguientes
+    await new Promise(resolve => setTimeout(resolve, 1000))
 
     let photo_url = null
     if (logo) {
@@ -364,6 +382,20 @@ export default function RegistroEmpresaPage() {
               <Label>Años en el mercado <span className="text-muted-foreground">(opcional)</span></Label>
               <Input type="number" min="0" max="200" placeholder="Ej. 10" {...step1.register('years_market')} />
             </div>
+
+            {step1Error && (
+              <div style={{
+                background: '#C4581A10',
+                border: '1px solid #C4581A40',
+                borderRadius: '8px',
+                padding: '12px 16px',
+                fontFamily: FONT_SANS,
+                fontSize: '14px',
+                color: '#C4581A',
+              }}>
+                {step1Error}
+              </div>
+            )}
 
             <Button type="submit" className="w-full" size="lg" disabled={step1.formState.isSubmitting}>
               {step1.formState.isSubmitting ? 'Guardando...' : 'Continuar →'}
