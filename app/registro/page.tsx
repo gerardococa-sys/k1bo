@@ -146,7 +146,7 @@ export default function RegistroPage() {
               borderRadius: '0 16px 0 10px',
             }}
           >
-            Más popular
+            Plan Empresa $99/año
           </span>
           <div style={{ width: 72, height: 72, borderRadius: '50%', backgroundColor: '#C4581A12', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '8px' }}>
             <Building2 style={{ width: 36, height: 36, color: '#C4581A' }} />
@@ -154,11 +154,11 @@ export default function RegistroPage() {
           <p style={{ fontFamily: FONT_SERIF, fontSize: '24px', fontWeight: 600, color: '#2C2C2C', margin: 0 }}>
             Empresa
           </p>
-          <span style={{ display: 'inline-block', backgroundColor: '#C4581A15', color: '#C4581A', fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 700, borderRadius: '20px', padding: '4px 12px' }}>
-            $99 / año
+          <span style={{ display: 'inline-block', backgroundColor: '#C4581A15', color: '#C4581A', fontFamily: FONT_SANS, fontSize: '11px', fontWeight: 700, borderRadius: '20px', padding: '3px 10px' }}>
+            Disponible
           </span>
           <p style={{ fontFamily: FONT_SANS, fontSize: '16px', color: '#7A7A78', lineHeight: 1.65, margin: 0, flex: 1 }}>
-            Perfil destacado permanente, múltiples categorías, badge verificado y estadísticas.
+            Publica tu empresa, recibe solicitudes de propietarios verificados y accede a beneficios premium. $99/año.
           </p>
           <Link
             href="/registro/empresa"
