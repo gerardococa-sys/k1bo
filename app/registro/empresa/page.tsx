@@ -148,7 +148,18 @@ export default function RegistroEmpresaPage() {
   const handleStep1 = async (data: Step1Data) => {
     setStep1Error(null)
     const supabase = mkClient()
-    const { data: auth, error } = await supabase.auth.signUp({ email: data.email, password: data.password })
+    const { data: auth, error } = await supabase.auth.signUp({
+      email: data.email,
+      password: data.password,
+      options: {
+        data: {
+          full_name: data.rep_name,
+          role: 'professional',
+          phone: `${phoneCode}${data.phone}`,
+        },
+        emailRedirectTo: `${window.location.origin}/auth/confirm`,
+      },
+    })
 
     if (error || !auth.user) {
       if (
@@ -164,10 +175,31 @@ export default function RegistroEmpresaPage() {
     }
 
     setUserId(auth.user.id)
-
-    // Esperar 1 segundo para evitar rate limit en queries siguientes
     await new Promise(resolve => setTimeout(resolve, 1000))
 
+    // Email confirmation required — no active session yet
+    if (!auth.session) {
+      localStorage.setItem('pending_profile', JSON.stringify({
+        phone:              data.phone,
+        phone_country_code: phoneCode,
+        country_id:         svCountryId || null,
+      }))
+      localStorage.setItem('pending_professional', JSON.stringify({
+        account_type:          'company',
+        company_name:          data.company_name,
+        nrc:                   data.nrc,
+        years_in_market:       data.years_market ? Number(data.years_market) : null,
+        covers_entire_country: false,
+        featured:              false,
+        total_projects:        0,
+        whatsapp:              phoneCode + data.phone,
+      }))
+      toast.success('¡Cuenta creada! Revisa tu correo para confirmarla.')
+      router.push('/registro/confirmar-email')
+      return
+    }
+
+    // Session available — proceed with immediate writes
     let photo_url = null
     if (logo) {
       const ext = logo.name.split('.').pop()

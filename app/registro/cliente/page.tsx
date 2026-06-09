@@ -117,6 +117,14 @@ export default function RegistroClientePage() {
     const { data: auth, error: authError } = await supabase.auth.signUp({
       email: data.email,
       password: data.password,
+      options: {
+        data: {
+          full_name: data.full_name,
+          role: 'client',
+          phone: `${phoneCountryCode}${data.phone}`,
+        },
+        emailRedirectTo: `${window.location.origin}/auth/confirm`,
+      },
     })
 
     if (authError || !auth.user) {
@@ -124,6 +132,24 @@ export default function RegistroClientePage() {
       return
     }
 
+    // Email confirmation required — no active session yet
+    if (!auth.session) {
+      localStorage.setItem('pending_profile', JSON.stringify({
+        phone:             data.phone,
+        phone_country_code: phoneCountryCode,
+        date_of_birth:     data.date_of_birth,
+        address:           data.address ?? null,
+        department_id:     selectedDept || null,
+        municipality_id:   selectedMuni || null,
+        district_id:       selectedDist || null,
+        country_id:        svCountryId || null,
+      }))
+      toast.success('¡Cuenta creada! Revisa tu correo para confirmarla.')
+      router.push('/registro/confirmar-email')
+      return
+    }
+
+    // Session available — proceed with immediate writes
     let photo_url = null
     if (avatar) {
       const ext = avatar.name.split('.').pop()

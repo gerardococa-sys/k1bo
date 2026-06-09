@@ -77,6 +77,15 @@ export default function ConfirmarEmailPage() {
           </ul>
         </div>
 
+        <p style={{
+          fontFamily: FONT_SANS,
+          fontSize: '13px',
+          color: '#7A7A78',
+          marginBottom: '20px',
+        }}>
+          📷 Podrás subir tu foto de perfil una vez que confirmes tu email.
+        </p>
+
         <Link
           href="/login"
           style={{

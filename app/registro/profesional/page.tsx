@@ -103,10 +103,42 @@ export default function RegistroProfesionalPage() {
       return
     }
     const supabase = mkClient()
-    const { data: auth, error } = await supabase.auth.signUp({ email: data.email, password: data.password })
+    const { data: auth, error } = await supabase.auth.signUp({
+      email: data.email,
+      password: data.password,
+      options: {
+        data: {
+          full_name: data.full_name,
+          role: 'professional',
+          phone: `${phoneCountryCode}${data.phone}`,
+        },
+        emailRedirectTo: `${window.location.origin}/auth/confirm`,
+      },
+    })
     if (error || !auth.user) { toast.error(error?.message ?? 'Error'); return }
     setUserId(auth.user.id)
 
+    // Email confirmation required — no active session yet
+    if (!auth.session) {
+      localStorage.setItem('pending_profile', JSON.stringify({
+        phone:              data.phone,
+        phone_country_code: phoneCountryCode,
+        date_of_birth:      data.date_of_birth,
+        country_id:         svCountryId || null,
+      }))
+      localStorage.setItem('pending_professional', JSON.stringify({
+        account_type:          accountType,
+        covers_entire_country: false,
+        featured:              false,
+        total_projects:        0,
+        whatsapp:              phoneCountryCode + data.phone,
+      }))
+      toast.success('¡Cuenta creada! Revisa tu correo para confirmarla.')
+      router.push('/registro/confirmar-email')
+      return
+    }
+
+    // Session available — proceed with immediate writes
     let photo_url = null
     if (avatar) {
       const ext = avatar.name.split('.').pop()

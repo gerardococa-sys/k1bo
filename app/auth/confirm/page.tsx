@@ -55,6 +55,35 @@ export default function AuthConfirmPage() {
         return
       }
 
+      // Apply pending profile fields saved before email confirmation
+      const pendingProfile = localStorage.getItem('pending_profile')
+      if (pendingProfile) {
+        try {
+          const profileData = JSON.parse(pendingProfile)
+          await supabase.from('profiles').update(profileData).eq('id', user.id)
+          localStorage.removeItem('pending_profile')
+        } catch (_) {}
+      }
+
+      // Apply pending professionals record
+      const pendingPro = localStorage.getItem('pending_professional')
+      if (pendingPro) {
+        try {
+          const proData = JSON.parse(pendingPro)
+          const { data: existing } = await supabase
+            .from('professionals')
+            .select('id')
+            .eq('id', user.id)
+            .maybeSingle()
+          if (existing) {
+            await supabase.from('professionals').update(proData).eq('id', user.id)
+          } else {
+            await supabase.from('professionals').insert({ id: user.id, ...proData })
+          }
+          localStorage.removeItem('pending_professional')
+        } catch (_) {}
+      }
+
       const { data: profile } = await supabase
         .from('profiles')
         .select('role')
