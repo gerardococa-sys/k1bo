@@ -70,7 +70,7 @@ export function Footer({ countryPrefix }: FooterProps) {
                 <Globe style={{ width: 20, height: 20 }} />
               </a>
 
-              <a href="https://www.facebook.com/Artifex7/" target="_blank" rel="noopener noreferrer" title="Facebook"
+              <a href="https://www.facebook.com/artifex7net" target="_blank" rel="noopener noreferrer" title="Facebook"
                 style={{ color: '#F2F0ED60', display: 'flex', alignItems: 'center', transition: 'color 150ms' }}
                 className="footer-social-link">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -78,7 +78,7 @@ export function Footer({ countryPrefix }: FooterProps) {
                 </svg>
               </a>
 
-              <a href="https://www.linkedin.com/company/artifex7/" target="_blank" rel="noopener noreferrer" title="LinkedIn"
+              <a href="https://www.linkedin.com/company/artifex7net" target="_blank" rel="noopener noreferrer" title="LinkedIn"
                 style={{ color: '#F2F0ED60', display: 'flex', alignItems: 'center', transition: 'color 150ms' }}
                 className="footer-social-link">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
