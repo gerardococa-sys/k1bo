@@ -724,10 +724,10 @@ export default function RegistroEmpresaPage() {
             </div>
 
             <Link
-              href="/sv"
+              href="/registro/confirmar-email"
               style={{ display: 'block', background: '#1E1E1E', color: '#D4963A', fontFamily: FONT_SANS, fontSize: '16px', fontWeight: 700, padding: '14px', borderRadius: '8px', textDecoration: 'none', textAlign: 'center' }}
             >
-              Ir al inicio
+              Revisar mi correo
             </Link>
           </div>
         )}

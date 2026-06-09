@@ -44,7 +44,11 @@ function LoginContent() {
     })
 
     if (authError || !authData.user) {
-      toast.error('Email o contraseña incorrectos.')
+      if (authError?.message?.toLowerCase().includes('email not confirmed')) {
+        toast.error('Tu email no ha sido confirmado. Revisa tu bandeja de entrada y haz clic en el enlace de verificación.')
+      } else {
+        toast.error('Email o contraseña incorrectos.')
+      }
       return
     }
 

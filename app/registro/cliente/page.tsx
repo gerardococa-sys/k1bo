@@ -158,7 +158,7 @@ export default function RegistroClientePage() {
     }
 
     toast.success('¡Cuenta creada con éxito!')
-    router.push('/sv')
+    router.push('/registro/confirmar-email')
   }
 
   return (

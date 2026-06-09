@@ -490,7 +490,7 @@ export default function RegistroProfesionalPage() {
               <p className="text-sm">✅ Comenzarás a recibir solicitudes de trabajo</p>
             </div>
             <Button asChild className="w-full">
-              <Link href="/sv">Ir a <Logo size="sm" /> El Salvador</Link>
+              <Link href="/registro/confirmar-email">Revisar mi correo</Link>
             </Button>
           </div>
         )}
