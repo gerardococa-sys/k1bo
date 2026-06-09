@@ -163,7 +163,70 @@ export default function TerminosPage() {
         </ul>
 
         <hr style={divider} />
-        <h2 style={sectionTitle}>6. Propiedad intelectual</h2>
+        <h2 style={sectionTitle}>6. Pagos y pasarela de pagos</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+
+          <p style={body}>
+            Todos los pagos realizados por los propietarios serán realizados a través de la plataforma
+            que pondrá a disposición la pasarela de pago o a través de transferencia electrónica
+            utilizando Transfer365 o transferencia directa entre cuentas.
+          </p>
+
+          <p style={body}>
+            Todas las transferencias serán realizadas a la cuenta que ARTIFEX7 ponga a disposición.
+          </p>
+
+          <p style={body}>
+            El profesional independiente o empresa reconoce que ARTIFEX7 cobra una comisión por cada
+            servicio de mano de obra completado a través de la plataforma. El porcentaje y estructura
+            de dicha comisión será comunicado dentro del perfil del profesional y podrá ser actualizado
+            por ARTIFEX7 con previo aviso razonable.
+          </p>
+
+          <p style={body}>
+            El profesional independiente o empresa recibirá el pago neto correspondiente (monto pagado
+            por el Propietario menos la comisión de ARTIFEX7) conforme al ciclo operativo de
+            liquidaciones o cuando el propietario ha aceptado el trabajo.
+          </p>
+
+          <p style={body}>
+            Es responsabilidad del profesional independiente o empresa proporcionar información bancaria
+            válida, completa y actualizada. ARTIFEX7 no será responsable por retrasos derivados de
+            errores en los datos proporcionados por el profesional.
+          </p>
+
+          <div>
+            <p style={body}>ARTIFEX7 podrá retener temporalmente pagos cuando:</p>
+            <ul style={{ paddingLeft: '20px', margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {[
+                'Exista una disputa o reclamo activo sobre un servicio.',
+                'Haya indicios de conducta inapropiada, fraude, incumplimiento operativo o violación de estos Términos.',
+                'Sea necesario cubrir reembolsos al propietario bajo las políticas de cancelación o bajo la Política de Garantía ARTIFEX7.',
+              ].map(item => (
+                <li key={item} style={{ fontFamily: FONT_SANS, fontSize: '16px', color: '#2C2C2C', lineHeight: 1.75, listStyleType: 'none', paddingLeft: '16px', position: 'relative' }}>
+                  <span style={{ color: '#C4581A', position: 'absolute', left: 0 }}>•</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <p style={body}>
+            Los pagos realizados al profesional podrán estar sujetos a retenciones o descuentos de ley
+            aplicables en la República de El Salvador, de acuerdo con su condición fiscal y la normativa
+            vigente. Dichas retenciones serán aplicadas automáticamente cuando corresponda.
+          </p>
+
+          <p style={body}>
+            El profesional es responsable del cumplimiento de sus propias obligaciones fiscales,
+            incluyendo inscripción tributaria, declaraciones y pago de impuestos derivados de sus
+            ingresos obtenidos como trabajador independiente.
+          </p>
+
+        </div>
+
+        <hr style={divider} />
+        <h2 style={sectionTitle}>9. Propiedad intelectual</h2>
         <p style={body}>
           Todo el contenido de Artifex7 — incluyendo logotipos, textos, imágenes y código —
           es propiedad de Artifex7 o sus licenciantes. Queda prohibida su reproducción total o
@@ -171,7 +234,7 @@ export default function TerminosPage() {
         </p>
 
         <hr style={divider} />
-        <h2 style={sectionTitle}>7. Modificaciones</h2>
+        <h2 style={sectionTitle}>11. Modificaciones</h2>
         <p style={body}>
           Nos reservamos el derecho de modificar estos términos en cualquier momento. Los cambios
           serán notificados a través de la Plataforma o por correo electrónico. El uso continuado
