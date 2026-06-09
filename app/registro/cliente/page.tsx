@@ -55,6 +55,7 @@ export default function RegistroClientePage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [phoneCountryCode, setPhoneCountryCode] = useState('+503')
+  const [signUpError, setSignUpError] = useState<string | null>(null)
 
   const { register, handleSubmit, setError, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -109,6 +110,7 @@ export default function RegistroClientePage() {
   }, [selectedMuni])
 
   const onSubmit = async (data: FormData) => {
+    setSignUpError(null)
     if (new Date(data.date_of_birth) >= new Date()) {
       setError('date_of_birth', { message: 'La fecha de nacimiento debe ser anterior a la fecha actual' })
       return
@@ -128,7 +130,17 @@ export default function RegistroClientePage() {
     })
 
     if (authError || !auth.user) {
-      toast.error(authError?.message ?? 'Error al crear cuenta')
+      if (
+        authError?.message?.includes('already registered') ||
+        authError?.message?.includes('User already registered') ||
+        (authError?.message?.toLowerCase().includes('email') && (authError as any)?.status === 400)
+      ) {
+        setSignUpError('Este correo ya está registrado. ¿Quieres iniciar sesión?')
+      } else if ((authError as any)?.status === 429 || authError?.message?.includes('rate')) {
+        setSignUpError('Demasiados intentos. Por favor espera unos minutos.')
+      } else {
+        setSignUpError(authError?.message ?? 'Error al crear cuenta')
+      }
       return
     }
 
@@ -366,6 +378,19 @@ export default function RegistroClientePage() {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+          )}
+
+          {signUpError && (
+            <div style={{ background: '#C4581A10', border: '1px solid #C4581A40', borderRadius: '8px', padding: '12px 16px', fontSize: '14px', color: '#C4581A' }}>
+              {signUpError}
+              {signUpError.includes('ya está registrado') && (
+                <p style={{ marginTop: '6px', fontSize: '14px', color: '#7A7A78' }}>
+                  <Link href="/login" style={{ color: '#C4581A', fontWeight: 600, textDecoration: 'none' }}>
+                    Ir a iniciar sesión →
+                  </Link>
+                </p>
+              )}
             </div>
           )}
 

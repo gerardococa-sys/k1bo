@@ -67,6 +67,7 @@ export default function RegistroProfesionalPage() {
   const [bio, setBio] = useState('')
 
   const [phoneCountryCode, setPhoneCountryCode] = useState('+503')
+  const [signUpError, setSignUpError] = useState<string | null>(null)
 
   // Step 4 — portfolio
   const [portfolioFiles, setPortfolioFiles] = useState<File[]>([])
@@ -98,6 +99,7 @@ export default function RegistroProfesionalPage() {
   }, [selectedDepts])
 
   const handleStep1 = async (data: Step1Data) => {
+    setSignUpError(null)
     if (new Date(data.date_of_birth) >= new Date()) {
       step1Form.setError('date_of_birth', { message: 'La fecha de nacimiento debe ser anterior a la fecha actual' })
       return
@@ -115,7 +117,20 @@ export default function RegistroProfesionalPage() {
         emailRedirectTo: `${window.location.origin}/auth/confirm`,
       },
     })
-    if (error || !auth.user) { toast.error(error?.message ?? 'Error'); return }
+    if (error || !auth.user) {
+      if (
+        error?.message?.includes('already registered') ||
+        error?.message?.includes('User already registered') ||
+        (error?.message?.toLowerCase().includes('email') && (error as any)?.status === 400)
+      ) {
+        setSignUpError('Este correo ya está registrado. ¿Quieres iniciar sesión?')
+      } else if ((error as any)?.status === 429 || error?.message?.includes('rate')) {
+        setSignUpError('Demasiados intentos. Por favor espera unos minutos.')
+      } else {
+        setSignUpError(error?.message ?? 'Error al crear cuenta')
+      }
+      return
+    }
     setUserId(auth.user.id)
 
     // Email confirmation required — no active session yet
@@ -360,6 +375,19 @@ export default function RegistroProfesionalPage() {
                 </Link>
               </p>
             </div>
+
+            {signUpError && (
+              <div style={{ background: '#C4581A10', border: '1px solid #C4581A40', borderRadius: '8px', padding: '12px 16px', fontSize: '14px', color: '#C4581A' }}>
+                {signUpError}
+                {signUpError.includes('ya está registrado') && (
+                  <p style={{ marginTop: '6px', fontSize: '14px', color: '#7A7A78' }}>
+                    <Link href="/login" style={{ color: '#C4581A', fontWeight: 600, textDecoration: 'none' }}>
+                      Ir a iniciar sesión →
+                    </Link>
+                  </p>
+                )}
+              </div>
+            )}
 
             <Button type="submit" className="w-full" disabled={step1Form.formState.isSubmitting}>
               {step1Form.formState.isSubmitting ? 'Creando cuenta...' : 'Continuar'}

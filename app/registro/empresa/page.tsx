@@ -163,6 +163,12 @@ export default function RegistroEmpresaPage() {
 
     if (error || !auth.user) {
       if (
+        error?.message?.includes('already registered') ||
+        error?.message?.includes('User already registered') ||
+        (error?.message?.toLowerCase().includes('email') && (error as any)?.status === 400)
+      ) {
+        setStep1Error('Este correo ya está registrado. ¿Quieres iniciar sesión?')
+      } else if (
         (error as any)?.status === 429 ||
         error?.message?.includes('rate') ||
         error?.message?.includes('429')
@@ -426,6 +432,13 @@ export default function RegistroEmpresaPage() {
                 color: '#C4581A',
               }}>
                 {step1Error}
+                {step1Error.includes('ya está registrado') && (
+                  <p style={{ marginTop: '6px', fontSize: '14px', color: '#7A7A78' }}>
+                    <Link href="/login" style={{ color: '#C4581A', fontWeight: 600, textDecoration: 'none' }}>
+                      Ir a iniciar sesión →
+                    </Link>
+                  </p>
+                )}
               </div>
             )}
 
