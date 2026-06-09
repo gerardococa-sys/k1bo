@@ -137,7 +137,7 @@ export default function RegistroEmpresaPage() {
 
   useEffect(() => {
     if (!selectedMuni) { setDistricts([]); setSelectedDist(''); return }
-    mkClient().from('districts').select('id, name').eq('municipality_id', selectedMuni).order('name')
+    mkClient().from('districts').select('id, name, municipality_id').eq('municipality_id', selectedMuni).order('name')
       .then(({ data }) => setDistricts(data ?? []))
     setSelectedDist('')
   }, [selectedMuni])
