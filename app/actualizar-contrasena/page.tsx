@@ -69,7 +69,14 @@ export default function ActualizarContrasenaPage() {
     )
     const { error } = await supabase.auth.updateUser({ password: data.password })
     if (error) {
-      setSubmitError(error.message)
+      const msg = error.message.toLowerCase()
+      if (msg.includes('different from the old password') || msg.includes('same password')) {
+        setSubmitError('La nueva contraseña debe ser diferente a la actual.')
+      } else if (msg.includes('weak password') || msg.includes('too short')) {
+        setSubmitError('La contraseña es demasiado débil. Usa mínimo 8 caracteres.')
+      } else {
+        setSubmitError('Ocurrió un error al actualizar la contraseña. Intenta de nuevo.')
+      }
       return
     }
     setDone(true)

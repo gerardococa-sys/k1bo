@@ -14,46 +14,71 @@ function formatDate(ts: string | null) {
   return new Date(ts).toLocaleDateString('es-SV', { day: '2-digit', month: '2-digit', year: 'numeric' })
 }
 
-const TABS = [
+const TIPO_TABS = [
   { label: 'Todos',          value: ''            },
   { label: 'Independientes', value: 'independent' },
   { label: 'Empresas',       value: 'company'     },
 ]
 
+const ESTADO_TABS = [
+  { label: 'Todos los estados', value: ''          },
+  { label: 'En revisión',       value: 'review'    },
+  { label: 'Activos',           value: 'active'    },
+  { label: 'Suspendidos',       value: 'suspended' },
+]
+
+const STATUS_STYLES: Record<string, { bg: string; color: string; label: string }> = {
+  review:    { bg: '#D4963A20', color: '#C4581A', label: 'En revisión' },
+  active:    { bg: '#7A7A7820', color: '#3d4d40', label: 'Activo'      },
+  suspended: { bg: '#C4581A15', color: '#C4581A', label: 'Suspendido'  },
+}
+
+function buildHref(tipo: string, estado: string) {
+  const params = new URLSearchParams()
+  if (tipo)   params.set('tipo',   tipo)
+  if (estado) params.set('estado', estado)
+  const qs = params.toString()
+  return `/admin/profesionales${qs ? `?${qs}` : ''}`
+}
+
 export default async function AdminProfesionalesPage({
   searchParams,
 }: {
-  searchParams: { tipo?: string }
+  searchParams: { tipo?: string; estado?: string }
 }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const tipo = ['independent', 'company'].includes(searchParams.tipo ?? '')
-    ? searchParams.tipo!
-    : ''
+  const tipo   = ['independent', 'company'].includes(searchParams.tipo ?? '')   ? searchParams.tipo!   : ''
+  const estado = ['review', 'active', 'suspended'].includes(searchParams.estado ?? '') ? searchParams.estado! : ''
 
   // Paso 1: obtener IDs y tipos desde professionals
   let prosQuery = supabase
     .from('professionals')
     .select('id, account_type')
 
-  if (tipo) {
-    prosQuery = prosQuery.eq('account_type', tipo)
-  }
+  if (tipo) prosQuery = prosQuery.eq('account_type', tipo)
 
   const { data: profData } = await prosQuery
-
-  // Paso 2: obtener perfiles de esos IDs
   const proIds = (profData ?? []).map((p) => p.id)
 
-  const { data: profileRows } = proIds.length
-    ? await supabase
+  // Paso 2: obtener perfiles filtrados por estado si aplica
+  let profilesQuery = proIds.length
+    ? supabase
         .from('profiles')
         .select('id, full_name, account_status, created_at, photo_url')
         .in('id', proIds)
         .eq('role', 'professional')
         .order('created_at', { ascending: false })
+    : null
+
+  if (profilesQuery && estado) {
+    profilesQuery = profilesQuery.eq('account_status', estado)
+  }
+
+  const { data: profileRows } = profilesQuery
+    ? await profilesQuery
     : { data: [] }
 
   // Paso 3: mapa account_type por ID
@@ -87,30 +112,58 @@ export default async function AdminProfesionalesPage({
         </span>
       </div>
 
-      {/* Tabs */}
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
-        {TABS.map((tab) => {
-          const active = tipo === tab.value
-          return (
-            <Link
-              key={tab.value}
-              href={`/admin/profesionales${tab.value ? `?tipo=${tab.value}` : ''}`}
-              style={{
-                fontFamily: FONT_SANS,
-                fontSize: '13px',
-                fontWeight: active ? 600 : 400,
-                padding: '6px 16px',
-                borderRadius: '20px',
-                border: '1px solid #D4963A40',
-                background: active ? '#1E1E1E' : 'transparent',
-                color: active ? '#D4963A' : '#7A7A78',
-                textDecoration: 'none',
-              }}
-            >
-              {tab.label}
-            </Link>
-          )
-        })}
+      {/* Filtros */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '24px' }}>
+
+        {/* Fila 1: tipo */}
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          {TIPO_TABS.map((tab) => {
+            const active = tipo === tab.value
+            return (
+              <Link
+                key={tab.value}
+                href={buildHref(tab.value, estado)}
+                style={{
+                  fontFamily: FONT_SANS, fontSize: '13px',
+                  fontWeight: active ? 600 : 400,
+                  padding: '6px 16px', borderRadius: '20px',
+                  border: '1px solid #D4963A40',
+                  background: active ? '#1E1E1E' : 'transparent',
+                  color: active ? '#D4963A' : '#7A7A78',
+                  textDecoration: 'none',
+                }}
+              >
+                {tab.label}
+              </Link>
+            )
+          })}
+        </div>
+
+        {/* Fila 2: estado */}
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          {ESTADO_TABS.map((tab) => {
+            const active = estado === tab.value
+            const s = STATUS_STYLES[tab.value]
+            return (
+              <Link
+                key={tab.value}
+                href={buildHref(tipo, tab.value)}
+                style={{
+                  fontFamily: FONT_SANS, fontSize: '13px',
+                  fontWeight: active ? 600 : 400,
+                  padding: '6px 16px', borderRadius: '20px',
+                  border: `1px solid ${s ? s.color + '50' : '#2C2C2C20'}`,
+                  background: active ? (s?.bg ?? '#2C2C2C15') : 'transparent',
+                  color: active ? (s?.color ?? '#2C2C2C') : '#7A7A78',
+                  textDecoration: 'none',
+                }}
+              >
+                {tab.label}
+              </Link>
+            )
+          })}
+        </div>
+
       </div>
 
       {/* Table */}
@@ -129,6 +182,7 @@ export default async function AdminProfesionalesPage({
           <tbody>
             {pros.map((p: any) => {
               const accountType = p.account_type
+              const s = STATUS_STYLES[p.account_status ?? 'review'] ?? STATUS_STYLES.review
               return (
                 <tr key={p.id} style={{ borderBottom: '1px solid #2C2C2C06' }}>
                   <td style={{ padding: '12px 16px' }}>
@@ -158,25 +212,14 @@ export default async function AdminProfesionalesPage({
                     {formatDate(p.created_at)}
                   </td>
                   <td style={{ padding: '12px 16px' }}>
-                    {(() => {
-                      const s = p.account_status ?? 'review'
-                      const styles: Record<string, { bg: string; color: string; label: string }> = {
-                        review:    { bg: '#D4963A20', color: '#C4581A', label: 'En revisión' },
-                        active:    { bg: '#7A7A7820', color: '#3d4d40', label: 'Activo'      },
-                        suspended: { bg: '#C4581A15', color: '#C4581A', label: 'Suspendido'  },
-                      }
-                      const b = styles[s] ?? styles.review
-                      return (
-                        <span style={{
-                          fontFamily: FONT_SANS, fontSize: '11px', fontWeight: 700,
-                          textTransform: 'uppercase', letterSpacing: '0.05em',
-                          background: b.bg, color: b.color,
-                          padding: '3px 10px', borderRadius: '20px', whiteSpace: 'nowrap',
-                        }}>
-                          {b.label}
-                        </span>
-                      )
-                    })()}
+                    <span style={{
+                      fontFamily: FONT_SANS, fontSize: '11px', fontWeight: 700,
+                      textTransform: 'uppercase', letterSpacing: '0.05em',
+                      background: s.bg, color: s.color,
+                      padding: '3px 10px', borderRadius: '20px', whiteSpace: 'nowrap',
+                    }}>
+                      {s.label}
+                    </span>
                   </td>
                   <td style={{ padding: '12px 16px' }}>
                     <div style={{ display: 'flex', gap: '6px' }}>
@@ -202,7 +245,7 @@ export default async function AdminProfesionalesPage({
             {pros.length === 0 && (
               <tr>
                 <td colSpan={6} style={{ padding: '40px', textAlign: 'center', fontFamily: FONT_SANS, fontSize: '15px', color: '#7A7A78' }}>
-                  No hay profesionales registrados
+                  No hay profesionales con los filtros seleccionados
                 </td>
               </tr>
             )}

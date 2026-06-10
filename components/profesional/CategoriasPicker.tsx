@@ -26,29 +26,35 @@ export function CategoriasPicker({ professionalId, initialSelected, allCategorie
 
   const MAX_PRINCIPALES = 3
 
-  const principales = allCategories.filter((c) => !c.parent_id)
-  const subcats      = allCategories.filter((c) => !!c.parent_id)
+  const principales = allCategories.filter((c) => c.parent_id === null)
+  const subcats      = allCategories.filter((c) => c.parent_id !== null)
 
-  const selectedMainCount = selected.filter((id) => {
-    const c = allCategories.find((c) => c.id === id)
-    return !c?.parent_id
-  }).length
+  // Cuenta solo las categorías principales seleccionadas
+  const selectedMainCount = selected.filter(
+    (id) => allCategories.find((c) => c.id === id)?.parent_id === null,
+  ).length
 
   function toggleCategoria(id: string) {
-    const cat        = allCategories.find((c) => c.id === id)
-    const isMainCat  = !cat?.parent_id
-
     setSelected((prev) => {
-      if (prev.includes(id)) return prev.filter((x) => x !== id)
+      // Deseleccionar
+      if (prev.includes(id)) {
+        setError('')
+        return prev.filter((x) => x !== id)
+      }
 
-      if (isMainCat) {
-        const mainCount = prev.filter((sid) => !allCategories.find((c) => c.id === sid)?.parent_id).length
+      // Es categoría principal? Verificar límite
+      const isMain = allCategories.find((c) => c.id === id)?.parent_id === null
+      if (isMain) {
+        const mainCount = prev.filter(
+          (sid) => allCategories.find((c) => c.id === sid)?.parent_id === null,
+        ).length
         if (mainCount >= MAX_PRINCIPALES) {
           setError(`Máximo ${MAX_PRINCIPALES} categorías principales`)
           return prev
         }
       }
 
+      // Subcategoría: sin límite — siempre se agrega
       setError('')
       return [...prev, id]
     })
@@ -85,50 +91,19 @@ export function CategoriasPicker({ professionalId, initialSelected, allCategorie
     setSaving(false)
   }
 
-  function CategoryButton({
-    cat,
-    size = 'md',
-  }: {
-    cat: Category
-    size?: 'md' | 'sm'
-  }) {
-    const isSelected = selected.includes(cat.id)
-    const isMainCat  = !cat.parent_id
-    const isDisabled = isMainCat && !isSelected && selectedMainCount >= MAX_PRINCIPALES
-    const sm         = size === 'sm'
-
-    return (
-      <button
-        key={cat.id}
-        type="button"
-        onClick={() => !isDisabled && toggleCategoria(cat.id)}
-        style={{
-          display:     'inline-flex',
-          alignItems:  'center',
-          gap:         '6px',
-          padding:     sm ? '7px 12px' : '8px 14px',
-          borderRadius: '8px',
-          border:      `1.5px solid ${isSelected ? '#C4581A' : sm ? '#2C2C2C15' : '#2C2C2C20'}`,
-          background:  isSelected ? '#C4581A12' : sm ? '#F2F0ED' : '#fff',
-          color:       isSelected ? '#C4581A' : sm ? '#7A7A78' : '#2C2C2C',
-          fontFamily:  FONT_SANS,
-          fontSize:    sm ? '13px' : '14px',
-          fontWeight:  isSelected ? 600 : 400,
-          cursor:      isDisabled ? 'not-allowed' : 'pointer',
-          opacity:     isDisabled ? 0.4 : 1,
-          transition:  'all 150ms',
-        }}
-      >
-        {isSelected && <Check style={{ width: sm ? 13 : 14, height: sm ? 13 : 14 }} />}
-        {cat.name}
-      </button>
-    )
+  const btnBase: React.CSSProperties = {
+    display:    'inline-flex',
+    alignItems: 'center',
+    gap:        '6px',
+    borderRadius: '8px',
+    transition: 'all 150ms',
+    border:     'none',
   }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
 
-      {/* Contador / info */}
+      {/* Info / contador */}
       <div style={{
         background:   '#F2F0ED',
         borderRadius: '8px',
@@ -138,15 +113,16 @@ export function CategoriasPicker({ professionalId, initialSelected, allCategorie
         gap:          '10px',
       }}>
         <span style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#7A7A78', lineHeight: 1.6, flex: 1 }}>
-          Selecciona hasta {MAX_PRINCIPALES} categorías principales. Puedes agregar subcategorías ilimitadas.
+          Selecciona hasta {MAX_PRINCIPALES} categorías principales.
+          Las subcategorías son ilimitadas.
         </span>
         <span style={{
-          fontFamily:  FONT_SANS,
-          fontSize:    '13px',
-          fontWeight:  700,
-          color:       selectedMainCount >= MAX_PRINCIPALES ? '#C4581A' : '#7A7A78',
-          whiteSpace:  'nowrap',
-          flexShrink:  0,
+          fontFamily: FONT_SANS,
+          fontSize:   '13px',
+          fontWeight: 700,
+          color:      selectedMainCount >= MAX_PRINCIPALES ? '#C4581A' : '#7A7A78',
+          whiteSpace: 'nowrap',
+          flexShrink: 0,
         }}>
           {selectedMainCount}/{MAX_PRINCIPALES} principales
         </span>
@@ -167,12 +143,38 @@ export function CategoriasPicker({ professionalId, initialSelected, allCategorie
             Categorías principales
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-            {principales.map((cat) => <CategoryButton key={cat.id} cat={cat} size="md" />)}
+            {principales.map((cat) => {
+              const isSelected = selected.includes(cat.id)
+              const isDisabled = !isSelected && selectedMainCount >= MAX_PRINCIPALES
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => toggleCategoria(cat.id)}
+                  disabled={isDisabled}
+                  style={{
+                    ...btnBase,
+                    padding:    '8px 14px',
+                    border:     `1.5px solid ${isSelected ? '#C4581A' : '#2C2C2C20'}`,
+                    background: isSelected ? '#C4581A12' : '#fff',
+                    color:      isSelected ? '#C4581A' : '#2C2C2C',
+                    fontFamily: FONT_SANS,
+                    fontSize:   '14px',
+                    fontWeight: isSelected ? 600 : 400,
+                    cursor:     isDisabled ? 'not-allowed' : 'pointer',
+                    opacity:    isDisabled ? 0.4 : 1,
+                  }}
+                >
+                  {isSelected && <Check style={{ width: 14, height: 14 }} />}
+                  {cat.name}
+                </button>
+              )
+            })}
           </div>
         </div>
       )}
 
-      {/* Subcategorías */}
+      {/* Subcategorías — sin límite */}
       {subcats.length > 0 && (
         <div>
           <p style={{
@@ -187,7 +189,31 @@ export function CategoriasPicker({ professionalId, initialSelected, allCategorie
             Subcategorías
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-            {subcats.map((cat) => <CategoryButton key={cat.id} cat={cat} size="sm" />)}
+            {subcats.map((cat) => {
+              const isSelected = selected.includes(cat.id)
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => toggleCategoria(cat.id)}
+                  style={{
+                    ...btnBase,
+                    padding:    '7px 12px',
+                    border:     `1.5px solid ${isSelected ? '#C4581A' : '#2C2C2C15'}`,
+                    background: isSelected ? '#C4581A12' : '#F2F0ED',
+                    color:      isSelected ? '#C4581A' : '#7A7A78',
+                    fontFamily: FONT_SANS,
+                    fontSize:   '13px',
+                    fontWeight: isSelected ? 600 : 400,
+                    cursor:     'pointer',
+                    opacity:    1,
+                  }}
+                >
+                  {isSelected && <Check style={{ width: 13, height: 13 }} />}
+                  {cat.name}
+                </button>
+              )
+            })}
           </div>
         </div>
       )}
