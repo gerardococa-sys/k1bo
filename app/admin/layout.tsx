@@ -180,6 +180,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             -webkit-overflow-scrolling: touch;
           }
         }
+        .admin-page-content {
+          padding: 16px;
+        }
+        @media (min-width: 768px) {
+          .admin-page-content {
+            padding: 32px;
+          }
+        }
+        .admin-table-scroll {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+        .admin-table-scroll table {
+          min-width: 600px;
+        }
       `}</style>
     </div>
   )

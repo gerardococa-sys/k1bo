@@ -72,7 +72,7 @@ export default async function AdminDashboardPage() {
         </p>
 
         {/* Counter cards inside header */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginTop: '32px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '20px', marginTop: '32px' }}>
           {cards.map(({ icon: Icon, count, label, href }) => (
             <div
               key={href}
@@ -118,7 +118,7 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Quotes by status */}
-      <div style={{ padding: '32px' }}>
+      <div className="admin-page-content">
         <div style={{ background: '#fff', borderRadius: '12px', border: '0.5px solid #2C2C2C12', padding: '24px' }}>
           <h2 style={{ fontFamily: FONT_SERIF, fontSize: '22px', fontWeight: 600, color: '#1E1E1E', marginBottom: '20px' }}>
             Solicitudes por estado

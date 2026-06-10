@@ -68,7 +68,7 @@ export default async function AdminProfesionalesPage({
   }))
 
   return (
-    <div style={{ padding: '32px' }}>
+    <div className="admin-page-content">
 
       <Link
         href="/admin/dashboard"
@@ -114,8 +114,9 @@ export default async function AdminProfesionalesPage({
       </div>
 
       {/* Table */}
-      <div className="admin-table-wrapper" style={{ background: '#fff', borderRadius: '12px', border: '0.5px solid #2C2C2C12', overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <div style={{ background: '#fff', borderRadius: '12px', border: '0.5px solid #2C2C2C12', overflow: 'hidden' }}>
+        <div className="admin-table-scroll">
+          <table style={{ width: '100%', minWidth: '700px', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ background: '#F2F0ED', borderBottom: '1px solid #2C2C2C10' }}>
               {['Código', 'Nombre', 'Tipo', 'Fecha solicitud', 'Estado', 'Acciones'].map((h) => (
@@ -207,6 +208,7 @@ export default async function AdminProfesionalesPage({
             )}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   )

@@ -103,7 +103,7 @@ export default async function AdminPropietarioPerfilPage({
     .filter(Boolean).join(' ') || null
 
   return (
-    <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '32px 24px' }}>
+    <div style={{ maxWidth: '1000px', margin: '0 auto', padding: 'clamp(16px, 4vw, 32px)' }}>
 
       {/* Nav */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '28px', flexWrap: 'wrap', gap: '12px' }}>
@@ -146,7 +146,7 @@ export default async function AdminPropietarioPerfilPage({
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px', alignItems: 'start' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px', alignItems: 'start' }}>
 
         {/* Columna izquierda */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>

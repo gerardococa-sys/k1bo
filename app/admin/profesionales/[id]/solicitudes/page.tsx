@@ -56,7 +56,7 @@ export default async function AdminProSolicitudesPage({
   const rows = (solicitudes ?? []) as any[]
 
   return (
-    <div style={{ padding: '32px' }}>
+    <div className="admin-page-content">
 
       <Link
         href={`/admin/profesionales/${params.id}`}
@@ -78,8 +78,9 @@ export default async function AdminProSolicitudesPage({
         </span>
       </div>
 
-      <div className="admin-table-wrapper" style={{ background: '#fff', borderRadius: '12px', border: '0.5px solid #2C2C2C12', overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <div style={{ background: '#fff', borderRadius: '12px', border: '0.5px solid #2C2C2C12', overflow: 'hidden' }}>
+        <div className="admin-table-scroll">
+          <table style={{ width: '100%', minWidth: '900px', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ background: '#F2F0ED', borderBottom: '1px solid #2C2C2C10' }}>
               {['Código', 'Cliente', 'Tipo de trabajo', 'Fecha solicitud', 'Fecha requerida', 'Fecha cotización', 'Estado', 'Acciones'].map((h) => (
@@ -172,6 +173,7 @@ export default async function AdminProSolicitudesPage({
             )}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   )

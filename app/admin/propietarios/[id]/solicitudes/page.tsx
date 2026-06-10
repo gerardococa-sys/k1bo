@@ -87,7 +87,7 @@ export default async function AdminPropietarioSolicitudesPage({
   }))
 
   return (
-    <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '32px 24px' }}>
+    <div className="admin-page-content" style={{ maxWidth: '1100px', margin: '0 auto' }}>
 
       <Link
         href={`/admin/propietarios/${params.id}`}
@@ -110,7 +110,9 @@ export default async function AdminPropietarioSolicitudesPage({
           Este propietario no tiene solicitudes
         </div>
       ) : (
-        <div className="admin-table-wrapper" style={{ background: '#fff', borderRadius: '12px', border: '0.5px solid #2C2C2C15', overflow: 'hidden' }}>
+        <div style={{ background: '#fff', borderRadius: '12px', border: '0.5px solid #2C2C2C15', overflow: 'hidden' }}>
+          <div className="admin-table-scroll">
+          <div style={{ minWidth: '800px' }}>
 
           {/* Header */}
           <div style={{ display: 'grid', gridTemplateColumns: '10% 22% 18% 13% 13% 13% 11%', background: '#F2F0ED', padding: '12px 16px' }}>
@@ -184,6 +186,8 @@ export default async function AdminPropietarioSolicitudesPage({
               </div>
             )
           })}
+          </div>
+          </div>
         </div>
       )}
     </div>

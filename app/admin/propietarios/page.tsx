@@ -40,7 +40,7 @@ export default async function AdminPropietariosPage() {
   const total = propietarios?.length ?? 0
 
   return (
-    <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '32px 24px' }}>
+    <div className="admin-page-content" style={{ maxWidth: '1100px', margin: '0 auto' }}>
 
       <Link
         href="/admin/dashboard"
@@ -63,7 +63,9 @@ export default async function AdminPropietariosPage() {
           No hay propietarios registrados
         </div>
       ) : (
-        <div className="admin-table-wrapper" style={{ background: '#fff', borderRadius: '12px', border: '0.5px solid #2C2C2C15', overflow: 'hidden' }}>
+        <div style={{ background: '#fff', borderRadius: '12px', border: '0.5px solid #2C2C2C15', overflow: 'hidden' }}>
+          <div className="admin-table-scroll">
+          <div style={{ minWidth: '600px' }}>
 
           {/* Header tabla */}
           <div style={{ display: 'grid', gridTemplateColumns: '10% 28% 18% 18% 26%', background: '#F2F0ED', padding: '12px 16px' }}>
@@ -127,6 +129,8 @@ export default async function AdminPropietariosPage() {
               </div>
             )
           })}
+          </div>
+          </div>
         </div>
       )}
     </div>
