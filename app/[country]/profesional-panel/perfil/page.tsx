@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic'
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter, useParams } from 'next/navigation'
-import { ChevronLeft, Plus, Trash2 } from 'lucide-react'
+import { ChevronLeft, Plus, Trash2, Upload } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -23,6 +23,12 @@ import { CoberturaEditor } from '@/components/profesional/CoberturaEditor'
 
 const FONT_SANS  = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
 const FONT_SERIF = 'var(--font-serif, "Playfair Display", Georgia, serif)'
+
+const DOC_TYPES = [
+  { value: 'dui',      label: 'DUI',                placeholder: '12345678-9' },
+  { value: 'passport', label: 'Pasaporte',           placeholder: 'A1234567'   },
+  { value: 'resident', label: 'Carnet de Residente', placeholder: 'Número de carnet' },
+] as const
 
 const profileSchema = z.object({
   full_name:         z.string().min(2),
@@ -79,6 +85,15 @@ export default function ProProfilePage() {
   const [allDepartments,       setAllDepartments]       = useState<{ id: string; name: string }[]>([])
   const [coversEntireCountry,  setCoversEntireCountry]  = useState(false)
 
+  // ── Documentos state ──────────────────────────────────────────────────────
+  const [docType,         setDocType]         = useState<'dui' | 'passport' | 'resident' | ''>('')
+  const [docNumber,       setDocNumber]       = useState('')
+  const [docFrontFile,    setDocFrontFile]    = useState<File | null>(null)
+  const [docBackFile,     setDocBackFile]     = useState<File | null>(null)
+  const [docFrontPreview, setDocFrontPreview] = useState<string | null>(null)
+  const [docBackPreview,  setDocBackPreview]  = useState<string | null>(null)
+  const [savingDoc,       setSavingDoc]       = useState(false)
+
   const { register, handleSubmit, reset, watch, setValue, formState: { isSubmitting } } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
   })
@@ -131,6 +146,10 @@ export default function ProProfilePage() {
           setPhoneCountryCode(prof.phone_country_code ?? '+503')
           if (prof.photo_url) setAvatarPreview(prof.photo_url)
           setCoversEntireCountry((pro as any).covers_entire_country ?? false)
+          setDocType((pro as any).doc_type   ?? '')
+          setDocNumber((pro as any).doc_number ?? '')
+          if ((pro as any).doc_front_url) setDocFrontPreview((pro as any).doc_front_url)
+          if ((pro as any).doc_back_url)  setDocBackPreview((pro as any).doc_back_url)
         }
         setFaq(faqData ?? [])
         const ids = (misCats ?? []).map((mc: any) => mc.category?.id).filter(Boolean) as string[]
@@ -253,6 +272,45 @@ export default function ProProfilePage() {
     setFaq((prev) => prev.filter((f) => f.id !== id))
   }
 
+  // ── Save document ─────────────────────────────────────────────────────────
+  const saveDocuments = async () => {
+    setSavingDoc(true)
+    let frontUrl: string | null = docFrontPreview?.startsWith('http') ? docFrontPreview : null
+    let backUrl:  string | null = docBackPreview?.startsWith('http')  ? docBackPreview  : null
+
+    if (docFrontFile) {
+      const ext  = docFrontFile.name.split('.').pop()
+      const path = `${userId}/doc_front.${ext}`
+      const { error: err } = await supabase.storage.from('documents').upload(path, docFrontFile, { upsert: true })
+      if (!err) {
+        frontUrl = supabase.storage.from('documents').getPublicUrl(path).data.publicUrl
+        setDocFrontPreview(frontUrl)
+        setDocFrontFile(null)
+      }
+    }
+
+    if (docBackFile) {
+      const ext  = docBackFile.name.split('.').pop()
+      const path = `${userId}/doc_back.${ext}`
+      const { error: err } = await supabase.storage.from('documents').upload(path, docBackFile, { upsert: true })
+      if (!err) {
+        backUrl = supabase.storage.from('documents').getPublicUrl(path).data.publicUrl
+        setDocBackPreview(backUrl)
+        setDocBackFile(null)
+      }
+    }
+
+    await supabase.from('professionals').update({
+      doc_type:      docType      || null,
+      doc_number:    docNumber.trim() || null,
+      doc_front_url: frontUrl,
+      doc_back_url:  backUrl,
+    }).eq('id', userId)
+
+    toast.success('Documento guardado correctamente')
+    setSavingDoc(false)
+  }
+
   if (loading) return <div className="container mx-auto px-4 py-8">Cargando...</div>
 
   return (
@@ -277,6 +335,7 @@ export default function ProProfilePage() {
           <TabsTrigger value="faq">FAQ</TabsTrigger>
           <TabsTrigger value="categorias">Categorías</TabsTrigger>
           <TabsTrigger value="cobertura">Cobertura</TabsTrigger>
+          <TabsTrigger value="documentos">Documentos</TabsTrigger>
         </TabsList>
 
         {/* ── Info tab ─────────────────────────────────────────────────────── */}
@@ -618,6 +677,176 @@ export default function ProProfilePage() {
           </div>
         </TabsContent>
 
+        {/* ── Documentos tab ──────────────────────────────────────────────── */}
+        <TabsContent value="documentos" className="mt-6">
+          <div style={{ backgroundColor: '#fff', border: '0.5px solid #2C2C2C12', borderRadius: '12px', padding: '24px' }}>
+            <h2 style={{ fontFamily: FONT_SERIF, fontSize: '18px', fontWeight: 600, color: '#1E1E1E', margin: '0 0 6px' }}>
+              Documento de identidad
+            </h2>
+            <p style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78', margin: '0 0 24px', lineHeight: 1.6 }}>
+              Sube una foto de tu documento para verificar tu cuenta. Esta información es confidencial y solo será revisada por el equipo de K1BO.
+            </p>
+
+            {/* Tipo */}
+            <div style={{ marginBottom: '20px' }}>
+              <Label style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, display: 'block', marginBottom: '10px' }}>
+                Tipo de documento
+              </Label>
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                {DOC_TYPES.map((t) => (
+                  <button
+                    key={t.value}
+                    type="button"
+                    onClick={() => setDocType(t.value)}
+                    style={{
+                      display: 'inline-flex', alignItems: 'center',
+                      padding: '10px 18px', borderRadius: '8px',
+                      border: `1.5px solid ${docType === t.value ? '#1E1E1E' : '#1E1E1E25'}`,
+                      background: docType === t.value ? '#1E1E1E' : 'transparent',
+                      color: docType === t.value ? '#D4963A' : '#7A7A78',
+                      fontFamily: FONT_SANS, fontSize: '14px', fontWeight: docType === t.value ? 700 : 500,
+                      cursor: 'pointer', transition: 'all 150ms',
+                    }}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Número */}
+            <div style={{ marginBottom: '24px' }}>
+              <Label style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, display: 'block', marginBottom: '8px' }}>
+                Número de documento
+              </Label>
+              <Input
+                value={docNumber}
+                onChange={(e) => setDocNumber(e.target.value)}
+                placeholder={DOC_TYPES.find((t) => t.value === docType)?.placeholder ?? 'Selecciona el tipo primero'}
+                disabled={!docType}
+              />
+            </div>
+
+            {/* Fotos */}
+            <div style={{ marginBottom: '24px' }}>
+              <Label style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, display: 'block', marginBottom: '12px' }}>
+                Fotografías del documento
+              </Label>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+
+                {/* Frente */}
+                <div>
+                  <p style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#1E1E1E', marginBottom: '8px' }}>
+                    Parte frontal
+                  </p>
+                  <label className="doc-upload-label" style={{ display: 'block', cursor: 'pointer' }}>
+                    {docFrontPreview ? (
+                      <div style={{ position: 'relative', borderRadius: '10px', overflow: 'hidden', aspectRatio: '3/2' }}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={docFrontPreview} alt="Frente del documento" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                        <div className="doc-img-overlay" style={{
+                          position: 'absolute', inset: 0, background: 'rgba(30,30,30,0.6)',
+                          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                          gap: '6px', opacity: 0, transition: 'opacity 150ms',
+                        }}>
+                          <Upload style={{ width: 22, height: 22, color: '#fff' }} />
+                          <span style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#fff', fontWeight: 600 }}>Cambiar</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="doc-upload-placeholder" style={{
+                        border: '2px dashed #1E1E1E20', borderRadius: '10px', aspectRatio: '3/2',
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                        gap: '8px', background: '#F2F0ED', transition: 'border-color 150ms',
+                      }}>
+                        <Upload style={{ width: 24, height: 24, color: '#7A7A78' }} />
+                        <span style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#7A7A78', fontWeight: 500 }}>Subir imagen</span>
+                      </div>
+                    )}
+                    <input type="file" accept="image/jpeg,image/png,image/webp" style={{ display: 'none' }}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0] ?? null
+                        if (!file) return
+                        setDocFrontFile(file)
+                        setDocFrontPreview(URL.createObjectURL(file))
+                        e.target.value = ''
+                      }}
+                    />
+                  </label>
+                  {docFrontFile && (
+                    <p style={{ fontFamily: FONT_SANS, fontSize: '11px', color: '#C4581A', marginTop: '4px' }}>
+                      Nueva imagen — se subirá al guardar
+                    </p>
+                  )}
+                </div>
+
+                {/* Reverso */}
+                <div>
+                  <p style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 600, color: '#1E1E1E', marginBottom: '8px' }}>
+                    Parte trasera
+                  </p>
+                  <label className="doc-upload-label" style={{ display: 'block', cursor: 'pointer' }}>
+                    {docBackPreview ? (
+                      <div style={{ position: 'relative', borderRadius: '10px', overflow: 'hidden', aspectRatio: '3/2' }}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={docBackPreview} alt="Trasera del documento" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                        <div className="doc-img-overlay" style={{
+                          position: 'absolute', inset: 0, background: 'rgba(30,30,30,0.6)',
+                          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                          gap: '6px', opacity: 0, transition: 'opacity 150ms',
+                        }}>
+                          <Upload style={{ width: 22, height: 22, color: '#fff' }} />
+                          <span style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#fff', fontWeight: 600 }}>Cambiar</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="doc-upload-placeholder" style={{
+                        border: '2px dashed #1E1E1E20', borderRadius: '10px', aspectRatio: '3/2',
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                        gap: '8px', background: '#F2F0ED', transition: 'border-color 150ms',
+                      }}>
+                        <Upload style={{ width: 24, height: 24, color: '#7A7A78' }} />
+                        <span style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#7A7A78', fontWeight: 500 }}>Subir imagen</span>
+                      </div>
+                    )}
+                    <input type="file" accept="image/jpeg,image/png,image/webp" style={{ display: 'none' }}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0] ?? null
+                        if (!file) return
+                        setDocBackFile(file)
+                        setDocBackPreview(URL.createObjectURL(file))
+                        e.target.value = ''
+                      }}
+                    />
+                  </label>
+                  {docBackFile && (
+                    <p style={{ fontFamily: FONT_SANS, fontSize: '11px', color: '#C4581A', marginTop: '4px' }}>
+                      Nueva imagen — se subirá al guardar
+                    </p>
+                  )}
+                </div>
+
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={saveDocuments}
+              disabled={savingDoc || !docType || !docNumber.trim()}
+              style={{
+                background: '#1E1E1E', color: '#D4963A',
+                fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700,
+                padding: '13px 32px', borderRadius: '8px', border: 'none',
+                cursor: savingDoc || !docType || !docNumber.trim() ? 'not-allowed' : 'pointer',
+                opacity: savingDoc || !docType || !docNumber.trim() ? 0.55 : 1,
+                width: '100%', transition: 'opacity 150ms',
+              }}
+            >
+              {savingDoc ? 'Guardando...' : 'Guardar documento'}
+            </button>
+          </div>
+        </TabsContent>
+
         {/* ── FAQ tab ──────────────────────────────────────────────────────── */}
         <TabsContent value="faq" className="mt-6 space-y-5">
           {faq.map((item) => (
@@ -658,6 +887,8 @@ export default function ProProfilePage() {
 
       <style>{`
         .pro-perfil-back-link:hover { text-decoration: underline; }
+        .doc-upload-label:hover .doc-img-overlay { opacity: 1 !important; }
+        .doc-upload-label:hover .doc-upload-placeholder { border-color: #C4581A80 !important; }
 
         .ax7-save-wrapper { margin-top: 8px; }
         .ax7-save-btn {
