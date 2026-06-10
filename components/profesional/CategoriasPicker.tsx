@@ -24,18 +24,31 @@ export function CategoriasPicker({ professionalId, initialSelected, allCategorie
   const [success,  setSuccess]  = useState(false)
   const [error,    setError]    = useState('')
 
-  const MAX_CATEGORIAS = 3
+  const MAX_PRINCIPALES = 3
 
   const principales = allCategories.filter((c) => !c.parent_id)
   const subcats      = allCategories.filter((c) => !!c.parent_id)
 
+  const selectedMainCount = selected.filter((id) => {
+    const c = allCategories.find((c) => c.id === id)
+    return !c?.parent_id
+  }).length
+
   function toggleCategoria(id: string) {
+    const cat        = allCategories.find((c) => c.id === id)
+    const isMainCat  = !cat?.parent_id
+
     setSelected((prev) => {
       if (prev.includes(id)) return prev.filter((x) => x !== id)
-      if (prev.length >= MAX_CATEGORIAS) {
-        setError(`Máximo ${MAX_CATEGORIAS} categorías permitidas`)
-        return prev
+
+      if (isMainCat) {
+        const mainCount = prev.filter((sid) => !allCategories.find((c) => c.id === sid)?.parent_id).length
+        if (mainCount >= MAX_PRINCIPALES) {
+          setError(`Máximo ${MAX_PRINCIPALES} categorías principales`)
+          return prev
+        }
       }
+
       setError('')
       return [...prev, id]
     })
@@ -80,7 +93,8 @@ export function CategoriasPicker({ professionalId, initialSelected, allCategorie
     size?: 'md' | 'sm'
   }) {
     const isSelected = selected.includes(cat.id)
-    const isDisabled = !isSelected && selected.length >= MAX_CATEGORIAS
+    const isMainCat  = !cat.parent_id
+    const isDisabled = isMainCat && !isSelected && selectedMainCount >= MAX_PRINCIPALES
     const sm         = size === 'sm'
 
     return (
@@ -124,18 +138,17 @@ export function CategoriasPicker({ professionalId, initialSelected, allCategorie
         gap:          '10px',
       }}>
         <span style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#7A7A78', lineHeight: 1.6, flex: 1 }}>
-          Selecciona hasta {MAX_CATEGORIAS} categorías en las que ofreces tus servicios.
-          Puedes incluir categorías principales y subcategorías.
+          Selecciona hasta {MAX_PRINCIPALES} categorías principales. Puedes agregar subcategorías ilimitadas.
         </span>
         <span style={{
           fontFamily:  FONT_SANS,
           fontSize:    '13px',
           fontWeight:  700,
-          color:       selected.length >= MAX_CATEGORIAS ? '#C4581A' : '#7A7A78',
+          color:       selectedMainCount >= MAX_PRINCIPALES ? '#C4581A' : '#7A7A78',
           whiteSpace:  'nowrap',
           flexShrink:  0,
         }}>
-          {selected.length}/{MAX_CATEGORIAS}
+          {selectedMainCount}/{MAX_PRINCIPALES} principales
         </span>
       </div>
 
