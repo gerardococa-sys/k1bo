@@ -24,6 +24,10 @@ export default async function CotizarPage({
     .eq('id', user.id)
     .single()
 
+  if (clientProfile?.role === 'admin') {
+    redirect(`/${params.country}`)
+  }
+
   if (!clientProfile || clientProfile.role !== 'client') {
     redirect(`/${params.country}/profesional/${params.id}`)
   }

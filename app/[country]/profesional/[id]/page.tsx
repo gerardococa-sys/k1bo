@@ -169,18 +169,35 @@ export default async function ProfessionalProfilePage({
           </div>
 
           {/* CTA */}
-          {clientProfile?.role === 'client' ? (
+          {clientProfile?.role === 'client' && (
             <Button asChild className="w-full" size="lg">
               <Link href={`/${params.country}/profesional/${params.id}/cotizar`}>
                 Solicitar Cotización
               </Link>
             </Button>
-          ) : (
+          )}
+
+          {!user && (
             <Button asChild className="w-full" size="lg">
-              <Link href={`/login?redirect=/${params.country}/profesional/${params.id}&message=Inicia sesión para solicitar una cotización`}>
+              <Link href={`/login?redirect=/${params.country}/profesional/${params.id}`}>
                 Solicitar Cotización
               </Link>
             </Button>
+          )}
+
+          {clientProfile?.role === 'professional' && (
+            <div style={{
+              background: '#F2F0ED',
+              border: '1px solid #2C2C2C15',
+              borderRadius: '8px',
+              padding: '12px 16px',
+              fontFamily: 'var(--font-sans, "DM Sans", system-ui, sans-serif)',
+              fontSize: '14px',
+              color: '#7A7A78',
+              textAlign: 'center',
+            }}>
+              Los profesionales no pueden solicitar cotizaciones a otros profesionales.
+            </div>
           )}
         </aside>
 

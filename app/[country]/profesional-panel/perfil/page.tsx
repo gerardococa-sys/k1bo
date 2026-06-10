@@ -17,6 +17,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { createClient } from '@/lib/supabase/client'
 import { getInitials } from '@/lib/utils'
+import { CategoriasPicker } from '@/components/profesional/CategoriasPicker'
 
 const FONT_SANS  = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
 const FONT_SERIF = 'var(--font-serif, "Playfair Display", Georgia, serif)'
@@ -57,6 +58,10 @@ export default function ProProfilePage() {
   const [newQuestion, setNewQuestion] = useState('')
   const [newAnswer,   setNewAnswer]   = useState('')
 
+  // ── Categorías state ───────────────────────────────────────────────────────
+  const [misCatIds,       setMisCatIds]       = useState<string[]>([])
+  const [todasCategorias, setTodasCategorias] = useState<{ id: string; name: string; parent_id: string | null }[]>([])
+
   const { register, handleSubmit, reset, watch, formState: { isSubmitting } } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
   })
@@ -90,7 +95,9 @@ export default function ProProfilePage() {
         supabase.from('profiles').select('*').eq('id', user.id).single(),
         supabase.from('professionals').select('*').eq('id', user.id).single(),
         supabase.from('professional_faq').select('*').eq('professional_id', user.id).order('order_index'),
-      ]).then(([{ data: prof }, { data: pro }, { data: faqData }]) => {
+        supabase.from('professional_categories').select('id, category:categories(id, name, parent_id)').eq('professional_id', user.id),
+        supabase.from('categories').select('id, name, parent_id').eq('active', true).order('name'),
+      ]).then(([{ data: prof }, { data: pro }, { data: faqData }, { data: misCats }, { data: allCats }]) => {
         if (prof && pro) {
           reset({
             full_name:         prof.full_name         ?? '',
@@ -105,6 +112,9 @@ export default function ProProfilePage() {
           if (prof.photo_url) setAvatarPreview(prof.photo_url)
         }
         setFaq(faqData ?? [])
+        const ids = (misCats ?? []).map((mc: any) => mc.category?.id).filter(Boolean) as string[]
+        setMisCatIds(ids)
+        setTodasCategorias((allCats ?? []) as { id: string; name: string; parent_id: string | null }[])
         setLoading(false)
         loadPortfolioPhotos(user.id)
       })
@@ -232,6 +242,7 @@ export default function ProProfilePage() {
           <TabsTrigger value="info">Información</TabsTrigger>
           <TabsTrigger value="portfolio">Portafolio</TabsTrigger>
           <TabsTrigger value="faq">FAQ</TabsTrigger>
+          <TabsTrigger value="categorias">Categorías</TabsTrigger>
         </TabsList>
 
         {/* ── Info tab ─────────────────────────────────────────────────────── */}
@@ -486,6 +497,32 @@ export default function ProProfilePage() {
               Aún no tienes fotos en tu portafolio
             </p>
           ) : null}
+        </TabsContent>
+
+        {/* ── Categorías tab ───────────────────────────────────────────────── */}
+        <TabsContent value="categorias" className="mt-6">
+          <div style={{
+            backgroundColor: '#fff',
+            border:          '0.5px solid #2C2C2C12',
+            borderRadius:    '12px',
+            padding:         '24px',
+          }}>
+            <h2 style={{ fontFamily: FONT_SERIF, fontSize: '18px', fontWeight: 600, color: '#1E1E1E', margin: '0 0 6px' }}>
+              Mis categorías de servicio
+            </h2>
+            <p style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78', margin: '0 0 24px', lineHeight: 1.6 }}>
+              Indica en qué categorías ofreces tus servicios. Los propietarios te encontrarán según estas categorías.
+            </p>
+            {userId && todasCategorias.length > 0 ? (
+              <CategoriasPicker
+                professionalId={userId}
+                initialSelected={misCatIds}
+                allCategories={todasCategorias}
+              />
+            ) : (
+              <p style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78' }}>Cargando categorías...</p>
+            )}
+          </div>
         </TabsContent>
 
         {/* ── FAQ tab ──────────────────────────────────────────────────────── */}
