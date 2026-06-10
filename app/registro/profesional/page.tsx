@@ -24,11 +24,15 @@ import type { Department, Municipality, Category } from '@/types'
 const STEPS = 6
 
 const step1Schema = z.object({
-  full_name: z.string().min(2, 'Nombre requerido'),
-  email: z.string().email('Email inválido'),
-  password: z.string().min(8, 'Mínimo 8 caracteres'),
-  phone: z.string().min(8, 'Teléfono requerido'),
-  date_of_birth: z.string().min(1, 'Fecha requerida'),
+  full_name:       z.string().min(2, 'Nombre requerido'),
+  email:           z.string().email('Email inválido'),
+  password:        z.string().min(8, 'Mínimo 8 caracteres'),
+  confirmPassword: z.string(),
+  phone:           z.string().min(8, 'Teléfono requerido'),
+  date_of_birth:   z.string().min(1, 'Fecha requerida'),
+}).refine((d) => d.password === d.confirmPassword, {
+  message: 'Las contraseñas no coinciden',
+  path:    ['confirmPassword'],
 })
 
 type Step1Data = z.infer<typeof step1Schema>
@@ -129,6 +133,11 @@ export default function RegistroProfesionalPage() {
       } else {
         setSignUpError(error?.message ?? 'Error al crear cuenta')
       }
+      return
+    }
+    // Supabase devuelve user con identities vacío cuando el email ya existe (modo con confirmación)
+    if ((auth.user.identities?.length ?? 0) === 0) {
+      setSignUpError('Este correo ya está registrado. ¿Quieres iniciar sesión?')
       return
     }
     setUserId(auth.user.id)
@@ -271,7 +280,7 @@ export default function RegistroProfesionalPage() {
       <div className="max-w-lg mx-auto">
         <div className="text-center mb-8">
           <Link href="/" style={{ color: '#2C2C2C' }}><Logo size="lg" /></Link>
-          <h1 className="mt-2 text-xl font-semibold">Registro de Profesional</h1>
+          <h1 className="mt-2 text-xl font-semibold">Registro de Profesional Independiente</h1>
         </div>
 
         {/* Progress bar */}
@@ -301,8 +310,13 @@ export default function RegistroProfesionalPage() {
             </div>
             <div className="space-y-2">
               <Label>Contraseña *</Label>
-              <Input type="password" placeholder="Mínimo 8 caracteres" {...step1Form.register('password')} />
+              <Input type="password" placeholder="Mínimo 8 caracteres" autoComplete="new-password" {...step1Form.register('password')} />
               {step1Form.formState.errors.password && <p className="text-sm text-destructive">{step1Form.formState.errors.password.message}</p>}
+            </div>
+            <div className="space-y-2">
+              <Label>Confirmar contraseña *</Label>
+              <Input type="password" placeholder="Repite tu contraseña" autoComplete="new-password" {...step1Form.register('confirmPassword')} />
+              {step1Form.formState.errors.confirmPassword && <p className="text-sm text-destructive">{step1Form.formState.errors.confirmPassword.message}</p>}
             </div>
             <div className="space-y-2">
               <Label>Foto de perfil *</Label>
@@ -348,27 +362,28 @@ export default function RegistroProfesionalPage() {
             </div>
 
             {/* Account type — fixed as independent */}
-            <div className="space-y-1">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <Label>Tipo de cuenta</Label>
               <div
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '8px',
+                  gap: '10px',
                   backgroundColor: '#C4581A12',
                   color: '#C4581A',
                   border: '1.5px solid #C4581A40',
                   borderRadius: '8px',
-                  padding: '10px 16px',
+                  padding: '12px 18px',
                   fontSize: '15px',
                   fontWeight: 600,
                   fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)',
+                  lineHeight: 1,
                 }}
               >
-                <HardHat style={{ width: 18, height: 18 }} />
+                <HardHat style={{ width: 18, height: 18, flexShrink: 0 }} />
                 Profesional Independiente
               </div>
-              <p style={{ fontSize: '13px', color: '#7A7A78', marginTop: '6px', fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)' }}>
+              <p style={{ fontSize: '13px', color: '#7A7A78', margin: 0, fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)' }}>
                 ¿Eres una empresa?{' '}
                 <Link href="/registro/empresa" style={{ color: '#7A7A78', textDecoration: 'underline' }}>
                   Regístrate aquí →

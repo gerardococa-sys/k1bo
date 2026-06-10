@@ -143,6 +143,11 @@ export default function RegistroClientePage() {
       }
       return
     }
+    // Supabase devuelve user con identities vacío cuando el email ya existe (modo con confirmación)
+    if ((auth.user.identities?.length ?? 0) === 0) {
+      setSignUpError('Este correo ya está registrado. ¿Quieres iniciar sesión?')
+      return
+    }
 
     // Email confirmation required — no active session yet
     if (!auth.session) {

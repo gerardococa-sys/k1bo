@@ -179,6 +179,11 @@ export default function RegistroEmpresaPage() {
       }
       return
     }
+    // Supabase devuelve user con identities vacío cuando el email ya existe (modo con confirmación)
+    if ((auth.user.identities?.length ?? 0) === 0) {
+      setStep1Error('Este correo ya está registrado. ¿Quieres iniciar sesión?')
+      return
+    }
 
     setUserId(auth.user.id)
     await new Promise(resolve => setTimeout(resolve, 1000))
