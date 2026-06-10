@@ -10,6 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
 import { CheckCircle2, X, HardHat } from 'lucide-react'
+import { getPhoneConfig, cleanPhone } from '@/lib/phone'
 import { Logo } from '@/components/ui/Logo'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -351,7 +352,24 @@ export default function RegistroProfesionalPage() {
                   <option value="+1">🇺🇸 +1</option>
                   <option value="+52">🇲🇽 +52</option>
                 </select>
-                <Input type="tel" placeholder="7XXX-XXXX" style={{ flex: 1 }} {...step1Form.register('phone')} />
+                <Input
+                  type="tel"
+                  inputMode="numeric"
+                  style={{ flex: 1 }}
+                  maxLength={getPhoneConfig(phoneCountryCode).max}
+                  placeholder={getPhoneConfig(phoneCountryCode).placeholder}
+                  {...step1Form.register('phone')}
+                  onKeyDown={(e) => {
+                    if (e.ctrlKey || e.metaKey) return
+                    if (['Backspace','Delete','ArrowLeft','ArrowRight','Tab'].includes(e.key)) return
+                    if (!/^\d$/.test(e.key)) e.preventDefault()
+                  }}
+                  onPaste={(e) => {
+                    e.preventDefault()
+                    const val = cleanPhone(e.clipboardData.getData('text'), getPhoneConfig(phoneCountryCode).max)
+                    step1Form.setValue('phone', val)
+                  }}
+                />
               </div>
               {step1Form.formState.errors.phone && <p className="text-sm text-destructive">{step1Form.formState.errors.phone.message}</p>}
             </div>

@@ -3,8 +3,9 @@ export const dynamic = 'force-dynamic'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight, Eye, FileText } from 'lucide-react'
+import { ChevronLeft, Eye, FileText } from 'lucide-react'
 import { ClientAvatar } from '@/components/ui/ClientAvatar'
+import { Pagination } from '@/components/ui/Pagination'
 
 const FONT_SERIF = 'var(--font-serif, "Playfair Display", Georgia, serif)'
 const FONT_SANS  = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
@@ -35,11 +36,11 @@ const STATUS_STYLES: Record<string, { bg: string; color: string; label: string }
   suspended: { bg: '#C4581A15', color: '#C4581A', label: 'Suspendido'  },
 }
 
-function buildHref(tipo: string, estado: string, pagina?: number) {
+// Solo filtros, sin página — usado como basePath para <Pagination> y en links de filtros
+function buildBasePath(tipo: string, estado: string) {
   const p = new URLSearchParams()
-  if (tipo)               p.set('tipo',   tipo)
-  if (estado)             p.set('estado', estado)
-  if (pagina && pagina > 1) p.set('pagina', String(pagina))
+  if (tipo)   p.set('tipo',   tipo)
+  if (estado) p.set('estado', estado)
   const qs = p.toString()
   return `/admin/profesionales${qs ? `?${qs}` : ''}`
 }
@@ -47,17 +48,18 @@ function buildHref(tipo: string, estado: string, pagina?: number) {
 export default async function AdminProfesionalesPage({
   searchParams,
 }: {
-  searchParams: { tipo?: string; estado?: string; pagina?: string }
+  searchParams: { tipo?: string; estado?: string; page?: string; size?: string }
 }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const tipo   = ['independent', 'company'].includes(searchParams.tipo   ?? '') ? searchParams.tipo!   : ''
-  const estado = ['review', 'active', 'suspended'].includes(searchParams.estado ?? '') ? searchParams.estado! : ''
-  const page   = Math.max(1, parseInt(searchParams.pagina ?? '1', 10))
-  const from   = (page - 1) * PAGE_SIZE
-  const to     = from + PAGE_SIZE - 1
+  const tipo     = ['independent', 'company'].includes(searchParams.tipo   ?? '') ? searchParams.tipo!   : ''
+  const estado   = ['review', 'active', 'suspended'].includes(searchParams.estado ?? '') ? searchParams.estado! : ''
+  const pageSize = [10, 20, 50].includes(Number(searchParams.size)) ? Number(searchParams.size) : PAGE_SIZE
+  const page     = Math.max(1, parseInt(searchParams.page ?? '1', 10))
+  const from     = (page - 1) * pageSize
+  const to       = from + pageSize - 1
 
   // Paso 1: IDs de profesionales filtrados por tipo
   let prosQuery = supabase.from('professionals').select('id, account_type').limit(10000)
@@ -71,7 +73,6 @@ export default async function AdminProfesionalesPage({
   let profileRows: any[] = []
 
   if (proIds.length > 0) {
-    // Paso 2: count
     let countQ = supabase
       .from('profiles')
       .select('id', { count: 'exact', head: true })
@@ -81,7 +82,6 @@ export default async function AdminProfesionalesPage({
     const { count } = await countQ
     totalCount = count ?? 0
 
-    // Paso 3: datos paginados
     let dataQ = supabase
       .from('profiles')
       .select('id, full_name, account_status, created_at, photo_url')
@@ -94,8 +94,9 @@ export default async function AdminProfesionalesPage({
     profileRows = data ?? []
   }
 
-  const totalPages = Math.ceil(totalCount / PAGE_SIZE)
-  const pros = profileRows.map((p) => ({ ...p, account_type: typeMap[p.id] ?? 'independent' }))
+  const totalPages = Math.ceil(totalCount / pageSize)
+  const pros       = profileRows.map((p) => ({ ...p, account_type: typeMap[p.id] ?? 'independent' }))
+  const basePath   = buildBasePath(tipo, estado)
 
   return (
     <div className="admin-page-content">
@@ -123,7 +124,7 @@ export default async function AdminProfesionalesPage({
           {TIPO_TABS.map((tab) => {
             const active = tipo === tab.value
             return (
-              <Link key={tab.value} href={buildHref(tab.value, estado)} style={{
+              <Link key={tab.value} href={buildBasePath(tab.value, estado)} style={{
                 fontFamily: FONT_SANS, fontSize: '13px', fontWeight: active ? 600 : 400,
                 padding: '6px 16px', borderRadius: '20px', border: '1px solid #D4963A40',
                 background: active ? '#1E1E1E' : 'transparent',
@@ -139,7 +140,7 @@ export default async function AdminProfesionalesPage({
             const active = estado === tab.value
             const s = STATUS_STYLES[tab.value]
             return (
-              <Link key={tab.value} href={buildHref(tipo, tab.value)} style={{
+              <Link key={tab.value} href={buildBasePath(tipo, tab.value)} style={{
                 fontFamily: FONT_SANS, fontSize: '13px', fontWeight: active ? 600 : 400,
                 padding: '6px 16px', borderRadius: '20px',
                 border: `1px solid ${s ? s.color + '50' : '#2C2C2C20'}`,
@@ -232,64 +233,12 @@ export default async function AdminProfesionalesPage({
         </div>
       </div>
 
-      <Pagination page={page} totalPages={totalPages} buildUrl={(n) => buildHref(tipo, estado, n)} />
-    </div>
-  )
-}
-
-function Pagination({ page, totalPages, buildUrl }: {
-  page: number
-  totalPages: number
-  buildUrl: (p: number) => string
-}) {
-  if (totalPages <= 1) return null
-
-  const base: React.CSSProperties = {
-    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-    minWidth: '36px', height: '36px', padding: '0 10px',
-    borderRadius: '8px', fontFamily: FONT_SANS, fontSize: '13px', textDecoration: 'none',
-  }
-  const btnStyle = (active: boolean, disabled = false): React.CSSProperties => ({
-    ...base,
-    border: `1px solid ${active ? '#1E1E1E' : disabled ? '#2C2C2C15' : '#2C2C2C20'}`,
-    background: active ? '#1E1E1E' : 'transparent',
-    color: active ? '#D4963A' : disabled ? '#2C2C2C30' : '#7A7A78',
-    fontWeight: active ? 700 : 400,
-    pointerEvents: disabled ? 'none' : 'auto',
-  })
-
-  const pages: (number | '...')[] = []
-  if (totalPages <= 7) {
-    for (let i = 1; i <= totalPages; i++) pages.push(i)
-  } else {
-    pages.push(1)
-    if (page > 3) pages.push('...')
-    for (let i = Math.max(2, page - 1); i <= Math.min(totalPages - 1, page + 1); i++) pages.push(i)
-    if (page < totalPages - 2) pages.push('...')
-    pages.push(totalPages)
-  }
-
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginTop: '24px', flexWrap: 'wrap' }}>
-      {page > 1
-        ? <Link href={buildUrl(page - 1)} style={btnStyle(false)}><ChevronLeft style={{ width: 14, height: 14 }} /></Link>
-        : <span style={btnStyle(false, true)}><ChevronLeft style={{ width: 14, height: 14 }} /></span>
-      }
-
-      {pages.map((n, i) =>
-        n === '...'
-          ? <span key={`e${i}`} style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#7A7A78', padding: '0 4px' }}>…</span>
-          : <Link key={n} href={buildUrl(n as number)} style={btnStyle(n === page)}>{n}</Link>
-      )}
-
-      {page < totalPages
-        ? <Link href={buildUrl(page + 1)} style={btnStyle(false)}><ChevronRight style={{ width: 14, height: 14 }} /></Link>
-        : <span style={btnStyle(false, true)}><ChevronRight style={{ width: 14, height: 14 }} /></span>
-      }
-
-      <span style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#7A7A78', marginLeft: '8px' }}>
-        Página {page} de {totalPages}
-      </span>
+      <Pagination
+        currentPage={page}
+        totalPages={totalPages}
+        pageSize={pageSize}
+        basePath={basePath}
+      />
     </div>
   )
 }

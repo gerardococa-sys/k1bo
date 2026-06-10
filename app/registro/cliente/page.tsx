@@ -10,6 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
 import { Eye, EyeOff } from 'lucide-react'
+import { getPhoneConfig, cleanPhone } from '@/lib/phone'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -57,7 +58,7 @@ export default function RegistroClientePage() {
   const [phoneCountryCode, setPhoneCountryCode] = useState('+503')
   const [signUpError, setSignUpError] = useState<string | null>(null)
 
-  const { register, handleSubmit, setError, formState: { errors, isSubmitting } } = useForm<FormData>({
+  const { register, handleSubmit, setError, setValue, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: 'onChange',
   })
@@ -303,7 +304,25 @@ export default function RegistroClientePage() {
                 <option value="+1">🇺🇸 +1</option>
                 <option value="+52">🇲🇽 +52</option>
               </select>
-              <Input id="phone" type="tel" placeholder="7XXX-XXXX" style={{ flex: 1 }} {...register('phone')} />
+              <Input
+                id="phone"
+                type="tel"
+                inputMode="numeric"
+                style={{ flex: 1 }}
+                maxLength={getPhoneConfig(phoneCountryCode).max}
+                placeholder={getPhoneConfig(phoneCountryCode).placeholder}
+                {...register('phone')}
+                onKeyDown={(e) => {
+                  if (e.ctrlKey || e.metaKey) return
+                  if (['Backspace','Delete','ArrowLeft','ArrowRight','Tab'].includes(e.key)) return
+                  if (!/^\d$/.test(e.key)) e.preventDefault()
+                }}
+                onPaste={(e) => {
+                  e.preventDefault()
+                  const val = cleanPhone(e.clipboardData.getData('text'), getPhoneConfig(phoneCountryCode).max)
+                  setValue('phone', val)
+                }}
+              />
             </div>
             {errors.phone && <p className="text-sm text-destructive">{errors.phone.message}</p>}
           </div>

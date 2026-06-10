@@ -3,8 +3,9 @@ export const dynamic = 'force-dynamic'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft } from 'lucide-react'
 import { ClientAvatar } from '@/components/ui/ClientAvatar'
+import { Pagination } from '@/components/ui/Pagination'
 
 const FONT_SERIF = 'var(--font-serif, "Playfair Display", Georgia, serif)'
 const FONT_SANS  = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
@@ -29,10 +30,9 @@ function formatDMY(ts: string | null) {
   return new Date(ts).toLocaleDateString('es-SV', { day: '2-digit', month: '2-digit', year: 'numeric' })
 }
 
-function buildHref(estado: string, pagina?: number) {
+function buildBasePath(estado: string) {
   const p = new URLSearchParams()
-  if (estado)               p.set('estado', estado)
-  if (pagina && pagina > 1) p.set('pagina', String(pagina))
+  if (estado) p.set('estado', estado)
   const qs = p.toString()
   return `/admin/propietarios${qs ? `?${qs}` : ''}`
 }
@@ -40,7 +40,7 @@ function buildHref(estado: string, pagina?: number) {
 export default async function AdminPropietariosPage({
   searchParams,
 }: {
-  searchParams: { estado?: string; pagina?: string }
+  searchParams: { estado?: string; page?: string; size?: string }
 }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -53,12 +53,12 @@ export default async function AdminPropietariosPage({
     .single()
   if (adminProfile?.role !== 'admin') redirect('/sv')
 
-  const estado = ['review', 'active', 'suspended'].includes(searchParams.estado ?? '') ? searchParams.estado! : ''
-  const page   = Math.max(1, parseInt(searchParams.pagina ?? '1', 10))
-  const from   = (page - 1) * PAGE_SIZE
-  const to     = from + PAGE_SIZE - 1
+  const estado   = ['review', 'active', 'suspended'].includes(searchParams.estado ?? '') ? searchParams.estado! : ''
+  const pageSize = [10, 20, 50].includes(Number(searchParams.size)) ? Number(searchParams.size) : PAGE_SIZE
+  const page     = Math.max(1, parseInt(searchParams.page ?? '1', 10))
+  const from     = (page - 1) * pageSize
+  const to       = from + pageSize - 1
 
-  // Count
   let countQ = supabase
     .from('profiles')
     .select('id', { count: 'exact', head: true })
@@ -66,7 +66,6 @@ export default async function AdminPropietariosPage({
   if (estado) countQ = countQ.eq('account_status', estado)
   const { count: totalCount } = await countQ
 
-  // Datos paginados
   let dataQ = supabase
     .from('profiles')
     .select('id, full_name, photo_url, account_status, created_at')
@@ -77,7 +76,8 @@ export default async function AdminPropietariosPage({
   const { data: propietarios } = await dataQ
 
   const total      = totalCount ?? 0
-  const totalPages = Math.ceil(total / PAGE_SIZE)
+  const totalPages = Math.ceil(total / pageSize)
+  const basePath   = buildBasePath(estado)
 
   return (
     <div className="admin-page-content" style={{ maxWidth: '1100px', margin: '0 auto' }}>
@@ -86,7 +86,8 @@ export default async function AdminPropietariosPage({
         href="/admin/dashboard"
         style={{ fontFamily: FONT_SANS, fontSize: '15px', color: '#C4581A', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px', marginBottom: '24px' }}
       >
-        ← Volver al Dashboard
+        <ChevronLeft style={{ width: 16, height: 16 }} />
+        Volver al Dashboard
       </Link>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '28px' }}>
@@ -106,7 +107,7 @@ export default async function AdminPropietariosPage({
           return (
             <Link
               key={tab.value}
-              href={buildHref(tab.value)}
+              href={buildBasePath(tab.value)}
               style={{
                 fontFamily: FONT_SANS, fontSize: '13px', fontWeight: active ? 600 : 400,
                 padding: '6px 16px', borderRadius: '20px',
@@ -193,66 +194,14 @@ export default async function AdminPropietariosPage({
             </div>
           </div>
 
-          <Pagination page={page} totalPages={totalPages} buildUrl={(n) => buildHref(estado, n)} />
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            pageSize={pageSize}
+            basePath={basePath}
+          />
         </>
       )}
-    </div>
-  )
-}
-
-function Pagination({ page, totalPages, buildUrl }: {
-  page: number
-  totalPages: number
-  buildUrl: (p: number) => string
-}) {
-  if (totalPages <= 1) return null
-
-  const base: React.CSSProperties = {
-    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-    minWidth: '36px', height: '36px', padding: '0 10px',
-    borderRadius: '8px', fontFamily: FONT_SANS, fontSize: '13px', textDecoration: 'none',
-  }
-  const btnStyle = (active: boolean, disabled = false): React.CSSProperties => ({
-    ...base,
-    border: `1px solid ${active ? '#1E1E1E' : disabled ? '#2C2C2C15' : '#2C2C2C20'}`,
-    background: active ? '#1E1E1E' : 'transparent',
-    color: active ? '#D4963A' : disabled ? '#2C2C2C30' : '#7A7A78',
-    fontWeight: active ? 700 : 400,
-    pointerEvents: disabled ? 'none' : 'auto',
-  })
-
-  const pages: (number | '...')[] = []
-  if (totalPages <= 7) {
-    for (let i = 1; i <= totalPages; i++) pages.push(i)
-  } else {
-    pages.push(1)
-    if (page > 3) pages.push('...')
-    for (let i = Math.max(2, page - 1); i <= Math.min(totalPages - 1, page + 1); i++) pages.push(i)
-    if (page < totalPages - 2) pages.push('...')
-    pages.push(totalPages)
-  }
-
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginTop: '24px', flexWrap: 'wrap' }}>
-      {page > 1
-        ? <Link href={buildUrl(page - 1)} style={btnStyle(false)}><ChevronLeft style={{ width: 14, height: 14 }} /></Link>
-        : <span style={btnStyle(false, true)}><ChevronLeft style={{ width: 14, height: 14 }} /></span>
-      }
-
-      {pages.map((n, i) =>
-        n === '...'
-          ? <span key={`e${i}`} style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#7A7A78', padding: '0 4px' }}>…</span>
-          : <Link key={n} href={buildUrl(n as number)} style={btnStyle(n === page)}>{n}</Link>
-      )}
-
-      {page < totalPages
-        ? <Link href={buildUrl(page + 1)} style={btnStyle(false)}><ChevronRight style={{ width: 14, height: 14 }} /></Link>
-        : <span style={btnStyle(false, true)}><ChevronRight style={{ width: 14, height: 14 }} /></span>
-      }
-
-      <span style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#7A7A78', marginLeft: '8px' }}>
-        Página {page} de {totalPages}
-      </span>
     </div>
   )
 }

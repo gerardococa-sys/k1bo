@@ -18,6 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { createClient } from '@/lib/supabase/client'
 import { getInitials } from '@/lib/utils'
 import { CategoriasPicker } from '@/components/profesional/CategoriasPicker'
+import { getPhoneConfig, cleanPhone } from '@/lib/phone'
 import { CoberturaEditor } from '@/components/profesional/CoberturaEditor'
 
 const FONT_SANS  = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
@@ -78,7 +79,7 @@ export default function ProProfilePage() {
   const [allDepartments,       setAllDepartments]       = useState<{ id: string; name: string }[]>([])
   const [coversEntireCountry,  setCoversEntireCountry]  = useState(false)
 
-  const { register, handleSubmit, reset, watch, formState: { isSubmitting } } = useForm<ProfileFormData>({
+  const { register, handleSubmit, reset, watch, setValue, formState: { isSubmitting } } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
   })
   const fullName = watch('full_name', '')
@@ -377,7 +378,24 @@ export default function ProProfilePage() {
                   <option value="+1">🇺🇸 +1</option>
                   <option value="+52">🇲🇽 +52</option>
                 </select>
-                <Input type="tel" placeholder="7XXX-XXXX" style={{ flex: 1 }} {...register('phone')} />
+                <Input
+                  type="tel"
+                  inputMode="numeric"
+                  style={{ flex: 1 }}
+                  maxLength={getPhoneConfig(phoneCountryCode).max}
+                  placeholder={getPhoneConfig(phoneCountryCode).placeholder}
+                  {...register('phone')}
+                  onKeyDown={(e) => {
+                    if (e.ctrlKey || e.metaKey) return
+                    if (['Backspace','Delete','ArrowLeft','ArrowRight','Tab'].includes(e.key)) return
+                    if (!/^\d$/.test(e.key)) e.preventDefault()
+                  }}
+                  onPaste={(e) => {
+                    e.preventDefault()
+                    const val = cleanPhone(e.clipboardData.getData('text'), getPhoneConfig(phoneCountryCode).max)
+                    setValue('phone', val)
+                  }}
+                />
               </div>
             </div>
 

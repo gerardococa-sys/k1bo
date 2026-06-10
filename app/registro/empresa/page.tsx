@@ -10,6 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
 import { CheckCircle2, X, Building2 } from 'lucide-react'
+import { getPhoneConfig, cleanPhone } from '@/lib/phone'
 import { Logo } from '@/components/ui/Logo'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -404,7 +405,24 @@ export default function RegistroEmpresaPage() {
                 <select value={phoneCode} onChange={e => setPhoneCode(e.target.value)} style={phoneSelectStyle}>
                   {PHONE_CODES.map(p => <option key={p.code} value={p.code}>{p.label}</option>)}
                 </select>
-                <Input type="tel" placeholder="7XXX-XXXX" style={{ flex: 1 }} {...step1.register('phone')} />
+                <Input
+                  type="tel"
+                  inputMode="numeric"
+                  style={{ flex: 1 }}
+                  maxLength={getPhoneConfig(phoneCode).max}
+                  placeholder={getPhoneConfig(phoneCode).placeholder}
+                  {...step1.register('phone')}
+                  onKeyDown={(e) => {
+                    if (e.ctrlKey || e.metaKey) return
+                    if (['Backspace','Delete','ArrowLeft','ArrowRight','Tab'].includes(e.key)) return
+                    if (!/^\d$/.test(e.key)) e.preventDefault()
+                  }}
+                  onPaste={(e) => {
+                    e.preventDefault()
+                    const val = cleanPhone(e.clipboardData.getData('text'), getPhoneConfig(phoneCode).max)
+                    step1.setValue('phone', val)
+                  }}
+                />
               </div>
               {step1.formState.errors.phone && <p className="text-sm text-destructive">{step1.formState.errors.phone.message}</p>}
             </div>
@@ -424,6 +442,36 @@ export default function RegistroEmpresaPage() {
             <div className="space-y-2">
               <Label>Años en el mercado <span className="text-muted-foreground">(opcional)</span></Label>
               <Input type="number" min="0" max="200" placeholder="Ej. 10" {...step1.register('years_market')} />
+            </div>
+
+            {/* Account type — fixed as company */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <Label>Tipo de cuenta</Label>
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  backgroundColor: '#1E1E1E0D',
+                  color: '#1E1E1E',
+                  border: '1.5px solid #1E1E1E30',
+                  borderRadius: '8px',
+                  padding: '12px 18px',
+                  fontSize: '15px',
+                  fontWeight: 600,
+                  fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)',
+                  lineHeight: 1,
+                }}
+              >
+                <Building2 style={{ width: 18, height: 18, flexShrink: 0 }} />
+                Empresa
+              </div>
+              <p style={{ fontSize: '13px', color: '#7A7A78', margin: 0, fontFamily: 'var(--font-sans,"DM Sans",system-ui,sans-serif)' }}>
+                ¿Eres un profesional independiente?{' '}
+                <Link href="/registro/profesional" style={{ color: '#7A7A78', textDecoration: 'underline' }}>
+                  Regístrate aquí →
+                </Link>
+              </p>
             </div>
 
             {step1Error && (
