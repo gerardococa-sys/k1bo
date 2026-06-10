@@ -34,18 +34,39 @@ export default async function AdminProfesionalesPage({
     ? searchParams.tipo!
     : ''
 
-  let query = supabase
-    .from('profiles')
-    .select('id, full_name, account_status, created_at, photo_url, professionals!inner(account_type)')
-    .eq('role', 'professional')
-    .order('created_at', { ascending: false })
+  // Paso 1: obtener IDs y tipos desde professionals
+  let prosQuery = supabase
+    .from('professionals')
+    .select('id, account_type')
 
   if (tipo) {
-    query = (query as any).eq('professionals.account_type', tipo)
+    prosQuery = prosQuery.eq('account_type', tipo)
   }
 
-  const { data: rows } = await query
-  const pros = (rows ?? []) as any[]
+  const { data: profData } = await prosQuery
+
+  // Paso 2: obtener perfiles de esos IDs
+  const proIds = (profData ?? []).map((p) => p.id)
+
+  const { data: profileRows } = proIds.length
+    ? await supabase
+        .from('profiles')
+        .select('id, full_name, account_status, created_at, photo_url')
+        .in('id', proIds)
+        .eq('role', 'professional')
+        .order('created_at', { ascending: false })
+    : { data: [] }
+
+  // Paso 3: mapa account_type por ID
+  const typeMap = Object.fromEntries(
+    (profData ?? []).map((p) => [p.id, p.account_type])
+  )
+
+  // Paso 4: ensamblar
+  const pros = (profileRows ?? []).map((p) => ({
+    ...p,
+    account_type: typeMap[p.id] ?? 'independent',
+  }))
 
   return (
     <div style={{ padding: '32px' }}>
@@ -107,9 +128,7 @@ export default async function AdminProfesionalesPage({
           </thead>
           <tbody>
             {pros.map((p: any) => {
-              const accountType = Array.isArray(p.professionals)
-                ? p.professionals[0]?.account_type
-                : p.professionals?.account_type
+              const accountType = p.account_type
               return (
                 <tr key={p.id} style={{ borderBottom: '1px solid #2C2C2C06' }}>
                   <td style={{ padding: '12px 16px' }}>

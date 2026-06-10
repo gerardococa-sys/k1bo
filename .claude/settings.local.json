@@ -36,7 +36,8 @@
       "Bash(xargs -0 sed -i '' 's/rgba\\(184, 92, 26/rgba\\(196, 88, 26/g')",
       "Bash(npm install *)",
       "Bash(mkdir -p \"/Users/Gerardo/Library/CloudStorage/OneDrive-Personal/Proyectos/Ai/K1bo/app/admin/profesionales/[id]/solicitudes\")",
-      "Bash(mkdir -p \"/Users/Gerardo/Library/CloudStorage/OneDrive-Personal/Proyectos/Ai/K1bo/app/admin/clientes/[id]/solicitudes\")"
+      "Bash(mkdir -p \"/Users/Gerardo/Library/CloudStorage/OneDrive-Personal/Proyectos/Ai/K1bo/app/admin/clientes/[id]/solicitudes\")",
+      "Bash(xargs ls -la)"
     ]
   }
 }
