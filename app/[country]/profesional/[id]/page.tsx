@@ -17,6 +17,8 @@ import { AvailabilityCalendar } from '@/components/professionals/AvailabilityCal
 import { PortfolioLightbox } from '@/components/professionals/PortfolioLightbox'
 import { getInitials } from '@/lib/utils'
 
+const FONT_SANS = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
+
 export default async function ProfessionalProfilePage({
   params,
 }: {
@@ -170,33 +172,52 @@ export default async function ProfessionalProfilePage({
 
           {/* CTA */}
           {clientProfile?.role === 'client' && (
-            <Button asChild className="w-full" size="lg">
-              <Link href={`/${params.country}/profesional/${params.id}/cotizar`}>
-                Solicitar Cotización
-              </Link>
-            </Button>
+            <Link
+              href={`/${params.country}/profesional/${params.id}/cotizar`}
+              style={{
+                display: 'block', width: '100%', padding: '14px',
+                borderRadius: '8px', background: '#1E1E1E', color: '#D4963A',
+                fontFamily: FONT_SANS, fontSize: '16px', fontWeight: 700,
+                textAlign: 'center', textDecoration: 'none',
+              }}
+            >
+              Solicitar Cotización
+            </Link>
           )}
 
           {!user && (
-            <Button asChild className="w-full" size="lg">
-              <Link href={`/login?redirect=/${params.country}/profesional/${params.id}`}>
-                Solicitar Cotización
-              </Link>
-            </Button>
+            <Link
+              href="/registro"
+              style={{
+                display: 'block', width: '100%', padding: '14px',
+                borderRadius: '8px', background: '#1E1E1E', color: '#D4963A',
+                fontFamily: FONT_SANS, fontSize: '16px', fontWeight: 700,
+                textAlign: 'center', textDecoration: 'none',
+              }}
+            >
+              Regístrate para solicitar cotización
+            </Link>
           )}
 
           {clientProfile?.role === 'professional' && (
             <div style={{
-              background: '#F2F0ED',
-              border: '1px solid #2C2C2C15',
-              borderRadius: '8px',
-              padding: '12px 16px',
-              fontFamily: 'var(--font-sans, "DM Sans", system-ui, sans-serif)',
-              fontSize: '14px',
-              color: '#7A7A78',
-              textAlign: 'center',
+              width: '100%', padding: '13px 16px', borderRadius: '8px',
+              background: '#F2F0ED', border: '1px solid #2C2C2C15',
+              fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78',
+              textAlign: 'center', lineHeight: 1.5,
             }}>
               Los profesionales no pueden solicitar cotizaciones a otros profesionales.
+            </div>
+          )}
+
+          {clientProfile?.role === 'admin' && (
+            <div style={{
+              width: '100%', padding: '13px 16px', borderRadius: '8px',
+              background: '#F2F0ED', border: '1px solid #2C2C2C15',
+              fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78',
+              textAlign: 'center',
+            }}>
+              Vista de administrador
             </div>
           )}
         </aside>

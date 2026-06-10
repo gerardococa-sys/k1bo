@@ -24,11 +24,15 @@ export default async function CotizarPage({
     .eq('id', user.id)
     .single()
 
-  if (clientProfile?.role === 'admin') {
-    redirect(`/${params.country}`)
+  if (clientProfile?.role === 'professional' || clientProfile?.role === 'admin') {
+    redirect(`/${params.country}/profesional/${params.id}`)
   }
 
   if (!clientProfile || clientProfile.role !== 'client') {
+    redirect(`/${params.country}/profesional/${params.id}`)
+  }
+
+  if (clientProfile.account_status === 'suspended') {
     redirect(`/${params.country}/profesional/${params.id}`)
   }
 
