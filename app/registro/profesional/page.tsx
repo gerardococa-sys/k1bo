@@ -115,9 +115,10 @@ export default function RegistroProfesionalPage() {
       password: data.password,
       options: {
         data: {
-          full_name: data.full_name,
-          role: 'professional',
-          phone: `${phoneCountryCode}${data.phone}`,
+          full_name:    data.full_name,
+          role:         'professional',
+          account_type: accountType,
+          phone:        `${phoneCountryCode}${data.phone}`,
         },
         emailRedirectTo: `${window.location.origin}/auth/confirm`,
       },

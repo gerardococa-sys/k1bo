@@ -42,12 +42,12 @@ export default function AuthConfirmPage() {
   const [dashPath, setDashPath] = useState('/sv/cliente/dashboard')
 
   useEffect(() => {
-    const supabase = createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    )
-
     async function handleConfirm() {
+      const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      )
+
       const { data: { user }, error } = await supabase.auth.getUser()
 
       if (error || !user) {
@@ -55,7 +55,7 @@ export default function AuthConfirmPage() {
         return
       }
 
-      // Apply pending profile fields saved before email confirmation
+      // Aplicar datos pendientes del perfil
       const pendingProfile = localStorage.getItem('pending_profile')
       if (pendingProfile) {
         try {
@@ -65,25 +65,39 @@ export default function AuthConfirmPage() {
         } catch (_) {}
       }
 
-      // Apply pending professionals record
+      // Si es profesional, asegurar que existe en tabla professionals
       const pendingPro = localStorage.getItem('pending_professional')
       if (pendingPro) {
         try {
           const proData = JSON.parse(pendingPro)
-          const { data: existing } = await supabase
+
+          // Verificar si ya existe (por el trigger)
+          const { data: existingPro } = await supabase
             .from('professionals')
             .select('id')
             .eq('id', user.id)
-            .maybeSingle()
-          if (existing) {
-            await supabase.from('professionals').update(proData).eq('id', user.id)
-          } else {
+            .single()
+
+          if (!existingPro) {
+            // Crear si el trigger no lo hizo
             await supabase.from('professionals').insert({ id: user.id, ...proData })
+          } else {
+            // Actualizar account_type si es null
+            await supabase
+              .from('professionals')
+              .update({
+                account_type: proData.account_type ?? 'independent',
+                whatsapp:     proData.whatsapp,
+              })
+              .eq('id', user.id)
           }
           localStorage.removeItem('pending_professional')
         } catch (_) {}
       }
 
+      setStatus('success')
+
+      // Redirigir según role
       const { data: profile } = await supabase
         .from('profiles')
         .select('role')
@@ -95,9 +109,14 @@ export default function AuthConfirmPage() {
         : '/sv/cliente/dashboard'
 
       setDashPath(path)
-      setStatus('success')
 
-      setTimeout(() => router.push(path), 3000)
+      setTimeout(() => {
+        if (profile?.role === 'professional') {
+          window.location.href = '/sv/profesional-panel/dashboard'
+        } else {
+          window.location.href = '/sv/cliente/dashboard'
+        }
+      }, 3000)
     }
 
     handleConfirm()
