@@ -42,6 +42,7 @@ export default function ProProfilePage() {
 
   // ── Profile state ──────────────────────────────────────────────────────────
   const [userId,           setUserId]           = useState('')
+  const [email,            setEmail]            = useState('')
   const [loading,          setLoading]          = useState(true)
   const [phoneCountryCode, setPhoneCountryCode] = useState('+503')
   const [avatarPreview,    setAvatarPreview]    = useState<string | null>(null)
@@ -105,6 +106,7 @@ export default function ProProfilePage() {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) { router.push('/login'); return }
       setUserId(user.id)
+      setEmail(user.email ?? '')
 
       Promise.all([
         supabase.from('profiles').select('*').eq('id', user.id).single(),
@@ -328,6 +330,21 @@ export default function ProProfilePage() {
                     </p>
                   )}
                 </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Correo electrónico</Label>
+              <div style={{
+                padding: '10px 14px', borderRadius: '8px',
+                border: '1px solid rgba(44,44,44,0.12)', background: '#F2F0ED',
+                fontFamily: FONT_SANS, fontSize: '15px', color: '#7A7A78',
+                display: 'flex', alignItems: 'center', gap: '8px',
+              }}>
+                {email}
+                <span style={{ marginLeft: 'auto', fontSize: '11px', fontWeight: 600, color: '#7A7A78', background: '#2C2C2C12', padding: '2px 8px', borderRadius: '20px', whiteSpace: 'nowrap' }}>
+                  Solo lectura
+                </span>
               </div>
             </div>
 

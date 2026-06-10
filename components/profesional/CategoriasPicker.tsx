@@ -35,29 +35,24 @@ export function CategoriasPicker({ professionalId, initialSelected, allCategorie
   ).length
 
   function toggleCategoria(id: string) {
-    setSelected((prev) => {
-      // Deseleccionar
-      if (prev.includes(id)) {
-        setError('')
-        return prev.filter((x) => x !== id)
-      }
-
-      // Es categoría principal? Verificar límite
-      const isMain = allCategories.find((c) => c.id === id)?.parent_id === null
-      if (isMain) {
-        const mainCount = prev.filter(
-          (sid) => allCategories.find((c) => c.id === sid)?.parent_id === null,
-        ).length
-        if (mainCount >= MAX_PRINCIPALES) {
-          setError(`Máximo ${MAX_PRINCIPALES} categorías principales`)
-          return prev
-        }
-      }
-
-      // Subcategoría: sin límite — siempre se agrega
+    // Deseleccionar — sin lógica de límite
+    if (selected.includes(id)) {
+      setSelected((prev) => prev.filter((x) => x !== id))
       setError('')
-      return [...prev, id]
-    })
+      setSuccess(false)
+      return
+    }
+
+    // Solo las categorías principales tienen límite
+    const isMain = allCategories.find((c) => c.id === id)?.parent_id === null
+    if (isMain && selectedMainCount >= MAX_PRINCIPALES) {
+      setError(`Máximo ${MAX_PRINCIPALES} categorías principales`)
+      return
+    }
+
+    // Agregar (principal dentro del límite, o subcategoría sin límite)
+    setSelected((prev) => [...prev, id])
+    setError('')
     setSuccess(false)
   }
 
