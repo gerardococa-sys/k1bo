@@ -32,7 +32,7 @@ export default async function ProfessionalProfilePage({
       *,
       profile:profiles(*, department:departments(*), municipality:municipalities(*)),
       categories:professional_categories(*, category:categories(*)),
-      coverage:professional_coverage(*, department:departments(*), municipality:municipalities(*)),
+      coverage:professional_coverage(*, department:departments(*), municipality:municipalities(*), district:districts(*)),
       services:professional_services(*),
       portfolio:portfolio_photos(*),
       faq:professional_faq(*)
@@ -254,6 +254,42 @@ export default async function ProfessionalProfilePage({
                         {s.service_tag}
                       </span>
                     ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Área de cobertura */}
+              {(pro.covers_entire_country || (pro.coverage as any[])?.length > 0) && (
+                <div>
+                  <h2 className="font-semibold mb-3">Área de Cobertura:</h2>
+                  <div className="flex flex-wrap gap-2">
+                    {pro.covers_entire_country ? (
+                      <span
+                        className="inline-flex items-center rounded-full px-3 py-1 text-sm font-medium text-white"
+                        style={{ backgroundColor: '#1B3A6B' }}
+                      >
+                        <MapPin className="h-3 w-3 mr-1.5" />
+                        Todo El Salvador
+                      </span>
+                    ) : (
+                      (pro.coverage as any[]).map((c: any, i: number) => {
+                        const parts = [
+                          c.department?.name,
+                          c.municipality?.name,
+                          c.district?.name,
+                        ].filter(Boolean)
+                        return (
+                          <span
+                            key={i}
+                            className="inline-flex items-center rounded-full px-3 py-1 text-sm font-medium text-white"
+                            style={{ backgroundColor: '#1B3A6B' }}
+                          >
+                            <MapPin className="h-3 w-3 mr-1.5 shrink-0" />
+                            {parts.join(' · ')}
+                          </span>
+                        )
+                      })
+                    )}
                   </div>
                 </div>
               )}
