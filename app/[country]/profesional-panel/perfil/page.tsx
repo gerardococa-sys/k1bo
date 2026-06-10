@@ -18,6 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { createClient } from '@/lib/supabase/client'
 import { getInitials } from '@/lib/utils'
 import { CategoriasPicker } from '@/components/profesional/CategoriasPicker'
+import { CoberturaEditor } from '@/components/profesional/CoberturaEditor'
 
 const FONT_SANS  = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
 const FONT_SERIF = 'var(--font-serif, "Playfair Display", Georgia, serif)'
@@ -62,6 +63,20 @@ export default function ProProfilePage() {
   const [misCatIds,       setMisCatIds]       = useState<string[]>([])
   const [todasCategorias, setTodasCategorias] = useState<{ id: string; name: string; parent_id: string | null }[]>([])
 
+  // ── Cobertura state ────────────────────────────────────────────────────────
+  type CoverageItem = {
+    id?:               string
+    department_id:     string
+    department_name:   string
+    municipality_id?:  string | null
+    municipality_name?: string | null
+    district_id?:      string | null
+    district_name?:    string | null
+  }
+  const [coberturaActual,      setCoberturaActual]      = useState<CoverageItem[]>([])
+  const [allDepartments,       setAllDepartments]       = useState<{ id: string; name: string }[]>([])
+  const [coversEntireCountry,  setCoversEntireCountry]  = useState(false)
+
   const { register, handleSubmit, reset, watch, formState: { isSubmitting } } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
   })
@@ -97,7 +112,9 @@ export default function ProProfilePage() {
         supabase.from('professional_faq').select('*').eq('professional_id', user.id).order('order_index'),
         supabase.from('professional_categories').select('id, category:categories(id, name, parent_id)').eq('professional_id', user.id),
         supabase.from('categories').select('id, name, parent_id').eq('active', true).order('name'),
-      ]).then(([{ data: prof }, { data: pro }, { data: faqData }, { data: misCats }, { data: allCats }]) => {
+        supabase.from('professional_coverage').select('id, department_id, municipality_id, district_id, department:departments(id,name), municipality:municipalities(id,name), district:districts(id,name)').eq('professional_id', user.id),
+        supabase.from('departments').select('id, name').order('name'),
+      ]).then(([{ data: prof }, { data: pro }, { data: faqData }, { data: misCats }, { data: allCats }, { data: cobertura }, { data: depts }]) => {
         if (prof && pro) {
           reset({
             full_name:         prof.full_name         ?? '',
@@ -110,11 +127,24 @@ export default function ProProfilePage() {
           })
           setPhoneCountryCode(prof.phone_country_code ?? '+503')
           if (prof.photo_url) setAvatarPreview(prof.photo_url)
+          setCoversEntireCountry((pro as any).covers_entire_country ?? false)
         }
         setFaq(faqData ?? [])
         const ids = (misCats ?? []).map((mc: any) => mc.category?.id).filter(Boolean) as string[]
         setMisCatIds(ids)
         setTodasCategorias((allCats ?? []) as { id: string; name: string; parent_id: string | null }[])
+        setCoberturaActual(
+          (cobertura ?? []).map((c: any) => ({
+            id:                c.id,
+            department_id:     c.department_id,
+            department_name:   c.department?.name ?? '',
+            municipality_id:   c.municipality_id ?? null,
+            municipality_name: c.municipality?.name ?? null,
+            district_id:       c.district_id ?? null,
+            district_name:     c.district?.name ?? null,
+          }))
+        )
+        setAllDepartments((depts ?? []) as { id: string; name: string }[])
         setLoading(false)
         loadPortfolioPhotos(user.id)
       })
@@ -243,6 +273,7 @@ export default function ProProfilePage() {
           <TabsTrigger value="portfolio">Portafolio</TabsTrigger>
           <TabsTrigger value="faq">FAQ</TabsTrigger>
           <TabsTrigger value="categorias">Categorías</TabsTrigger>
+          <TabsTrigger value="cobertura">Cobertura</TabsTrigger>
         </TabsList>
 
         {/* ── Info tab ─────────────────────────────────────────────────────── */}
@@ -521,6 +552,33 @@ export default function ProProfilePage() {
               />
             ) : (
               <p style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78' }}>Cargando categorías...</p>
+            )}
+          </div>
+        </TabsContent>
+
+        {/* ── Cobertura tab ────────────────────────────────────────────────── */}
+        <TabsContent value="cobertura" className="mt-6">
+          <div style={{
+            backgroundColor: '#fff',
+            border:          '0.5px solid #2C2C2C12',
+            borderRadius:    '12px',
+            padding:         '24px',
+          }}>
+            <h2 style={{ fontFamily: FONT_SERIF, fontSize: '18px', fontWeight: 600, color: '#1E1E1E', margin: '0 0 6px' }}>
+              Zonas de cobertura
+            </h2>
+            <p style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78', margin: '0 0 24px', lineHeight: 1.6 }}>
+              Define las zonas donde puedes prestar tus servicios. Los propietarios podrán filtrarte por ubicación.
+            </p>
+            {userId && allDepartments.length > 0 ? (
+              <CoberturaEditor
+                professionalId={userId}
+                initialCoverage={coberturaActual}
+                initialEntireCountry={coversEntireCountry}
+                departments={allDepartments}
+              />
+            ) : (
+              <p style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78' }}>Cargando datos de cobertura...</p>
             )}
           </div>
         </TabsContent>
