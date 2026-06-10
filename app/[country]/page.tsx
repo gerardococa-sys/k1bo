@@ -15,7 +15,7 @@ export default async function CountryPage({ params }: { params: { country: strin
 
   const { data: categories } = await supabase
     .from('categories')
-    .select('id, name, slug, icon, parent_id')
+    .select('id, name, slug, icon, parent_id, description, order_index, active, created_at')
     .eq('active', true)
     .is('parent_id', null)
     .order('order_index')
