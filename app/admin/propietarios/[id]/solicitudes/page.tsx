@@ -110,7 +110,7 @@ export default async function AdminPropietarioSolicitudesPage({
           Este propietario no tiene solicitudes
         </div>
       ) : (
-        <div style={{ background: '#fff', borderRadius: '12px', border: '0.5px solid #2C2C2C15', overflow: 'hidden' }}>
+        <div className="admin-table-wrapper" style={{ background: '#fff', borderRadius: '12px', border: '0.5px solid #2C2C2C15', overflow: 'hidden' }}>
 
           {/* Header */}
           <div style={{ display: 'grid', gridTemplateColumns: '10% 22% 18% 13% 13% 13% 11%', background: '#F2F0ED', padding: '12px 16px' }}>

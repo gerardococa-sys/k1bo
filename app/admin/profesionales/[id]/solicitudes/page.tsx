@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronLeft } from 'lucide-react'
+import { ClientAvatar } from '@/components/ui/ClientAvatar'
 
 const FONT_SERIF = 'var(--font-serif, "Playfair Display", Georgia, serif)'
 const FONT_SANS  = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
@@ -44,9 +45,10 @@ export default async function AdminProSolicitudesPage({
   const { data: solicitudes } = await supabase
     .from('quote_requests')
     .select(`
-      id, status, created_at, description,
+      id, status, created_at, responded_at, required_date, description,
       category:categories!quote_requests_category_id_fkey(name),
-      client:profiles!quote_requests_client_id_fkey(full_name)
+      subcategory:categories!quote_requests_subcategory_id_fkey(name),
+      client:profiles!quote_requests_client_id_fkey(full_name, photo_url)
     `)
     .eq('professional_id', params.id)
     .order('created_at', { ascending: false })
@@ -66,7 +68,7 @@ export default async function AdminProSolicitudesPage({
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '24px', flexWrap: 'wrap' }}>
         <h1 style={{ fontFamily: FONT_SERIF, fontSize: '34px', fontWeight: 700, color: '#2C2C2C', margin: 0 }}>
-          Solicitudes
+          Solicitudes de cotización
         </h1>
         <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78', fontStyle: 'italic' }}>
           de {profile.full_name}
@@ -76,12 +78,12 @@ export default async function AdminProSolicitudesPage({
         </span>
       </div>
 
-      <div style={{ background: '#fff', borderRadius: '12px', border: '0.5px solid #2C2C2C12', overflow: 'hidden' }}>
+      <div className="admin-table-wrapper" style={{ background: '#fff', borderRadius: '12px', border: '0.5px solid #2C2C2C12', overflow: 'hidden' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ background: '#F2F0ED', borderBottom: '1px solid #2C2C2C10' }}>
-              {['Código', 'Propietario', 'Categoría', 'Descripción', 'Fecha', 'Estado'].map((h) => (
-                <th key={h} style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 700, color: '#7A7A78', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '12px 16px', textAlign: 'left' }}>
+              {['Código', 'Cliente', 'Tipo de trabajo', 'Fecha solicitud', 'Fecha requerida', 'Fecha cotización', 'Estado', 'Acciones'].map((h) => (
+                <th key={h} style={{ fontFamily: FONT_SANS, fontSize: '11px', fontWeight: 700, color: '#7A7A78', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '12px 16px', textAlign: 'left', whiteSpace: 'nowrap' }}>
                   {h}
                 </th>
               ))}
@@ -92,39 +94,79 @@ export default async function AdminProSolicitudesPage({
               const badge = STATUS_BADGE[r.status] ?? STATUS_BADGE.pending
               const client = Array.isArray(r.client) ? r.client[0] : r.client
               const category = Array.isArray(r.category) ? r.category[0] : r.category
+              const subcategory = Array.isArray(r.subcategory) ? r.subcategory[0] : r.subcategory
               return (
                 <tr key={r.id} style={{ borderBottom: '1px solid #2C2C2C06' }}>
+
+                  {/* Código */}
                   <td style={{ padding: '12px 16px' }}>
                     <span style={{ fontFamily: 'monospace', fontSize: '12px', background: '#1E1E1E08', padding: '2px 8px', borderRadius: '4px', color: '#7A7A78' }}>
                       {r.id.substring(0, 8).toUpperCase()}
                     </span>
                   </td>
-                  <td style={{ padding: '12px 16px', fontFamily: FONT_SANS, fontSize: '14px', color: '#2C2C2C' }}>
-                    {client?.full_name ?? '—'}
+
+                  {/* Cliente */}
+                  <td style={{ padding: '12px 16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <ClientAvatar name={client?.full_name ?? '?'} photoUrl={client?.photo_url} size={28} />
+                      <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#2C2C2C', fontWeight: 500 }}>
+                        {client?.full_name ?? '—'}
+                      </span>
+                    </div>
                   </td>
-                  <td style={{ padding: '12px 16px', fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78' }}>
-                    {category?.name ?? '—'}
+
+                  {/* Tipo de trabajo */}
+                  <td style={{ padding: '12px 16px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                      <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#2C2C2C' }}>
+                        {category?.name ?? '—'}
+                      </span>
+                      {subcategory?.name && (
+                        <span style={{ fontFamily: FONT_SANS, fontSize: '12px', color: '#7A7A78' }}>
+                          {subcategory.name}
+                        </span>
+                      )}
+                    </div>
                   </td>
-                  <td style={{ padding: '12px 16px', maxWidth: '240px' }}>
-                    <span style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#7A7A78', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                      {r.description}
-                    </span>
-                  </td>
+
+                  {/* Fecha solicitud */}
                   <td style={{ padding: '12px 16px', fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78', whiteSpace: 'nowrap' }}>
                     {formatDate(r.created_at)}
                   </td>
+
+                  {/* Fecha requerida */}
+                  <td style={{ padding: '12px 16px', fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78', whiteSpace: 'nowrap' }}>
+                    {formatDate(r.required_date)}
+                  </td>
+
+                  {/* Fecha cotización */}
+                  <td style={{ padding: '12px 16px', fontFamily: FONT_SANS, fontSize: '14px', color: r.responded_at ? '#2C2C2C' : '#7A7A78', whiteSpace: 'nowrap' }}>
+                    {formatDate(r.responded_at)}
+                  </td>
+
+                  {/* Estado */}
                   <td style={{ padding: '12px 16px' }}>
-                    <span style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 700, background: badge.bg, color: badge.color, padding: '3px 10px', borderRadius: '20px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    <span style={{ fontFamily: FONT_SANS, fontSize: '11px', fontWeight: 700, background: badge.bg, color: badge.color, padding: '3px 10px', borderRadius: '20px', textTransform: 'uppercase', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
                       {badge.label}
                     </span>
+                  </td>
+
+                  {/* Acciones */}
+                  <td style={{ padding: '12px 16px' }}>
+                    <Link
+                      href={`/admin/profesionales/${params.id}/solicitudes/${r.id}`}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', border: '1px solid #C4581A40', borderRadius: '6px', padding: '5px 10px', color: '#C4581A', textDecoration: 'none', fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 600, whiteSpace: 'nowrap' }}
+                    >
+                      Ver
+                    </Link>
                   </td>
                 </tr>
               )
             })}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={6} style={{ padding: '40px', textAlign: 'center', fontFamily: FONT_SANS, fontSize: '15px', color: '#7A7A78' }}>
-                  Este profesional no tiene solicitudes
+                <td colSpan={8} style={{ padding: '40px', textAlign: 'center', fontFamily: FONT_SANS, fontSize: '15px', color: '#7A7A78' }}>
+                  Este profesional no tiene solicitudes de cotización
                 </td>
               </tr>
             )}

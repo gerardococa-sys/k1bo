@@ -5,7 +5,6 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronLeft, Eye, FileText } from 'lucide-react'
 import { ClientAvatar } from '@/components/ui/ClientAvatar'
-import { StatusSelect } from '@/components/admin/StatusSelect'
 
 const FONT_SERIF = 'var(--font-serif, "Playfair Display", Georgia, serif)'
 const FONT_SANS  = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
@@ -115,7 +114,7 @@ export default async function AdminProfesionalesPage({
       </div>
 
       {/* Table */}
-      <div style={{ background: '#fff', borderRadius: '12px', border: '0.5px solid #2C2C2C12', overflow: 'hidden' }}>
+      <div className="admin-table-wrapper" style={{ background: '#fff', borderRadius: '12px', border: '0.5px solid #2C2C2C12', overflow: 'hidden' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ background: '#F2F0ED', borderBottom: '1px solid #2C2C2C10' }}>
@@ -158,7 +157,25 @@ export default async function AdminProfesionalesPage({
                     {formatDate(p.created_at)}
                   </td>
                   <td style={{ padding: '12px 16px' }}>
-                    <StatusSelect userId={p.id} initialStatus={p.account_status ?? 'review'} />
+                    {(() => {
+                      const s = p.account_status ?? 'review'
+                      const styles: Record<string, { bg: string; color: string; label: string }> = {
+                        review:    { bg: '#D4963A20', color: '#C4581A', label: 'En revisión' },
+                        active:    { bg: '#7A7A7820', color: '#3d4d40', label: 'Activo'      },
+                        suspended: { bg: '#C4581A15', color: '#C4581A', label: 'Suspendido'  },
+                      }
+                      const b = styles[s] ?? styles.review
+                      return (
+                        <span style={{
+                          fontFamily: FONT_SANS, fontSize: '11px', fontWeight: 700,
+                          textTransform: 'uppercase', letterSpacing: '0.05em',
+                          background: b.bg, color: b.color,
+                          padding: '3px 10px', borderRadius: '20px', whiteSpace: 'nowrap',
+                        }}>
+                          {b.label}
+                        </span>
+                      )
+                    })()}
                   </td>
                   <td style={{ padding: '12px 16px' }}>
                     <div style={{ display: 'flex', gap: '6px' }}>
