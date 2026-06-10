@@ -13,6 +13,11 @@ const MarkAsVisited = dynamicImport(
   { ssr: false }
 )
 
+const CompletionPanel = dynamicImport(
+  () => import('@/components/solicitudes/CompletionPanel').then(mod => ({ default: mod.CompletionPanel })),
+  { ssr: false }
+)
+
 const QuoteResponsePanel = dynamicImport(
   () => import('@/components/solicitudes/QuoteResponsePanel').then(mod => ({ default: mod.QuoteResponsePanel })),
   {
@@ -232,6 +237,12 @@ export default async function ProSolicitudDetailPage({ params }: { params: { cou
             respondedAt={(solicitud as any).responded_at ?? null}
             laborCost={(solicitud as any).labor_cost ?? null}
             materialsCost={(solicitud as any).materials_cost ?? null}
+          />
+          <CompletionPanel
+            solicitudId={params.id}
+            initialStatus={(solicitud as any).status ?? 'pending'}
+            initialCompletionNotes={(solicitud as any).completion_notes ?? null}
+            initialCompletedAt={(solicitud as any).completed_at ?? null}
           />
         </div>
       </div>

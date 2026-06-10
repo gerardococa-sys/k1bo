@@ -660,77 +660,6 @@ export function QuoteResponsePanel({
           />
         </div>
 
-        {/* Separador */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '4px 0' }}>
-          <div style={{ flex: 1, height: '1px', background: '#2C2C2C12' }} />
-          <span style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#7A7A78' }}>— o —</span>
-          <div style={{ flex: 1, height: '1px', background: '#2C2C2C12' }} />
-        </div>
-
-        {/* Rechazo accordion */}
-        <div>
-          <button
-            type="button"
-            onClick={() => { setRejectionOpen((v) => !v); setError(null) }}
-            style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              width: '100%', background: 'none', border: 'none', cursor: 'pointer',
-              fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600,
-              color: rejectionOpen ? '#1E1E1E' : '#7A7A78',
-              padding: '4px 0', transition: 'color 0.15s',
-            }}
-          >
-            Rechazar esta solicitud
-            <ChevronDown style={{
-              width: 18, height: 18,
-              transform: rejectionOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-              transition: 'transform 0.2s',
-            }} />
-          </button>
-
-          {rejectionOpen && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '14px' }}>
-              <label style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#2C2C2C' }}>
-                Motivo del rechazo <span style={{ color: '#C4581A' }}>*</span>
-              </label>
-              <textarea
-                rows={3}
-                value={rejectionText}
-                onChange={(e) => setRejectionText(e.target.value)}
-                placeholder="Explica al propietario por qué no puedes atender esta solicitud..."
-                style={{
-                  border: '1px solid #C4581A40', borderRadius: '8px',
-                  padding: '12px 14px', fontSize: '15px', fontFamily: FONT_SANS,
-                  background: '#C4581A05', resize: 'vertical', outline: 'none',
-                  color: '#2C2C2C', lineHeight: 1.6,
-                }}
-              />
-              <button
-                type="button"
-                onClick={rechazarSolicitud}
-                disabled={submitting}
-                style={{
-                  background: 'transparent', color: '#C4581A',
-                  border: '1.5px solid #C4581A', borderRadius: '8px',
-                  fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700,
-                  padding: '12px 24px', width: '100%', marginTop: '8px',
-                  cursor: submitting ? 'not-allowed' : 'pointer',
-                  opacity: submitting ? 0.6 : 1,
-                }}
-              >
-                {submitting ? 'Enviando...' : 'Rechazar solicitud'}
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Error */}
-        {error && (
-          <p style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#C4581A', margin: 0 }}>
-            {error}
-          </p>
-        )}
-
         {/* Checkbox términos y condiciones */}
         <div
           id="terminos-check"
@@ -818,6 +747,77 @@ export function QuoteResponsePanel({
           <Send style={{ width: 18, height: 18 }} />
           {submitting ? 'Enviando...' : 'Enviar cotización'}
         </button>
+
+        {/* Separador */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '4px 0' }}>
+          <div style={{ flex: 1, height: '1px', background: '#2C2C2C12' }} />
+          <span style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#7A7A78' }}>— o —</span>
+          <div style={{ flex: 1, height: '1px', background: '#2C2C2C12' }} />
+        </div>
+
+        {/* Rechazo accordion */}
+        <div>
+          <button
+            type="button"
+            onClick={() => { setRejectionOpen((v) => !v); setError(null) }}
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              width: '100%', background: 'none', border: 'none', cursor: 'pointer',
+              fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600,
+              color: rejectionOpen ? '#1E1E1E' : '#7A7A78',
+              padding: '4px 0', transition: 'color 0.15s',
+            }}
+          >
+            Rechazar esta solicitud
+            <ChevronDown style={{
+              width: 18, height: 18,
+              transform: rejectionOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+              transition: 'transform 0.2s',
+            }} />
+          </button>
+
+          {rejectionOpen && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '14px' }}>
+              <label style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#2C2C2C' }}>
+                Motivo del rechazo <span style={{ color: '#C4581A' }}>*</span>
+              </label>
+              <textarea
+                rows={3}
+                value={rejectionText}
+                onChange={(e) => setRejectionText(e.target.value)}
+                placeholder="Explica al propietario por qué no puedes atender esta solicitud..."
+                style={{
+                  border: '1px solid #C4581A40', borderRadius: '8px',
+                  padding: '12px 14px', fontSize: '15px', fontFamily: FONT_SANS,
+                  background: '#C4581A05', resize: 'vertical', outline: 'none',
+                  color: '#2C2C2C', lineHeight: 1.6,
+                }}
+              />
+              <button
+                type="button"
+                onClick={rechazarSolicitud}
+                disabled={submitting}
+                style={{
+                  background: 'transparent', color: '#C4581A',
+                  border: '1.5px solid #C4581A', borderRadius: '8px',
+                  fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700,
+                  padding: '12px 24px', width: '100%', marginTop: '8px',
+                  cursor: submitting ? 'not-allowed' : 'pointer',
+                  opacity: submitting ? 0.6 : 1,
+                }}
+              >
+                {submitting ? 'Enviando...' : 'Rechazar solicitud'}
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Error */}
+        {error && (
+          <p style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#C4581A', margin: 0 }}>
+            {error}
+          </p>
+        )}
       </div>
     </div>
   )

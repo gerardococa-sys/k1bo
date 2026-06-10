@@ -16,6 +16,7 @@ const STATUS_BADGE: Record<string, { bg: string; color: string; label: string; d
   revision:  { bg: '#D4963A15', color: '#C4581A', label: 'En revisión', description: 'Has solicitado cambios. El profesional está revisando tu solicitud.' },
   accepted:  { bg: '#7A7A7820', color: '#3d4d40', label: 'Aceptada',    description: 'Has aceptado la cotización del profesional.' },
   rejected:  { bg: '#2C2C2C10', color: '#7A7A78', label: 'Rechazada',  description: 'El profesional no pudo atender tu solicitud en este momento.' },
+  completed: { bg: '#2C2C2C12', color: '#2C2C2C', label: 'Finalizada',  description: 'El trabajo ha sido completado.' },
 }
 
 function formatDMY(dateStr: string | null | undefined) {
@@ -268,6 +269,42 @@ export default function SolicitudDetailPage() {
             </p>
           </div>
         </Card>
+
+        {/* Trabajo completado */}
+        {currentStatus === 'completed' && solicitud.completion_notes && (
+          <div style={{
+            background: '#fff',
+            border: '1.5px solid #7A7A7830',
+            borderRadius: '12px',
+            padding: '24px',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+              <CheckCircle style={{ width: 20, height: 20, color: '#3d4d40', flexShrink: 0 }} />
+              <p style={{ fontFamily: FONT_SERIF, fontSize: '18px', fontWeight: 700, color: '#1E1E1E', margin: 0 }}>
+                Trabajo completado
+              </p>
+            </div>
+            <div>
+              <span style={{
+                fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 600, color: '#7A7A78',
+                textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: '6px',
+              }}>
+                Descripción del trabajo realizado
+              </span>
+              <p style={{ fontFamily: FONT_SANS, fontSize: '15px', color: '#1E1E1E', lineHeight: 1.7, margin: 0 }}>
+                {solicitud.completion_notes}
+              </p>
+            </div>
+            {solicitud.completed_at && (
+              <p style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#7A7A78', margin: '12px 0 0' }}>
+                Finalizado el{' '}
+                {new Date(solicitud.completed_at).toLocaleDateString('es-SV', {
+                  day: '2-digit', month: '2-digit', year: 'numeric',
+                })}
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Cotización recibida */}
         {showCotizacion && (
