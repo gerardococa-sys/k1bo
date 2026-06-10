@@ -66,28 +66,37 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
             </Link>
           )
         })}
+
+        {/* Separador + Cerrar sesión */}
+        <div style={{ borderTop: '1px solid #F2F0ED15', paddingTop: '12px', marginTop: '8px' }}>
+          <button
+            onClick={handleLogout}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '10px',
+              padding: '10px 12px', borderRadius: '8px',
+              background: 'transparent', color: '#F2F0ED40',
+              fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 400,
+              border: 'none', cursor: 'pointer',
+              width: '100%', textAlign: 'left',
+              transition: 'all 150ms',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = '#F2F0ED'; e.currentTarget.style.background = '#F2F0ED10' }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = '#F2F0ED40'; e.currentTarget.style.background = 'transparent' }}
+          >
+            <LogOut style={{ width: 18, height: 18, flexShrink: 0 }} />
+            Cerrar sesión
+          </button>
+        </div>
       </nav>
 
       {/* Footer */}
-      <div style={{ borderTop: '1px solid #F2F0ED15', paddingTop: '16px', marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      <div style={{ borderTop: '1px solid #F2F0ED15', paddingTop: '16px', marginTop: '16px' }}>
         <Link
           href="/sv"
           style={{ fontFamily: FONT_SANS, fontSize: '13px', color: '#F2F0ED40', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}
         >
           ← Volver al sitio
         </Link>
-        <button
-          onClick={handleLogout}
-          style={{
-            background: 'none', border: 'none', cursor: 'pointer', padding: 0,
-            fontFamily: FONT_SANS, fontSize: '13px', color: '#F2F0ED40',
-            display: 'flex', alignItems: 'center', gap: '6px',
-            textAlign: 'left',
-          }}
-        >
-          <LogOut style={{ width: 14, height: 14 }} />
-          Cerrar sesión
-        </button>
       </div>
     </div>
   )

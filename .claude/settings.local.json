@@ -37,7 +37,9 @@
       "Bash(npm install *)",
       "Bash(mkdir -p \"/Users/Gerardo/Library/CloudStorage/OneDrive-Personal/Proyectos/Ai/K1bo/app/admin/profesionales/[id]/solicitudes\")",
       "Bash(mkdir -p \"/Users/Gerardo/Library/CloudStorage/OneDrive-Personal/Proyectos/Ai/K1bo/app/admin/clientes/[id]/solicitudes\")",
-      "Bash(xargs ls -la)"
+      "Bash(xargs ls -la)",
+      "Bash(sed -n '655,670p' /Users/Gerardo/Library/CloudStorage/OneDrive-Personal/Proyectos/Ai/K1bo/components/solicitudes/QuoteResponsePanel.tsx)",
+      "Bash(sed -n '750,790p' /Users/Gerardo/Library/CloudStorage/OneDrive-Personal/Proyectos/Ai/K1bo/components/solicitudes/QuoteResponsePanel.tsx)"
     ]
   }
 }
