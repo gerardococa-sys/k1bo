@@ -51,11 +51,21 @@ export default async function AdminPropietarioSolicitudesPage({
 
   const solicitudes = rawSolicitudes ?? []
 
-  const proIds = [...new Set(solicitudes.map((s) => s.professional_id).filter(Boolean))]
-  const catIds = [...new Set([
-    ...solicitudes.map((s) => s.category_id),
-    ...solicitudes.map((s) => s.subcategory_id),
-  ].filter(Boolean))]
+  const proIds = Array.from(
+    new Set(
+      solicitudes
+        .map((s: any) => s.professional_id)
+        .filter(Boolean)
+    )
+  )
+  const catIds = Array.from(
+    new Set(
+      [
+        ...solicitudes.map((s: any) => s.category_id),
+        ...solicitudes.map((s: any) => s.subcategory_id),
+      ].filter(Boolean)
+    )
+  )
 
   const [{ data: prosData }, { data: catsData }] = await Promise.all([
     proIds.length

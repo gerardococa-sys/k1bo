@@ -11,26 +11,14 @@ import { Logo } from '@/components/ui/Logo'
 import { CtaProfesional } from '@/components/sections/CtaProfesional'
 
 export default async function CountryPage({ params }: { params: { country: string } }) {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-  if (!supabaseUrl || !supabaseKey) {
-    return <div>Error de configuración</div>
-  }
-
-  const categoriesRes = await fetch(
-    `${supabaseUrl}/rest/v1/categories?parent_id=is.null&order=order_index`,
-    {
-      headers: {
-        'apikey': supabaseKey,
-        'Authorization': `Bearer ${supabaseKey}`,
-      },
-      cache: 'no-store',
-    }
-  )
-  const categories = categoriesRes.ok ? await categoriesRes.json() : []
-
   const supabase = await createClient()
+
+  const { data: categories } = await supabase
+    .from('categories')
+    .select('id, name, slug, icon, parent_id')
+    .eq('active', true)
+    .is('parent_id', null)
+    .order('order_index')
 
   const { data: country } = await supabase
     .from('countries')
