@@ -1,193 +1,177 @@
-'use client'
-
 export const dynamic = 'force-dynamic'
 
-import { useEffect, useState } from 'react'
-import Image from 'next/image'
+import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { toast } from 'sonner'
-import { CheckCircle, XCircle, Star } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-import { Switch } from '@/components/ui/switch'
-import { Label } from '@/components/ui/label'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { createClient } from '@/lib/supabase/client'
-import { getInitials } from '@/lib/utils'
+import { ChevronLeft, Eye, FileText } from 'lucide-react'
+import { ClientAvatar } from '@/components/ui/ClientAvatar'
+import { StatusSelect } from '@/components/admin/StatusSelect'
 
-type Tab = 'all' | 'pending' | 'verified'
+const FONT_SERIF = 'var(--font-serif, "Playfair Display", Georgia, serif)'
+const FONT_SANS  = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
 
-export default function AdminProfesionalesPage() {
-  const supabase = createClient()
-  const [tab, setTab] = useState<Tab>('all')
-  const [search, setSearch] = useState('')
-  const [pros, setPros] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
+function formatDate(ts: string | null) {
+  if (!ts) return '—'
+  return new Date(ts).toLocaleDateString('es-SV', { day: '2-digit', month: '2-digit', year: 'numeric' })
+}
 
-  const load = async () => {
-    setLoading(true)
-    let query = supabase
-      .from('professionals')
-      .select('id, featured, total_projects, profile:profiles(full_name, photo_url, verified, active, email:id)')
-      .order('id')
+const TABS = [
+  { label: 'Todos',          value: ''            },
+  { label: 'Independientes', value: 'independent' },
+  { label: 'Empresas',       value: 'company'     },
+]
 
-    const { data } = await query
-    setPros(data ?? [])
-    setLoading(false)
+export default async function AdminProfesionalesPage({
+  searchParams,
+}: {
+  searchParams: { tipo?: string }
+}) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+
+  const tipo = ['independent', 'company'].includes(searchParams.tipo ?? '')
+    ? searchParams.tipo!
+    : ''
+
+  let query = supabase
+    .from('profiles')
+    .select('id, full_name, account_status, created_at, photo_url, professionals!inner(account_type)')
+    .eq('role', 'professional')
+    .order('created_at', { ascending: false })
+
+  if (tipo) {
+    query = (query as any).eq('professionals.account_type', tipo)
   }
 
-  useEffect(() => { load() }, [])
-
-  const verify = async (id: string, verified: boolean) => {
-    const adminClient = createClient()
-    const { error } = await adminClient.from('profiles').update({ verified }).eq('id', id)
-    if (error) { toast.error('Error'); return }
-    load()
-    toast.success(verified ? 'Profesional verificado' : 'Verificación revocada')
-  }
-
-  const toggleActive = async (id: string, active: boolean) => {
-    await supabase.from('profiles').update({ active }).eq('id', id)
-    load()
-  }
-
-  const toggleFeatured = async (id: string, featured: boolean) => {
-    await supabase.from('professionals').update({ featured }).eq('id', id)
-    load()
-  }
-
-  const filtered = pros.filter((p) => {
-    const profile = p.profile as any
-    const name = profile?.full_name?.toLowerCase() ?? ''
-    const matchSearch = name.includes(search.toLowerCase())
-    if (tab === 'pending') return matchSearch && !profile?.verified
-    if (tab === 'verified') return matchSearch && profile?.verified
-    return matchSearch
-  })
+  const { data: rows } = await query
+  const pros = (rows ?? []) as any[]
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-6">Gestión de Profesionales</h1>
+    <div style={{ padding: '32px' }}>
 
-      <div className="flex gap-4 mb-6 flex-wrap">
-        <div className="flex gap-2">
-          {(['all', 'pending', 'verified'] as Tab[]).map((t) => (
-            <Button
-              key={t}
-              variant={tab === t ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setTab(t)}
-            >
-              {t === 'all' ? 'Todos' : t === 'pending' ? 'Pendientes' : 'Verificados'}
-            </Button>
-          ))}
-        </div>
-        <Input
-          placeholder="Buscar por nombre..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="max-w-xs"
-        />
+      <Link
+        href="/admin/dashboard"
+        style={{ fontFamily: FONT_SANS, fontSize: '15px', color: '#C4581A', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px', marginBottom: '24px' }}
+      >
+        <ChevronLeft style={{ width: 16, height: 16 }} />
+        Volver al Dashboard
+      </Link>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '24px', flexWrap: 'wrap' }}>
+        <h1 style={{ fontFamily: FONT_SERIF, fontSize: '38px', fontWeight: 700, color: '#2C2C2C', margin: 0 }}>
+          Profesionales
+        </h1>
+        <span style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#7A7A78', background: '#2C2C2C10', padding: '4px 12px', borderRadius: '20px' }}>
+          {pros.length} registros
+        </span>
       </div>
 
-      {loading ? (
-        <p className="text-muted-foreground">Cargando...</p>
-      ) : (
-        <div className="rounded-lg border bg-white overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Profesional</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead>Activo</TableHead>
-                <TableHead>Destacado</TableHead>
-                <TableHead>Acciones</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filtered.map((pro) => {
-                const profile = pro.profile as any
-                return (
-                  <TableRow key={pro.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <div className="h-9 w-9 rounded-full bg-muted overflow-hidden flex items-center justify-center text-sm font-semibold shrink-0">
-                          {profile?.photo_url ? (
-                            <Image src={profile.photo_url} alt="" width={36} height={36} className="object-cover" />
-                          ) : (
-                            getInitials(profile?.full_name ?? 'P')
-                          )}
-                        </div>
-                        <div>
-                          <p className="font-medium text-sm">{profile?.full_name}</p>
-                          <Link
-                            href={`/sv/profesional/${pro.id}`}
-                            target="_blank"
-                            className="text-xs text-primary hover:underline"
-                          >
-                            Ver perfil
-                          </Link>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {profile?.verified ? (
-                        <Badge className="bg-green-100 text-green-800 border-green-200">
-                          <CheckCircle className="mr-1 h-3 w-3" /> Verificado
-                        </Badge>
-                      ) : (
-                        <Badge variant="outline" className="text-yellow-700 border-yellow-300">
-                          Pendiente
-                        </Badge>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Switch
-                        checked={profile?.active ?? true}
-                        onCheckedChange={(v) => toggleActive(pro.id, v)}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Switch
-                        checked={pro.featured}
-                        onCheckedChange={(v) => toggleFeatured(pro.id, v)}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        {!profile?.verified ? (
-                          <Button
-                            size="sm"
-                            onClick={() => verify(pro.id, true)}
-                          >
-                            <CheckCircle className="mr-1 h-3 w-3" /> Verificar
-                          </Button>
-                        ) : (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => verify(pro.id, false)}
-                          >
-                            <XCircle className="mr-1 h-3 w-3" /> Revocar
-                          </Button>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
-              {filtered.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
-                    No se encontraron profesionales
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      )}
+      {/* Tabs */}
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
+        {TABS.map((tab) => {
+          const active = tipo === tab.value
+          return (
+            <Link
+              key={tab.value}
+              href={`/admin/profesionales${tab.value ? `?tipo=${tab.value}` : ''}`}
+              style={{
+                fontFamily: FONT_SANS,
+                fontSize: '13px',
+                fontWeight: active ? 600 : 400,
+                padding: '6px 16px',
+                borderRadius: '20px',
+                border: '1px solid #D4963A40',
+                background: active ? '#1E1E1E' : 'transparent',
+                color: active ? '#D4963A' : '#7A7A78',
+                textDecoration: 'none',
+              }}
+            >
+              {tab.label}
+            </Link>
+          )
+        })}
+      </div>
+
+      {/* Table */}
+      <div style={{ background: '#fff', borderRadius: '12px', border: '0.5px solid #2C2C2C12', overflow: 'hidden' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr style={{ background: '#F2F0ED', borderBottom: '1px solid #2C2C2C10' }}>
+              {['Código', 'Nombre', 'Tipo', 'Fecha solicitud', 'Estado', 'Acciones'].map((h) => (
+                <th key={h} style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 700, color: '#7A7A78', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '12px 16px', textAlign: 'left' }}>
+                  {h}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {pros.map((p: any) => {
+              const accountType = Array.isArray(p.professionals)
+                ? p.professionals[0]?.account_type
+                : p.professionals?.account_type
+              return (
+                <tr key={p.id} style={{ borderBottom: '1px solid #2C2C2C06' }}>
+                  <td style={{ padding: '12px 16px' }}>
+                    <span style={{ fontFamily: 'monospace', fontSize: '12px', background: '#1E1E1E08', padding: '2px 8px', borderRadius: '4px', color: '#7A7A78' }}>
+                      {p.id.substring(0, 8).toUpperCase()}
+                    </span>
+                  </td>
+                  <td style={{ padding: '12px 16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <ClientAvatar name={p.full_name ?? ''} photoUrl={p.photo_url} size={32} />
+                      <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#2C2C2C', fontWeight: 500 }}>
+                        {p.full_name ?? '—'}
+                      </span>
+                    </div>
+                  </td>
+                  <td style={{ padding: '12px 16px' }}>
+                    <span style={{
+                      fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 700,
+                      background: accountType === 'company' ? '#1E1E1E15' : '#C4581A15',
+                      color:      accountType === 'company' ? '#1E1E1E'   : '#C4581A',
+                      padding: '3px 10px', borderRadius: '20px',
+                    }}>
+                      {accountType === 'company' ? 'Empresa' : 'Independiente'}
+                    </span>
+                  </td>
+                  <td style={{ padding: '12px 16px', fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78' }}>
+                    {formatDate(p.created_at)}
+                  </td>
+                  <td style={{ padding: '12px 16px' }}>
+                    <StatusSelect userId={p.id} initialStatus={p.account_status ?? 'review'} />
+                  </td>
+                  <td style={{ padding: '12px 16px' }}>
+                    <div style={{ display: 'flex', gap: '6px' }}>
+                      <Link
+                        href={`/admin/profesionales/${p.id}`}
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', border: '1px solid #C4581A40', borderRadius: '6px', padding: '6px 10px', color: '#C4581A', textDecoration: 'none' }}
+                      >
+                        <Eye style={{ width: 14, height: 14 }} />
+                        <span style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 600 }}>Ver</span>
+                      </Link>
+                      <Link
+                        href={`/admin/profesionales/${p.id}/solicitudes`}
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', border: '1px solid #7A7A7840', borderRadius: '6px', padding: '6px 10px', color: '#7A7A78', textDecoration: 'none' }}
+                      >
+                        <FileText style={{ width: 14, height: 14 }} />
+                        <span style={{ fontFamily: FONT_SANS, fontSize: '12px', fontWeight: 600 }}>Solicitudes</span>
+                      </Link>
+                    </div>
+                  </td>
+                </tr>
+              )
+            })}
+            {pros.length === 0 && (
+              <tr>
+                <td colSpan={6} style={{ padding: '40px', textAlign: 'center', fontFamily: FONT_SANS, fontSize: '15px', color: '#7A7A78' }}>
+                  No hay profesionales registrados
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }

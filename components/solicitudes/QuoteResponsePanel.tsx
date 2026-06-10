@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { Send, FileUp, FileText, FileDown, X, ChevronDown, Plus, Trash2, RefreshCw } from 'lucide-react'
+import { Send, FileUp, FileText, FileDown, X, ChevronDown, Plus, Trash2, RefreshCw, Check, AlertCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
 const FONT_SERIF = 'var(--font-serif, "Playfair Display", Georgia, serif)'
@@ -61,8 +61,9 @@ export function QuoteResponsePanel({
   const [pdfFile,       setPdfFile]       = useState<File | null>(null)
   const [rejectionOpen, setRejectionOpen] = useState(false)
   const [rejectionText, setRejectionText] = useState('')
-  const [error,         setError]         = useState<string | null>(null)
-  const [submitting,    setSubmitting]    = useState(false)
+  const [aceptaTerminos, setAceptaTerminos] = useState(false)
+  const [error,          setError]         = useState<string | null>(null)
+  const [submitting,     setSubmitting]    = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const totalMateriales = materials.reduce((sum, m) => sum + m.precioTotal, 0)
@@ -70,6 +71,10 @@ export function QuoteResponsePanel({
   useEffect(() => {
     setMaterialsCost(totalMateriales > 0 ? totalMateriales : '')
   }, [totalMateriales])
+
+  useEffect(() => {
+    if (status === 'revision') setAceptaTerminos(false)
+  }, [status])
 
   useEffect(() => {
     if (status === 'pending' && quoteDescription) setDescription(quoteDescription)
@@ -119,6 +124,13 @@ export function QuoteResponsePanel({
 
   async function enviarCotizacion() {
     if (!description.trim()) return
+
+    if (!aceptaTerminos) {
+      setError('Debes aceptar los términos y condiciones para enviar la cotización.')
+      document.getElementById('terminos-check')?.scrollIntoView({ behavior: 'smooth' })
+      return
+    }
+
     setSubmitting(true)
     setError(null)
     const supabase = createClient()
@@ -719,19 +731,88 @@ export function QuoteResponsePanel({
           </p>
         )}
 
+        {/* Checkbox términos y condiciones */}
+        <div
+          id="terminos-check"
+          style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: '12px',
+            padding: '16px',
+            background: '#F2F0ED',
+            borderRadius: '8px',
+            border: `1.5px solid ${aceptaTerminos ? '#C4581A40' : '#2C2C2C15'}`,
+            cursor: 'pointer',
+          }}
+          onClick={() => setAceptaTerminos((v) => !v)}
+        >
+          <div style={{
+            width: '20px',
+            height: '20px',
+            borderRadius: '4px',
+            border: `2px solid ${aceptaTerminos ? '#C4581A' : '#7A7A78'}`,
+            background: aceptaTerminos ? '#C4581A' : 'transparent',
+            flexShrink: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all 150ms',
+            marginTop: '1px',
+          }}>
+            {aceptaTerminos && (
+              <Check style={{ width: 12, height: 12, color: '#F2F0ED', strokeWidth: 3 }} />
+            )}
+          </div>
+          <p style={{
+            fontFamily: FONT_SANS,
+            fontSize: '14px',
+            color: '#2C2C2C',
+            lineHeight: 1.6,
+            margin: 0,
+            userSelect: 'none',
+          }}>
+            He leído y acepto los{' '}
+            <a
+              href="/terminos"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              style={{ color: '#C4581A', fontWeight: 600, textDecoration: 'none' }}
+            >
+              Términos y Condiciones
+            </a>
+            {' '}de Artifex7, incluyendo la política de comisiones y pagos aplicable a los profesionales.
+          </p>
+        </div>
+
+        {!aceptaTerminos && error?.includes('términos') && (
+          <p style={{
+            fontFamily: FONT_SANS,
+            fontSize: '13px',
+            color: '#C4581A',
+            margin: 0,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+          }}>
+            <AlertCircle style={{ width: 14, height: 14, flexShrink: 0 }} />
+            Debes aceptar los términos y condiciones para enviar la cotización.
+          </p>
+        )}
+
         {/* Botón principal */}
         <button
           type="button"
           onClick={enviarCotizacion}
-          disabled={!description.trim() || laborCost === '' || submitting}
+          disabled={!description.trim() || laborCost === '' || !aceptaTerminos || submitting}
           style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
             background: '#1E1E1E', color: '#D4963A',
             fontFamily: FONT_SANS, fontSize: '16px', fontWeight: 700,
             padding: '14px', borderRadius: '8px', width: '100%',
             border: 'none',
-            cursor: !description.trim() || laborCost === '' || submitting ? 'not-allowed' : 'pointer',
-            opacity: !description.trim() || laborCost === '' || submitting ? 0.5 : 1,
+            cursor: !description.trim() || laborCost === '' || !aceptaTerminos || submitting ? 'not-allowed' : 'pointer',
+            opacity: !description.trim() || laborCost === '' || !aceptaTerminos || submitting ? 0.5 : 1,
           }}
         >
           <Send style={{ width: 18, height: 18 }} />

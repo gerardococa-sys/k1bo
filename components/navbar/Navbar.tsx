@@ -150,14 +150,23 @@ export function Navbar({ countryPrefix: propPrefix }: NavbarProps) {
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuLabel className="truncate">{profile.full_name}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => router.push(panelPath)}>
-                  <LayoutDashboard className="mr-2 h-4 w-4" />
-                  Mi Dashboard
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push(panelPath.replace('dashboard', 'perfil'))}>
-                  <User className="mr-2 h-4 w-4" />
-                  Mi Perfil
-                </DropdownMenuItem>
+                {profile.role === 'admin' ? (
+                  <DropdownMenuItem onClick={() => router.push('/admin/dashboard')}>
+                    <LayoutDashboard className="mr-2 h-4 w-4" />
+                    Admin Dashboard
+                  </DropdownMenuItem>
+                ) : (
+                  <>
+                    <DropdownMenuItem onClick={() => router.push(panelPath)}>
+                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                      Mi Dashboard
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push(panelPath.replace('dashboard', 'perfil'))}>
+                      <User className="mr-2 h-4 w-4" />
+                      Mi Perfil
+                    </DropdownMenuItem>
+                  </>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
                   <LogOut className="mr-2 h-4 w-4" />

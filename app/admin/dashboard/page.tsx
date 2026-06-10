@@ -1,99 +1,175 @@
 export const dynamic = 'force-dynamic'
 
 import { createClient } from '@/lib/supabase/server'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Users, UserCheck, FileText, Star } from 'lucide-react'
+import { redirect } from 'next/navigation'
+import Link from 'next/link'
+import { HardHat, Building2, Home } from 'lucide-react'
+
+const FONT_SERIF = 'var(--font-serif, "Playfair Display", Georgia, serif)'
+const FONT_SANS  = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
 
 export default async function AdminDashboardPage() {
-  const supabase = createClient()
+  const supabase = await createClient()
 
-  const [
-    { count: totalPros },
-    { count: verifiedPros },
-    { count: totalClients },
-    { count: totalQuotes },
-    { count: pendingPros },
-  ] = await Promise.all([
-    supabase.from('professionals').select('*', { count: 'exact', head: true }),
-    supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'professional').eq('verified', true),
-    supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'client'),
-    supabase.from('quote_requests').select('*', { count: 'exact', head: true }),
-    supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'professional').eq('verified', false),
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role, full_name')
+    .eq('id', user.id)
+    .single()
+  if (profile?.role !== 'admin') redirect('/sv')
+
+  const [indRes, empRes, propRes] = await Promise.all([
+    supabase
+      .from('professionals')
+      .select('id', { count: 'exact', head: true })
+      .eq('account_type', 'independent'),
+    supabase
+      .from('professionals')
+      .select('id', { count: 'exact', head: true })
+      .eq('account_type', 'company'),
+    supabase
+      .from('profiles')
+      .select('id', { count: 'exact', head: true })
+      .eq('role', 'client'),
   ])
 
-  const stats = [
-    { label: 'Total profesionales', value: totalPros ?? 0, icon: UserCheck, color: 'text-purple-600' },
-    { label: 'Verificados', value: verifiedPros ?? 0, icon: UserCheck, color: 'text-green-600' },
-    { label: 'Pendientes verificación', value: pendingPros ?? 0, icon: UserCheck, color: 'text-yellow-600' },
-    { label: 'Propietarios', value: totalClients ?? 0, icon: Users, color: 'text-blue-600' },
-    { label: 'Solicitudes de cotización', value: totalQuotes ?? 0, icon: FileText, color: 'text-orange-600' },
+  const cards = [
+    {
+      icon:  HardHat,
+      count: indRes.count ?? 0,
+      label: 'Profesionales Independientes',
+      href:  '/admin/profesionales?tipo=independent',
+    },
+    {
+      icon:  Building2,
+      count: empRes.count ?? 0,
+      label: 'Empresas registradas',
+      href:  '/admin/profesionales?tipo=company',
+    },
+    {
+      icon:  Home,
+      count: propRes.count ?? 0,
+      label: 'Propietarios registrados',
+      href:  '/admin/clientes',
+    },
   ]
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
+    <>
+      {/* Dark header */}
+      <div style={{ background: '#1E1E1E', padding: '48px 32px 40px' }}>
+        <p style={{ fontFamily: FONT_SANS, fontSize: '13px', fontWeight: 700, color: '#D4963A', letterSpacing: '0.1em', textTransform: 'uppercase', margin: '0 0 8px' }}>
+          Administración
+        </p>
+        <h1 style={{ fontFamily: FONT_SERIF, fontSize: '42px', fontWeight: 700, color: '#F2F0ED', margin: '0 0 6px' }}>
+          Dashboard
+        </h1>
+        <p style={{ fontFamily: FONT_SANS, fontSize: '18px', color: 'rgba(242,240,237,0.50)', margin: 0 }}>
+          Bienvenido, {profile?.full_name}
+        </p>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-        {stats.map((stat) => (
-          <Card key={stat.label}>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-muted-foreground flex items-center gap-2">
-                <stat.icon className={`h-4 w-4 ${stat.color}`} />
-                {stat.label}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">{stat.value}</p>
-            </CardContent>
-          </Card>
-        ))}
+        {/* Counter cards inside header */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginTop: '32px' }}>
+          {cards.map(({ icon: Icon, count, label, href }) => (
+            <div
+              key={href}
+              style={{
+                background: '#fff',
+                borderRadius: '12px',
+                border: '0.5px solid #2C2C2C12',
+                padding: '24px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px',
+              }}
+            >
+              <div style={{
+                width: 56, height: 56, borderRadius: '50%',
+                background: '#C4581A12',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <Icon style={{ width: 28, height: 28, color: '#C4581A' }} />
+              </div>
+              <p style={{ fontFamily: FONT_SERIF, fontSize: '48px', fontWeight: 700, color: '#1E1E1E', margin: 0, lineHeight: 1 }}>
+                {count}
+              </p>
+              <p style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78', margin: 0 }}>
+                {label}
+              </p>
+              <Link
+                href={href}
+                style={{
+                  fontFamily: FONT_SANS,
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  color: '#C4581A',
+                  textDecoration: 'none',
+                  marginTop: 'auto',
+                }}
+              >
+                Ver listado →
+              </Link>
+            </div>
+          ))}
+        </div>
       </div>
 
-      <div className="mt-8 rounded-lg border bg-white p-6">
-        <h2 className="font-semibold mb-4">Solicitudes por estado</h2>
-        <QuotesByStatus />
+      {/* Quotes by status */}
+      <div style={{ padding: '32px' }}>
+        <div style={{ background: '#fff', borderRadius: '12px', border: '0.5px solid #2C2C2C12', padding: '24px' }}>
+          <h2 style={{ fontFamily: FONT_SERIF, fontSize: '22px', fontWeight: 600, color: '#1E1E1E', marginBottom: '20px' }}>
+            Solicitudes por estado
+          </h2>
+          <QuotesByStatus />
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 
 async function QuotesByStatus() {
-  const supabase = createClient()
-  const statuses = ['pending', 'responded', 'accepted', 'rejected']
+  const supabase = await createClient()
+  const statuses = ['pending', 'responded', 'accepted', 'rejected', 'completed']
   const labels: Record<string, string> = {
-    pending: 'Pendientes',
-    responded: 'Respondidas',
-    accepted: 'Aceptadas',
-    rejected: 'Rechazadas',
+    pending:   'Pendientes',
+    responded: 'Cotizadas',
+    accepted:  'Aceptadas',
+    rejected:  'Rechazadas',
+    completed: 'Finalizadas',
   }
-  const colors: Record<string, string> = {
-    pending: 'bg-yellow-400',
-    responded: 'bg-blue-400',
-    accepted: 'bg-green-400',
-    rejected: 'bg-red-400',
+  const barColors: Record<string, string> = {
+    pending:   '#D4963A',
+    responded: '#7A7A78',
+    accepted:  '#3d4d40',
+    rejected:  '#C4581A',
+    completed: '#2C2C2C',
   }
 
   const counts = await Promise.all(
     statuses.map((s) =>
-      supabase.from('quote_requests').select('*', { count: 'exact', head: true }).eq('status', s)
-    )
+      supabase.from('quote_requests').select('*', { count: 'exact', head: true }).eq('status', s),
+    ),
   )
 
   const total = counts.reduce((sum, { count }) => sum + (count ?? 0), 0)
+  const FONT_SANS = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
 
   return (
-    <div className="space-y-3">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
       {statuses.map((s, i) => {
         const count = counts[i].count ?? 0
         const pct = total > 0 ? Math.round((count / total) * 100) : 0
         return (
           <div key={s}>
-            <div className="flex justify-between text-sm mb-1">
-              <span>{labels[s]}</span>
-              <span className="font-medium">{count}</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+              <span style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78' }}>{labels[s]}</span>
+              <span style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#2C2C2C' }}>{count}</span>
             </div>
-            <div className="h-2 bg-muted rounded-full overflow-hidden">
-              <div className={`h-full ${colors[s]} rounded-full`} style={{ width: `${pct}%` }} />
+            <div style={{ height: '6px', background: '#2C2C2C08', borderRadius: '99px', overflow: 'hidden' }}>
+              <div style={{ height: '100%', background: barColors[s], borderRadius: '99px', width: `${pct}%`, transition: 'width 0.4s' }} />
             </div>
           </div>
         )
