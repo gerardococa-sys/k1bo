@@ -11,9 +11,10 @@ const FONT_SERIF = 'var(--font-serif, "Playfair Display", Georgia, serif)'
 const FONT_SANS  = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
 
 const STATUS_BADGE: Record<string, { bg: string; color: string; label: string }> = {
-  review:    { bg: '#D4963A20', color: '#C4581A', label: 'En revisión' },
-  active:    { bg: '#7A7A7820', color: '#3d4d40', label: 'Activo'      },
-  suspended: { bg: '#C4581A15', color: '#C4581A', label: 'Suspendido'  },
+  registered: { bg: '#7A7A7815', color: '#7A7A78', label: 'Registrado'  },
+  review:     { bg: '#D4963A20', color: '#C4581A', label: 'En revisión' },
+  active:     { bg: '#7A7A7820', color: '#3d4d40', label: 'Activo'      },
+  suspended:  { bg: '#C4581A15', color: '#C4581A', label: 'Suspendido'  },
 }
 
 function formatDMY(ts: string | null | undefined) {

@@ -13,16 +13,17 @@ const FONT_SANS  = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
 const PAGE_SIZE = 20
 
 const STATUS_BADGE: Record<string, { bg: string; color: string; label: string }> = {
-  review:    { bg: '#D4963A20', color: '#C4581A', label: 'En revisión' },
-  active:    { bg: '#7A7A7820', color: '#3d4d40', label: 'Activo'      },
-  suspended: { bg: '#C4581A15', color: '#C4581A', label: 'Suspendido'  },
+  registered: { bg: '#7A7A7815', color: '#7A7A78', label: 'Registrado'  },
+  review:     { bg: '#D4963A20', color: '#C4581A', label: 'En revisión' },
+  active:     { bg: '#7A7A7820', color: '#3d4d40', label: 'Activo'      },
+  suspended:  { bg: '#C4581A15', color: '#C4581A', label: 'Suspendido'  },
 }
 
 const ESTADO_TABS = [
-  { label: 'Todos los estados', value: ''          },
-  { label: 'En revisión',       value: 'review'    },
-  { label: 'Activos',           value: 'active'    },
-  { label: 'Suspendidos',       value: 'suspended' },
+  { label: 'Todos los estados', value: ''           },
+  { label: 'En revisión',       value: 'review'     },
+  { label: 'Activos',           value: 'active'     },
+  { label: 'Suspendidos',       value: 'suspended'  },
 ]
 
 function formatDMY(ts: string | null) {

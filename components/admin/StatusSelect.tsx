@@ -5,7 +5,7 @@ import { useState } from 'react'
 const FONT_SANS = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
 
 const STATUS_STYLES: Record<string, { bg: string; color: string; border: string }> = {
-  registered: { bg: '#1E1E1E12', color: '#1E1E1E', border: '#1E1E1E30' },
+  registered: { bg: '#7A7A7815', color: '#7A7A78', border: '#7A7A7830' },
   review:     { bg: '#D4963A15', color: '#C4581A', border: '#C4581A40' },
   active:     { bg: '#7A7A7820', color: '#3d4d40', border: '#3d4d4040' },
   suspended:  { bg: '#C4581A10', color: '#C4581A', border: '#C4581A40' },

@@ -18,19 +18,22 @@ export function AccountStatusBanner({
   status,
   role,
   professionalId,
-  activationRequested: initialRequested = false,
+  activationRequested: _unused,
   country = 'sv',
 }: AccountStatusBannerProps) {
-  const [requested, setRequested] = useState(initialRequested)
-  const [loading,   setLoading]   = useState(false)
-  const [sent,      setSent]      = useState(false)
+  const [currentStatus, setCurrentStatus] = useState(status)
+  const [loading,       setLoading]       = useState(false)
 
-  if (status === 'active') return null
+  if (currentStatus === 'active') return null
 
   async function handleRequestActivation() {
     if (!professionalId) return
     setLoading(true)
     const supabase = createClient()
+    await supabase
+      .from('profiles')
+      .update({ account_status: 'review' })
+      .eq('id', professionalId)
     await supabase
       .from('professionals')
       .update({
@@ -38,13 +41,12 @@ export function AccountStatusBanner({
         activation_requested_at: new Date().toISOString(),
       })
       .eq('id', professionalId)
-    setRequested(true)
-    setSent(true)
+    setCurrentStatus('review')
     setLoading(false)
   }
 
-  // ── Suspendido ──────────────────────────────────────────────────────────────
-  if (status === 'suspended') {
+  // ── Suspendido ───────────────────────────────────────────────────────────────
+  if (currentStatus === 'suspended') {
     return (
       <div style={{
         background: '#C4581A10', border: '1.5px solid #C4581A40',
@@ -70,57 +72,66 @@ export function AccountStatusBanner({
     )
   }
 
-  // ── Profesional en revisión (o registrado) ──────────────────────────────────
-  if (role === 'professional') {
+  // ── Registrado (profesional) — con botón para solicitar activación ───────────
+  if (currentStatus === 'registered' && role === 'professional') {
     return (
       <div style={{
         background: '#D4963A10', border: '1.5px solid #D4963A50',
         borderRadius: '10px', padding: '20px 24px', marginBottom: '24px',
       }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
-          <span style={{ fontSize: '24px', flexShrink: 0, marginTop: '2px' }}>⏳</span>
+          <span style={{ fontSize: '24px', flexShrink: 0, marginTop: '2px' }}>📋</span>
           <div style={{ flex: 1 }}>
             <p style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700, color: '#C4581A', margin: '0 0 8px' }}>
-              Cuenta en revisión
+              Cuenta registrada
             </p>
-
-            {requested ? (
-              <p style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78', lineHeight: 1.65, margin: 0 }}>
-                {sent
-                  ? '✅ Tu solicitud de activación fue enviada. El equipo de ARTIFEX7 revisará tu perfil y te notificará cuando esté activo.'
-                  : '✅ Ya enviaste tu solicitud de activación. El equipo de ARTIFEX7 revisará tu perfil y te notificará cuando esté activo.'
-                }
-              </p>
-            ) : (
-              <>
-                <p style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78', lineHeight: 1.65, margin: '0 0 16px' }}>
-                  Por favor ve a la sección de{' '}
-                  <Link
-                    href={`/${country}/profesional-panel/perfil`}
-                    style={{ color: '#C4581A', fontWeight: 600, textDecoration: 'none' }}
-                  >
-                    Mi Perfil
-                  </Link>
-                  {' '}y completa las diferentes secciones. Cuando las hayas completado da clic al siguiente botón para que validemos tu cuenta.
-                </p>
-                <button
-                  onClick={handleRequestActivation}
-                  disabled={loading}
-                  style={{
-                    display: 'inline-flex', alignItems: 'center', gap: '8px',
-                    background: loading ? '#1E1E1E50' : '#1E1E1E',
-                    color: '#D4963A', fontFamily: FONT_SANS,
-                    fontSize: '14px', fontWeight: 700,
-                    padding: '11px 20px', borderRadius: '8px',
-                    border: 'none', cursor: loading ? 'not-allowed' : 'pointer',
-                    opacity: loading ? 0.7 : 1, transition: 'opacity 150ms',
-                  }}
-                >
-                  {loading ? 'Enviando...' : '✓ Perfil completado, solicitar activación'}
-                </button>
-              </>
-            )}
+            <p style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78', lineHeight: 1.65, margin: '0 0 16px' }}>
+              Por favor ve a la sección de{' '}
+              <Link
+                href={`/${country}/profesional-panel/perfil`}
+                style={{ color: '#C4581A', fontWeight: 600, textDecoration: 'none' }}
+              >
+                Mi Perfil
+              </Link>
+              {' '}y completa las diferentes secciones. Cuando las hayas completado da clic al siguiente botón para que validemos tu cuenta.
+            </p>
+            <button
+              onClick={handleRequestActivation}
+              disabled={loading}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: '8px',
+                background: loading ? '#1E1E1E50' : '#1E1E1E',
+                color: '#D4963A', fontFamily: FONT_SANS,
+                fontSize: '14px', fontWeight: 700,
+                padding: '11px 20px', borderRadius: '8px',
+                border: 'none', cursor: loading ? 'not-allowed' : 'pointer',
+                opacity: loading ? 0.7 : 1, transition: 'opacity 150ms',
+              }}
+            >
+              {loading ? 'Enviando...' : '✓ Perfil completado, solicitar activación'}
+            </button>
           </div>
+        </div>
+      </div>
+    )
+  }
+
+  // ── En revisión (profesional) — sin botón ───────────────────────────────────
+  if (currentStatus === 'review' && role === 'professional') {
+    return (
+      <div style={{
+        background: '#D4963A10', border: '1.5px solid #D4963A50',
+        borderRadius: '10px', padding: '20px 24px', marginBottom: '24px',
+        display: 'flex', alignItems: 'flex-start', gap: '14px',
+      }}>
+        <span style={{ fontSize: '24px', flexShrink: 0, marginTop: '2px' }}>⏳</span>
+        <div>
+          <p style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700, color: '#C4581A', margin: '0 0 4px' }}>
+            Cuenta en revisión
+          </p>
+          <p style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78', lineHeight: 1.65, margin: 0 }}>
+            ✅ Tu solicitud de activación fue enviada. El equipo de ARTIFEX7 revisará tu perfil y te notificará cuando esté activo.
+          </p>
         </div>
       </div>
     )

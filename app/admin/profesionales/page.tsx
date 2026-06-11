@@ -32,7 +32,7 @@ const ESTADO_TABS = [
 ]
 
 const STATUS_STYLES: Record<string, { bg: string; color: string; label: string }> = {
-  registered: { bg: '#1E1E1E12', color: '#1E1E1E', label: 'Registrado'  },
+  registered: { bg: '#7A7A7815', color: '#7A7A78', label: 'Registrado'  },
   review:     { bg: '#D4963A20', color: '#C4581A', label: 'En revisión' },
   active:     { bg: '#7A7A7820', color: '#3d4d40', label: 'Activo'      },
   suspended:  { bg: '#C4581A15', color: '#C4581A', label: 'Suspendido'  },
