@@ -59,7 +59,7 @@ export default async function AdminProfesionalDetailPage({
 
   const { data: pro } = await supabase
     .from('professionals')
-    .select('account_type, bio, short_description, whatsapp, covers_entire_country, company_name, nrc, years_in_market')
+    .select('account_type, bio, short_description, whatsapp, covers_entire_country, company_name, nrc, years_in_market, activation_requested')
     .eq('id', params.id)
     .maybeSingle()
 
@@ -158,6 +158,18 @@ export default async function AdminProfesionalDetailPage({
         {/* Right */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <Card title="Estado de cuenta">
+            {pro?.activation_requested && (profile.account_status === 'review' || profile.account_status === 'registered') && (
+              <div style={{
+                background: '#D4963A15', border: '1px solid #D4963A40',
+                borderRadius: '8px', padding: '12px 16px', marginBottom: '16px',
+                display: 'flex', alignItems: 'center', gap: '10px',
+              }}>
+                <span style={{ fontSize: '18px' }}>🔔</span>
+                <p style={{ fontFamily: FONT_SANS, fontSize: '14px', fontWeight: 600, color: '#C4581A', margin: 0 }}>
+                  Este profesional ha completado su perfil y solicita activación de cuenta.
+                </p>
+              </div>
+            )}
             <StatusActions userId={profile.id} currentStatus={profile.account_status ?? 'registered'} />
           </Card>
 

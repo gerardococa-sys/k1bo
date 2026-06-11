@@ -25,7 +25,7 @@ export default async function ProDashboardPage({ params }: { params: { country: 
 
   const { data: pro } = await supabase
     .from('professionals')
-    .select('total_projects, categories:professional_categories(projects_count, category:categories(name))')
+    .select('total_projects, activation_requested, categories:professional_categories(projects_count, category:categories(name))')
     .eq('id', user.id)
     .single()
 
@@ -62,7 +62,13 @@ export default async function ProDashboardPage({ params }: { params: { country: 
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <AccountStatusBanner status={(profile.account_status as any) ?? 'registered'} country={params.country} />
+      <AccountStatusBanner
+        status={(profile.account_status as any) ?? 'review'}
+        role={profile.role}
+        professionalId={user.id}
+        activationRequested={pro?.activation_requested ?? false}
+        country={params.country}
+      />
       <h1 className="text-2xl font-bold mb-2">Dashboard del Profesional</h1>
       <p className="text-muted-foreground mb-8">Bienvenido, {profile.full_name}</p>
 

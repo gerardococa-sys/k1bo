@@ -64,12 +64,13 @@ export default async function AdminProfesionalesPage({
   const to       = from + pageSize - 1
 
   // Paso 1: IDs de profesionales filtrados por tipo
-  let prosQuery = supabase.from('professionals').select('id, account_type').limit(10000)
+  let prosQuery = supabase.from('professionals').select('id, account_type, activation_requested').limit(10000)
   if (tipo) prosQuery = prosQuery.eq('account_type', tipo)
   const { data: profData } = await prosQuery
 
-  const proIds  = (profData ?? []).map((p) => p.id)
-  const typeMap = Object.fromEntries((profData ?? []).map((p) => [p.id, p.account_type]))
+  const proIds         = (profData ?? []).map((p) => p.id)
+  const typeMap        = Object.fromEntries((profData ?? []).map((p) => [p.id, p.account_type]))
+  const activationMap  = Object.fromEntries((profData ?? []).map((p) => [p.id, p.activation_requested ?? false]))
 
   let totalCount = 0
   let profileRows: any[] = []
@@ -97,7 +98,11 @@ export default async function AdminProfesionalesPage({
   }
 
   const totalPages = Math.ceil(totalCount / pageSize)
-  const pros       = profileRows.map((p) => ({ ...p, account_type: typeMap[p.id] ?? 'independent' }))
+  const pros       = profileRows.map((p) => ({
+    ...p,
+    account_type:         typeMap[p.id]       ?? 'independent',
+    activation_requested: activationMap[p.id] ?? false,
+  }))
   const basePath   = buildBasePath(tipo, estado)
 
   return (
@@ -199,14 +204,27 @@ export default async function AdminProfesionalesPage({
                       {formatDate(p.created_at)}
                     </td>
                     <td style={{ padding: '12px 16px' }}>
-                      <span style={{
-                        fontFamily: FONT_SANS, fontSize: '11px', fontWeight: 700,
-                        textTransform: 'uppercase', letterSpacing: '0.05em',
-                        background: s.bg, color: s.color,
-                        padding: '3px 10px', borderRadius: '20px', whiteSpace: 'nowrap',
-                      }}>
-                        {s.label}
-                      </span>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', alignItems: 'flex-start' }}>
+                        <span style={{
+                          fontFamily: FONT_SANS, fontSize: '11px', fontWeight: 700,
+                          textTransform: 'uppercase', letterSpacing: '0.05em',
+                          background: s.bg, color: s.color,
+                          padding: '3px 10px', borderRadius: '20px', whiteSpace: 'nowrap',
+                        }}>
+                          {s.label}
+                        </span>
+                        {p.activation_requested && (p.account_status === 'review' || p.account_status === 'registered') && (
+                          <span style={{
+                            display: 'inline-flex', alignItems: 'center', gap: '4px',
+                            background: '#D4963A20', color: '#C4581A',
+                            fontFamily: FONT_SANS, fontSize: '10px', fontWeight: 700,
+                            padding: '2px 8px', borderRadius: '20px',
+                            textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap',
+                          }}>
+                            🔔 Solicita activación
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td style={{ padding: '12px 16px' }}>
                       <div style={{ display: 'flex', gap: '6px' }}>
