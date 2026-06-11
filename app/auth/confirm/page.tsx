@@ -93,6 +93,11 @@ export default function AuthConfirmPage() {
           }
           localStorage.removeItem('pending_professional')
         } catch (_) {}
+
+        // Fijar estado 'registered' via servidor (service role — bypassea RLS)
+        try {
+          await fetch('/api/auth/inicializar-profesional', { method: 'POST' })
+        } catch (_) {}
       }
 
       setStatus('success')

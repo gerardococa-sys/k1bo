@@ -75,9 +75,10 @@ export function StatusActions({
           {info.label}
         </span>
       </div>
-      {btn('✅ Activar',           'active',    '#7A7A7820', '#3d4d40')}
-      {btn('⏸ Marcar en revisión', 'review',    '#D4963A15', '#C4581A')}
-      {btn('🚫 Suspender',         'suspended', '#C4581A15', '#C4581A')}
+      {btn('✅ Activar',                'active',     '#7A7A7820', '#3d4d40')}
+      {btn('⏸ Marcar en revisión',    'review',     '#D4963A15', '#C4581A')}
+      {btn('📋 Marcar como Registrado','registered', '#1E1E1E12', '#1E1E1E')}
+      {btn('🚫 Suspender',            'suspended',  '#C4581A15', '#C4581A')}
     </div>
   )
 }
