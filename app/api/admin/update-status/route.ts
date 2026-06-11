@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
 
     const { userId, status } = await req.json()
 
-    if (!userId || !['review', 'active', 'suspended'].includes(status)) {
+    if (!userId || !['registered', 'review', 'active', 'suspended'].includes(status)) {
       return NextResponse.json({ error: 'Parámetros inválidos' }, { status: 400 })
     }
 

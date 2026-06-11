@@ -24,16 +24,18 @@ const TIPO_TABS = [
 ]
 
 const ESTADO_TABS = [
-  { label: 'Todos los estados', value: ''          },
-  { label: 'En revisión',       value: 'review'    },
-  { label: 'Activos',           value: 'active'    },
-  { label: 'Suspendidos',       value: 'suspended' },
+  { label: 'Todos los estados', value: ''           },
+  { label: 'Registrados',       value: 'registered' },
+  { label: 'En revisión',       value: 'review'     },
+  { label: 'Activos',           value: 'active'     },
+  { label: 'Suspendidos',       value: 'suspended'  },
 ]
 
 const STATUS_STYLES: Record<string, { bg: string; color: string; label: string }> = {
-  review:    { bg: '#D4963A20', color: '#C4581A', label: 'En revisión' },
-  active:    { bg: '#7A7A7820', color: '#3d4d40', label: 'Activo'      },
-  suspended: { bg: '#C4581A15', color: '#C4581A', label: 'Suspendido'  },
+  registered: { bg: '#1E1E1E12', color: '#1E1E1E', label: 'Registrado'  },
+  review:     { bg: '#D4963A20', color: '#C4581A', label: 'En revisión' },
+  active:     { bg: '#7A7A7820', color: '#3d4d40', label: 'Activo'      },
+  suspended:  { bg: '#C4581A15', color: '#C4581A', label: 'Suspendido'  },
 }
 
 // Solo filtros, sin página — usado como basePath para <Pagination> y en links de filtros
@@ -55,7 +57,7 @@ export default async function AdminProfesionalesPage({
   if (!user) redirect('/login')
 
   const tipo     = ['independent', 'company'].includes(searchParams.tipo   ?? '') ? searchParams.tipo!   : ''
-  const estado   = ['review', 'active', 'suspended'].includes(searchParams.estado ?? '') ? searchParams.estado! : ''
+  const estado   = ['registered', 'review', 'active', 'suspended'].includes(searchParams.estado ?? '') ? searchParams.estado! : ''
   const pageSize = [10, 20, 50].includes(Number(searchParams.size)) ? Number(searchParams.size) : PAGE_SIZE
   const page     = Math.max(1, parseInt(searchParams.page ?? '1', 10))
   const from     = (page - 1) * pageSize

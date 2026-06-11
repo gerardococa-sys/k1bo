@@ -195,6 +195,7 @@ export default function RegistroEmpresaPage() {
         phone:              data.phone,
         phone_country_code: phoneCode,
         country_id:         svCountryId || null,
+        account_status:     'registered',
       }))
       localStorage.setItem('pending_professional', JSON.stringify({
         account_type:          'company',
@@ -227,7 +228,7 @@ export default function RegistroEmpresaPage() {
       id:                 auth.user.id,
       country_id:         svCountryId || null,
       role:               'professional',
-      account_status:     'review',
+      account_status:     'registered',
       full_name:          data.rep_name,
       photo_url,
       phone:              data.phone,

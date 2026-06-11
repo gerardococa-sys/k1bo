@@ -151,6 +151,7 @@ export default function RegistroProfesionalPage() {
         phone_country_code: phoneCountryCode,
         date_of_birth:      data.date_of_birth,
         country_id:         svCountryId || null,
+        account_status:     'registered',
       }))
       localStorage.setItem('pending_professional', JSON.stringify({
         account_type:          accountType,
@@ -179,14 +180,15 @@ export default function RegistroProfesionalPage() {
     }
 
     await supabase.from('profiles').insert({
-      id: auth.user.id,
-      country_id: svCountryId,
-      role: 'professional',
-      full_name: data.full_name,
+      id:                 auth.user.id,
+      country_id:         svCountryId,
+      role:               'professional',
+      account_status:     'registered',
+      full_name:          data.full_name,
       photo_url,
-      phone: data.phone,
+      phone:              data.phone,
       phone_country_code: phoneCountryCode,
-      date_of_birth: data.date_of_birth,
+      date_of_birth:      data.date_of_birth,
     })
 
     await supabase.from('professionals').insert({

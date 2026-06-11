@@ -62,7 +62,7 @@ export default async function ProDashboardPage({ params }: { params: { country: 
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <AccountStatusBanner status={(profile.account_status as any) ?? 'review'} />
+      <AccountStatusBanner status={(profile.account_status as any) ?? 'registered'} country={params.country} />
       <h1 className="text-2xl font-bold mb-2">Dashboard del Profesional</h1>
       <p className="text-muted-foreground mb-8">Bienvenido, {profile.full_name}</p>
 

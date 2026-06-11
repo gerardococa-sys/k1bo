@@ -158,7 +158,7 @@ export default async function AdminProfesionalDetailPage({
         {/* Right */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <Card title="Estado de cuenta">
-            <StatusActions userId={profile.id} currentStatus={profile.account_status ?? 'review'} />
+            <StatusActions userId={profile.id} currentStatus={profile.account_status ?? 'registered'} />
           </Card>
 
           <Card title="Cobertura">

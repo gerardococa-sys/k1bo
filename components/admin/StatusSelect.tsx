@@ -5,9 +5,10 @@ import { useState } from 'react'
 const FONT_SANS = 'var(--font-sans, "DM Sans", system-ui, sans-serif)'
 
 const STATUS_STYLES: Record<string, { bg: string; color: string; border: string }> = {
-  review:    { bg: '#D4963A15', color: '#C4581A', border: '#C4581A40' },
-  active:    { bg: '#7A7A7820', color: '#3d4d40', border: '#3d4d4040' },
-  suspended: { bg: '#C4581A10', color: '#C4581A', border: '#C4581A40' },
+  registered: { bg: '#1E1E1E12', color: '#1E1E1E', border: '#1E1E1E30' },
+  review:     { bg: '#D4963A15', color: '#C4581A', border: '#C4581A40' },
+  active:     { bg: '#7A7A7820', color: '#3d4d40', border: '#3d4d4040' },
+  suspended:  { bg: '#C4581A10', color: '#C4581A', border: '#C4581A40' },
 }
 
 export function StatusSelect({
@@ -21,7 +22,7 @@ export function StatusSelect({
   const [loading, setLoading] = useState(false)
   const [error, setError]     = useState<string | null>(null)
 
-  const s = STATUS_STYLES[status] ?? STATUS_STYLES.review
+  const s = STATUS_STYLES[status] ?? STATUS_STYLES.registered
 
   const onChange = async (next: string) => {
     setLoading(true)
@@ -68,6 +69,7 @@ export function StatusSelect({
           opacity: loading ? 0.6 : 1,
         }}
       >
+        <option value="registered">Registrado</option>
         <option value="review">En revisión</option>
         <option value="active">Activo</option>
         <option value="suspended">Suspendido</option>
