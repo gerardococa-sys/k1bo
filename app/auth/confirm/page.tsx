@@ -48,20 +48,16 @@ export default function AuthConfirmPage() {
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       )
 
-      // Canjear el token_hash del link de confirmación por una sesión activa
+      // Canjear el token_hash del link de confirmación por una sesión activa.
+      // No se corta en error de verifyOtp — puede ser un error "soft" (token ya
+      // canjeado en un clic previo) pero la sesión queda establecida igual.
+      // getUser() es quien determina si hay sesión válida o no.
       const searchParams = new URLSearchParams(window.location.search)
       const token_hash   = searchParams.get('token_hash')
       const type         = searchParams.get('type')
 
       if (token_hash && type) {
-        const { error: verifyError } = await supabase.auth.verifyOtp({
-          token_hash,
-          type: type as any,
-        })
-        if (verifyError) {
-          setStatus('error')
-          return
-        }
+        await supabase.auth.verifyOtp({ token_hash, type: type as any })
       }
 
       const { data: { user }, error } = await supabase.auth.getUser()
