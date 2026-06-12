@@ -102,6 +102,14 @@ export default async function ProSolicitudDetailPage({ params }: { params: { cou
 
   if (!solicitud) redirect(`/${params.country}/profesional-panel/solicitudes`)
 
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('account_status')
+    .eq('id', user.id)
+    .single()
+
+  const isAccountActive = profile?.account_status === 'active'
+
   const client     = (solicitud as any).client
   const clientName = client?.full_name ?? 'Propietario'
 
@@ -228,6 +236,7 @@ export default async function ProSolicitudDetailPage({ params }: { params: { cou
             solicitudId={params.id}
             userId={user.id}
             country={params.country}
+            isAccountActive={isAccountActive}
             status={(solicitud as any).status ?? 'pending'}
             quoteDescription={(solicitud as any).quote_description ?? null}
             quoteMaterials={(solicitud as any).quote_materials ?? null}

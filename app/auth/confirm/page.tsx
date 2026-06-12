@@ -48,6 +48,22 @@ export default function AuthConfirmPage() {
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       )
 
+      // Canjear el token_hash del link de confirmación por una sesión activa
+      const searchParams = new URLSearchParams(window.location.search)
+      const token_hash   = searchParams.get('token_hash')
+      const type         = searchParams.get('type')
+
+      if (token_hash && type) {
+        const { error: verifyError } = await supabase.auth.verifyOtp({
+          token_hash,
+          type: type as any,
+        })
+        if (verifyError) {
+          setStatus('error')
+          return
+        }
+      }
+
       const { data: { user }, error } = await supabase.auth.getUser()
 
       if (error || !user) {

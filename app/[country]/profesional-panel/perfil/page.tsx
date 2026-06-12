@@ -493,6 +493,18 @@ export default function ProProfilePage() {
         {/* ── Portfolio tab ─────────────────────────────────────────────────── */}
         <TabsContent value="portfolio" className="mt-6 space-y-5">
 
+          {/* Mensaje de ayuda */}
+          <div style={{
+            background: '#F2F0ED', border: '0.5px solid #D4963A30',
+            borderRadius: '10px', padding: '14px 18px',
+            display: 'flex', alignItems: 'flex-start', gap: '10px',
+          }}>
+            <span style={{ fontSize: '18px', flexShrink: 0 }}>📸</span>
+            <p style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78', lineHeight: 1.65, margin: 0 }}>
+              Aquí puedes poner fotografías sobre tus trabajos realizados.
+            </p>
+          </div>
+
           {/* Hidden file input */}
           <input
             ref={portfolioInputRef}
@@ -849,6 +861,35 @@ export default function ProProfilePage() {
 
         {/* ── FAQ tab ──────────────────────────────────────────────────────── */}
         <TabsContent value="faq" className="mt-6 space-y-5">
+
+          {/* Mensaje de ayuda con ejemplo */}
+          <div style={{
+            background: '#F2F0ED', border: '0.5px solid #D4963A30',
+            borderRadius: '10px', padding: '16px 18px',
+            display: 'flex', alignItems: 'flex-start', gap: '10px',
+          }}>
+            <span style={{ fontSize: '18px', flexShrink: 0, marginTop: '1px' }}>💡</span>
+            <div style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78', lineHeight: 1.65 }}>
+              <p style={{ margin: '0 0 10px' }}>
+                Las preguntas frecuentes ayudan a tus posibles clientes a conocer más acerca de tus servicios.
+              </p>
+              <p style={{ margin: '0 0 4px', fontWeight: 600, color: '#2C2C2C', fontSize: '13px' }}>
+                Por ejemplo:
+              </p>
+              <div style={{
+                background: '#fff', borderRadius: '8px', padding: '12px 14px',
+                border: '0.5px solid #2C2C2C10',
+              }}>
+                <p style={{ margin: '0 0 4px', fontWeight: 600, fontSize: '13px', color: '#2C2C2C' }}>
+                  ¿Incluye los materiales en su cotización?
+                </p>
+                <p style={{ margin: 0, fontSize: '13px', color: '#7A7A78' }}>
+                  Sí, mis cotizaciones incluyen materiales y mano de obra, pero si lo desea puedo cotizar únicamente mano de obra.
+                </p>
+              </div>
+            </div>
+          </div>
+
           {faq.map((item) => (
             <div key={item.id} className="rounded-lg border p-4">
               <div className="flex justify-between items-start">

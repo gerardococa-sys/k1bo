@@ -1,0 +1,36 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2870
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\froman\fcharset0 Times-Roman;\f2\fnil\fcharset0 HelveticaNeue;
+}
+{\colortbl;\red255\green255\blue255;\red108\green0\blue181;\red0\green0\blue0;\red32\green36\blue45;
+\red16\green19\blue24;\red15\green112\blue1;\red0\green0\blue0;}
+{\*\expandedcolortbl;;\cssrgb\c50588\c0\c76078;\cssrgb\c0\c0\c0;\cssrgb\c16863\c18824\c23137;
+\cssrgb\c7843\c9412\c12157;\cssrgb\c0\c50196\c0;\cssrgb\c0\c0\c0\c84706;}
+\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 Para borrar un registro:\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f1 \cf2 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 SELECT\cf0 \strokec3  id\cf4 \strokec4 ,\cf0 \strokec3  email\cf4 \strokec4 ,\cf0 \strokec3  created_at\cf4 \strokec4 ,\cf0 \strokec3  email_confirmed_at\cf4 \strokec4 ,\cf0 \strokec3  raw_user_meta_data\cf5 \strokec5 ->>\cf6 \strokec6 'role'\cf0 \strokec3  \cf2 \strokec2 as\cf0 \strokec3  role \cf2 \strokec2 FROM\cf0 \strokec3  auth\cf4 \strokec4 .\cf0 \strokec3 users \cf2 \strokec2 WHERE\cf0 \strokec3 email \cf5 \strokec5 =\cf0 \strokec3  \cf6 \strokec6 'correo@queintentas.com'\cf4 \strokec4 ;\
+\
+\
+\pard\pardeftab720\partightenfactor0
+\cf0 \strokec3 Opci\'f3n A \'97 Eliminar el usuario fantasma:\
+Supabase Dashboard \uc0\u8594  Authentication \u8594  Users\
+\uc0\u8594  buscar el email \u8594  3 puntos (...) \u8594  Delete User\
+\
+\pard\pardeftab720\sa240\partightenfactor0
+\cf0 \strokec3 Luego limpia restos en las tablas:\
+DELETE FROM professionals \
+WHERE id = '[id del usuario]';\
+\
+DELETE FROM profiles \
+WHERE id = '[id del usuario]';
+\f2\fs22 \cf7 \strokec7 \
+\pard\pardeftab720\qc\partightenfactor0
+\cf7 \
+\
+\
+}

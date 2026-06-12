@@ -31,7 +31,7 @@ const step1Schema = z.object({
   confirm_password:z.string().min(1, 'Confirmar contraseña requerida'),
   phone:           z.string().min(8, 'Teléfono requerido'),
   rep_name:        z.string().min(2, 'Nombre del representante requerido'),
-  nrc:             z.string().min(1, 'NRC / Registro fiscal requerido'),
+  nrc:             z.string().regex(/^\d{7}-\d$/, 'Formato requerido: 1234567-8'),
   years_market:    z.string().optional(),
 }).refine(d => d.password === d.confirm_password, {
   message: 'Las contraseñas no coinciden',
@@ -436,7 +436,19 @@ export default function RegistroEmpresaPage() {
 
             <div className="space-y-2">
               <Label>NRC / Registro fiscal *</Label>
-              <Input placeholder="12345-6" {...step1.register('nrc')} />
+              <Input
+                placeholder="1234567-8"
+                maxLength={9}
+                {...step1.register('nrc')}
+                onChange={(e) => {
+                  const digits = e.target.value.replace(/\D/g, '').slice(0, 8)
+                  const masked = digits.length > 7
+                    ? `${digits.slice(0, 7)}-${digits.slice(7)}`
+                    : digits
+                  e.target.value = masked
+                  step1.setValue('nrc', masked, { shouldValidate: true })
+                }}
+              />
               {step1.formState.errors.nrc && <p className="text-sm text-destructive">{step1.formState.errors.nrc.message}</p>}
             </div>
 

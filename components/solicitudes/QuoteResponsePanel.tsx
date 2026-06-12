@@ -35,6 +35,7 @@ interface Props {
   solicitudId:      string
   userId:           string
   country:          string
+  isAccountActive?: boolean
   status:           string
   quoteDescription: string | null
   quoteMaterials:   string | null
@@ -47,7 +48,7 @@ interface Props {
 }
 
 export function QuoteResponsePanel({
-  solicitudId, userId, country, status,
+  solicitudId, userId, country, isAccountActive = true, status,
   quoteDescription, quoteMaterials, materialsList,
   quotePdfUrl, rejectionReason, respondedAt,
   laborCost: initialLaborCost, materialsCost: initialMaterialsCost,
@@ -385,6 +386,27 @@ export function QuoteResponsePanel({
               )}
             </div>
           )}
+        </div>
+      </div>
+    )
+  }
+
+  /* ── CUENTA INACTIVA — bloqueo ─────────────────────────────── */
+  if (!isAccountActive) {
+    return (
+      <div style={{
+        background: '#1E1E1E08', border: '1.5px solid #1E1E1E15',
+        borderRadius: '12px', padding: '28px 24px',
+        display: 'flex', alignItems: 'flex-start', gap: '16px',
+      }}>
+        <span style={{ fontSize: '28px', flexShrink: 0, marginTop: '2px' }}>🔒</span>
+        <div>
+          <p style={{ fontFamily: FONT_SANS, fontSize: '15px', fontWeight: 700, color: '#2C2C2C', margin: '0 0 6px' }}>
+            Cuenta no activa
+          </p>
+          <p style={{ fontFamily: FONT_SANS, fontSize: '14px', color: '#7A7A78', lineHeight: 1.65, margin: 0 }}>
+            Solo puedes responder cotizaciones cuando tu cuenta esté activa. Puedes ver el detalle de la solicitud, pero el formulario de respuesta estará disponible una vez que el equipo de ARTIFEX7 active tu cuenta.
+          </p>
         </div>
       </div>
     )
