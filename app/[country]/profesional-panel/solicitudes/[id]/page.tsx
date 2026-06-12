@@ -146,7 +146,7 @@ export default async function ProSolicitudDetailPage({ params }: { params: { cou
 
       {/* Title */}
       <h1 style={{ fontFamily: FONT_SERIF, fontSize: '38px', fontWeight: 700, color: '#2C2C2C', margin: '0 0 32px' }}>
-        Detalle de Solicitud
+        Detalle de Solicitud de Cotización
       </h1>
 
       {/* 2-column grid */}

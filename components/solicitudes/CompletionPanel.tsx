@@ -45,7 +45,8 @@ export function CompletionPanel({
       setCompletedAt(now)
       setCompletionOpen(false)
     } else {
-      console.error('Error al completar:', error)
+      console.error('[handleComplete] error:', error)
+      alert('Error al finalizar: ' + error.message)
     }
     setCompleting(false)
   }
