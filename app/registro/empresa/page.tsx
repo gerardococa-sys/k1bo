@@ -154,9 +154,10 @@ export default function RegistroEmpresaPage() {
       password: data.password,
       options: {
         data: {
-          full_name: data.rep_name,
-          role: 'professional',
-          phone: `${phoneCode}${data.phone}`,
+          full_name:    data.rep_name,
+          role:         'professional',
+          account_type: 'company',
+          phone:        `${phoneCode}${data.phone}`,
         },
         emailRedirectTo: `${window.location.origin}/auth/confirm`,
       },
